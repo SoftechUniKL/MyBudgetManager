@@ -1,1 +1,3 @@
-# sweng-d
+# MyBudgetManager
+
+Repository von Team 2
