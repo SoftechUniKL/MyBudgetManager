@@ -17,10 +17,10 @@ import com.opencsv.CSVReader;
  * 
  */
 public class BudgetPlanModel {
-	List<Posten> ausgaben;
-
+	List<Posten> Geldvermögen;
+		
 	public BudgetPlanModel() {
-		this.ausgaben = new ArrayList<Posten>();
+		this.Geldvermögen = new ArrayList<Posten>();
 		try {
 			// Zeilenweises Einlesen der Daten
 			CSVReader reader = new CSVReader(new FileReader("data/budget.csv"));
@@ -28,12 +28,13 @@ public class BudgetPlanModel {
 			while ((nextLine = reader.readNext()) != null) {
 				DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT, Locale.GERMAN);
 				Date datum = df.parse(nextLine[0]);
-				String bezeichnung = nextLine[1];
-				double betrag = Double.parseDouble(nextLine[2]);
-				ausgaben.add(new Posten(datum, bezeichnung, betrag));
+				String notiz = nextLine[1];
+				String bezeichnung = nextLine[2];
+				double betrag = Double.parseDouble(nextLine[3]);
+				Geldvermögen.add(new Posten(datum,notiz, bezeichnung, betrag));
 			}
 			reader.close();
-
+			
 		} catch (FileNotFoundException e) {
 			System.err
 					.println("Die Datei data/budget.csv wurde nicht gefunden!");
@@ -47,5 +48,12 @@ public class BudgetPlanModel {
 					.println("Formatfehler: Die Datei konnte nicht eingelesen werden!");
 			System.exit(1);
 		}
+			
 	}
 }
+	
+
+	
+
+
+	

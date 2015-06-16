@@ -11,6 +11,10 @@ public class Posten {
 	/**
 	 * Kurze Beschreibung
 	 */
+	private String notiz;
+	/**
+	 * Kurze Beschreibung
+	 */
 	private String bezeichnung;
 	/**
 	 * Hoehe des Postens
@@ -27,14 +31,18 @@ public class Posten {
 	 * @param betrag
 	 *            Hoehe des Postens
 	 */
-	public Posten(Date datum, String bezeichnung, double betrag) {
+	public Posten(Date datum,String notiz, String bezeichnung, double betrag) {
 		this.bezeichnung = bezeichnung;
+		this.notiz = notiz;
 		this.datum = datum;
 		this.betrag = betrag;
 	}
 
 	public Date getDatum() {
 		return datum;
+	}
+	public String getnotiz() {
+		return notiz;
 	}
 
 	public String getBezeichnung() {
@@ -43,5 +51,7 @@ public class Posten {
 
 	public double getBetrag() {
 		return betrag;
+		
 	}
 }
+
