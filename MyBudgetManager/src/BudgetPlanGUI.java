@@ -1,5 +1,6 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -14,6 +15,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -29,16 +31,27 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
+
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
+
 import java.io.*; 
 import java.awt.*; 
+
 import javax.swing.*; 
+
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.MouseEvent;
+
 import javax.swing.JSpinner;
+import javax.swing.border.MatteBorder;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.general.DefaultPieDataset;
 
 
 /**
@@ -69,50 +82,70 @@ public class BudgetPlanGUI extends JFrame {
 	/* Modell der Daten
 	 */
 	private BudgetPlanModel budget;
-
+	//panel Headline:	
 	private JPanel panel;
-	private JLabel lblKontostandsanzeige;
-	private JLabel lblKontostand;
+	private JLabel lblKontostandsanzeige,lblKontostand,lblDatum;
+	
+	//panel_1:
 	private JPanel panel_1;
-	private JButton btnInfo, btnTaschenrechner, btnSchließen;
 	private GroupLayout gl_panel_1;
+	private JButton btnKontoLöschen,btnInfo, btnTaschenrechner, btnSchließen;
+	
+	//TABBED PANE:
 	private JTabbedPane tabbedPane;
+	
+	//panel_Konto:
 	private JPanel panel_Konto;
+	private JPanel panel_Kontouebersicht;
+	private JLabel lblKontouebersicht;
+	private JScrollPane scrollPane;
+	private JTable table;
+	
+	//panel_Ausgaben:
 	private JPanel Panel_Ausgaben;
+	private JTextField textField_Ausgaben, txtTtmmjjjj_Ausgaben,textFieldNotiz_Ausgabe;
+	private JLabel lblAusgabenBuchungsbetrag, lblAusgabenKategorie,lblAusgabenWiederholung,
+				   lblAusgabenFaelligkeitsdatum, lblNotiz_Ausgaben,lblEuroZb,label_Datum;
+	private JButton btnAusgabenBuchen, btnReset_Ausgaben;
+	private JRadioButton rdbtnEinmaligAusgaben,rdbtnMonatlichAusgaben;
+	private JComboBox comboBox_Ausgaben;
+	
+	//panel_Einnahmen:	
 	private JPanel Panel_Einnahmen;
-	private JPanel Panel_Statistiken;
-	private JPanel panel_Sparfunktion;
+	private JLabel lblEinnahmenBuchungsbetrag,lblEinnahmenKategorie,lblEinnahmenWiederholung,
+	lblEinnahmenFaelligkeitsdatum,lblNotiz_Einnahmen,lblEuro,lblTtmmyyyy;
+	private JButton btnEinnahmenBuchen,btnReset_Einnahmen;
+	private JRadioButton rdbtnEinnahmenEinmalig,rdbtnEinnahmenMonatlich;	
+	private JTextField  txtTtmmjjjj_Einnahmen,textField_Einnahmen,textFieldNotiz_Einnahmen;
+	private JComboBox comboBox_Einnahmen;
+	
+	//panel_Daueraufträge:
 	private JPanel panel_Dauerauftraege;
-	private JPanel panel_Statistiken_Woche;
-	private JPanel panel_Statistiken_Monat;
-	private JPanel panel_Statistiken_Jahr;
 	
-	  private JTextArea textArea; //P2 
+	//panel_Statistiken
+	private JPanel Panel_Statistiken;
+	private JButton btnStatistik_KategorieKreisdiag;
+	private JRadioButton rdbtnGesamtzeitraum;
+	private JRadioButton rdbtnIndividualZeitraum;
+	private JTextField textField_Statistik_Startwert;
+	private JTextField textField_Statistik_Endwert;
+	private JButton btnStatistik_EinnahmenAusgaben;
+	private JButton btnStatistik_KategorieBalkendiag;
+	private JLabel lblAnfangsdatum;
+	private JLabel lblEnddatum;
 	
-	  private JTextField textField_Einnahmen,textFieldNotiz_Ausgabe;
-	  private JTextField textField_Ausgaben;
-	  private JTextField txtTtmmjjjj_Ausgaben, txtTtmmjjjj_Einnahmen;			//p3
-	  private JComboBox comboBox_Ausgaben;
-	  private JComboBox comboBox_Einnahmen;
-	  private JRadioButton rdbtnEinmalig;
-	  private JLabel lblAusgabenBuchungsbetrag, lblAusgabenKategorie, lblAusgabenWiederholung, lblAusgabenFaelligkeitsdatum, lblNotiz_Ausgaben;//Label Ausgaben
-	  private JRadioButton rdbtnMonatlich;
-	  private JButton btnAusgabenBuchen, btnReset_Ausgaben, btnReset_Einnahmen;
-	  
-	  private JLabel lblEinnahmenBuchungsbetrag,lblEinnahmenKategorie,lblEinnahmenWiederholung,lblEinnahmenFaelligkeitsdatum,lblDatum,lblNotiz_Einnahmen ;
-	  private JRadioButton rdbtnEinnahmenEinmalig;
-	  private JRadioButton rdbtnEinnahmenMonatlich;				//p4
-	  private JButton btnEinnahmenBuchen;
-	  private JTabbedPane tabbedPane_Statistiken;		//P5
-	  private JTextField textField;
-	  private JTextField textField_Einnahmen_1;
-	  private JLabel lblEuro;
-	  private JLabel lblTtmmyyyy;
-	  private JLabel lblEuroZb;
-	  private JLabel label_2;
-	  private JButton btnKontoLöschen;
-	  
-	  
+	//panel_Sparfunktion
+	private JPanel panel_Sparfunktion;
+
+
+
+
+
+
+
+
+	
+
 	/**
 	 * Konstruktor fuer die GUI.
 	 * 
@@ -122,7 +155,7 @@ public class BudgetPlanGUI extends JFrame {
 	 *            Modell der Daten
 	 */
 	public BudgetPlanGUI(BudgetPlanModel budget) {
-		super("MyBudgetPlaner");
+		super("MyBudgetManager");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		setBounds(100, 100, 450, 300); // Groesse des Frames
@@ -151,21 +184,19 @@ public class BudgetPlanGUI extends JFrame {
 	public void Anfangsabfrage(){
 		
 		if (budget.Geldvermögen.size() == 0) {
-			JOptionPane.showMessageDialog(null, "Willkommen bei MyBudgetPlaner! \n"
+			JOptionPane.showMessageDialog(null, "Willkommen bei MyBudgetManager! \n"
 					+ "Um das Programm anwenden zu können, legen Sie einen Startwert Ihres Kontos fest. \n"
 					+ "Befindet sich dieser im positiven Breich, tätigen Sie ihre Eröffnungsbuchung unter dem Menüunterpunkt: Einnahmen. \n"
 					+ "Anderenfalls gehen Sie auf Ausgaben.  \n"
 					+ "\n"
 					+ "Wir wünschen Ihnen viel Freunde an unserem tollen Produkt\n"
-					+ "" ,"Willkommen bei MyBudgetPlan", JOptionPane.INFORMATION_MESSAGE);
+					+ "" ,"Willkommen bei MyBudgetManager", JOptionPane.INFORMATION_MESSAGE);
 			
 			tabbedPane.setEnabledAt(0, false);
 			tabbedPane.setEnabledAt(3, false);
 			tabbedPane.setEnabledAt(4, false);
 			tabbedPane.setEnabledAt(5, false);
 			tabbedPane.setSelectedIndex(2);
-			
-
 			
 			comboBox_Ausgaben.insertItemAt("Startwert", 1);
 			comboBox_Ausgaben.setSelectedIndex(1);
@@ -179,9 +210,8 @@ public class BudgetPlanGUI extends JFrame {
 			btnReset_Ausgaben.setEnabled(false);
 			}
 		
-		
-		
 	}
+	
 	public void Aktivierung(){
 		tabbedPane.setEnabledAt(0, true);
 		tabbedPane.setEnabledAt(3, true);
@@ -196,6 +226,7 @@ public class BudgetPlanGUI extends JFrame {
 		
 		btnReset_Einnahmen.setEnabled(true);
 		btnReset_Ausgaben.setEnabled(true);
+		
 	}
 	 /**
 	   * 
@@ -268,7 +299,7 @@ public class BudgetPlanGUI extends JFrame {
   			System.err
   					.println("Probleme beim Oeffnen der Datei data/budget.csv!");
   			System.exit(1);
-  		}
+  		} 
 			
 		} 
 
@@ -303,10 +334,37 @@ public class BudgetPlanGUI extends JFrame {
 			textFieldNotiz_Ausgabe.setText(null);
 		}
 	  
+	  void Init_Kontoübersicht(){
+		  Object[][] data = new Object[budget.Geldvermögen.size()][5];		
+			int i = 0;	
+			String m;
+			for (Posten p : budget.Geldvermögen) {		
+				data[i][0] = new SimpleDateFormat("dd.MM.yyyy")		
+						.format(p.getDatum());	
+				data[i][1] = p.getBezeichnung();	
+				data[i][2] = p.getnotiz();		
+				data[i][3] = p.getBetrag();
+				if  (p.getintern_Einnahme_Ausgabe() == 0)
+					m = "Einnahme";
+				else
+					m = "Ausgabe";
+				
+				data[i][4] = m;
+				i++;		
+			}
+
+			table = new JTable(data, new Object[] { "Datum", "Kategorie", "Beschreibung", "Betrag", "Buchungsart" });		
+			table.enable(false);
+
+			table.setAutoCreateRowSorter(true);
+			scrollPane.setViewportView(table);
+	  }
+	  
 	  void Init_Kontostand(){
 		  NumberFormat nf = NumberFormat.getInstance(new Locale("de", "DE"));
 			double i = 0;
 			budget.Geldvermögen.clear();
+			
 			try {
 				// Zeilenweises Einlesen der Daten
 				CSVReader reader = new CSVReader(new FileReader("data/budget.csv"));
@@ -317,7 +375,9 @@ public class BudgetPlanGUI extends JFrame {
 					String notiz = nextLine[1];
 					String bezeichnung = nextLine[2];
 					double betrag = Double.parseDouble(nextLine[3]);
-					budget.Geldvermögen.add(new Posten(datum,notiz, bezeichnung, betrag));
+					int intern_Einnahme_Ausgabe = Integer.parseInt(nextLine[4]);
+					budget.Geldvermögen.add(new Posten(datum, notiz, bezeichnung, betrag, intern_Einnahme_Ausgabe));
+				    
 				}
 				reader.close();
 
@@ -334,6 +394,7 @@ public class BudgetPlanGUI extends JFrame {
 						.println("Formatfehler: Die Datei konnte nicht eingelesen werden!");
 				System.exit(1);
 			}
+			
 			for (Posten p : budget.Geldvermögen) {
 				i += p.getBetrag();
 			}
@@ -344,12 +405,14 @@ public class BudgetPlanGUI extends JFrame {
 				lblKontostand.setForeground(new Color(20, 170, 20));
 			}
 			else {
-				lblKontostand.setForeground(Color.RED);	
+				lblKontostand.setForeground(Color.RED);
 			}
-			
 			if (i < 0)
 				JOptionPane.showMessageDialog(null, "Ihr Kontostand befindet sich im negativen Bereich.\n"
 						+ "Bitte achten Sie auf Ihre Ausgaben.", "Kontostandswarnung", JOptionPane.WARNING_MESSAGE);
+			
+			
+			Init_Kontoübersicht();
 			}
 	  
 	  
@@ -407,7 +470,7 @@ public class BudgetPlanGUI extends JFrame {
 	  			String[] entries = new String[5];
 	  			
 	  			entries[0] = txtTtmmjjjj_Einnahmen.getText();
-	  			entries[1] = textField_Einnahmen_1.getText();
+	  			entries[1] = textFieldNotiz_Einnahmen.getText();
 	  			entries[2] = (String) comboBox_Einnahmen.getSelectedItem();
 	  			entries[3] = textField_Einnahmen.getText();
 	  			entries[4] = "0"; // 0 gilt als Einnahme. Nur intern sichtbar 
@@ -425,7 +488,7 @@ public class BudgetPlanGUI extends JFrame {
 	  			System.err
 	  					.println("Probleme beim Oeffnen der Datei data/budget.csv!");
 	  			System.exit(1);
-	  		}
+	  		} 
 				
 			}
 			catch (ParseException e) {
@@ -456,11 +519,88 @@ public class BudgetPlanGUI extends JFrame {
 			txtTtmmjjjj_Einnahmen.setText(new SimpleDateFormat("dd.MM.yyyy")
 					.format(new Date()));
 			comboBox_Einnahmen.setSelectedIndex(0); 
-			textField_Einnahmen_1.setText(null);
+			textFieldNotiz_Einnahmen.setText(null);
 	  }
 
+	  /**
+		 * 
+		 * Methoden für die Statistik 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 * 
+		 */
 		
-		
+	  
+	  
+		public boolean Statistik_CheckAuswahlDatum() {
+
+			try {
+				// Check date validation Startwert
+				if (textField_Statistik_Startwert.getText().length() != 10)
+					throw new ParseException("Fehler", 0);
+
+				Pattern p = Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}");
+				Matcher m = p.matcher(textField_Statistik_Startwert.getText());
+				boolean b = m.matches();
+				if (b == false)
+					throw new ParseException("Fehler", 0);
+
+				SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+				dateFormat.setLenient(false); // strenge Datumsprüfung
+				// einschalten
+				dateFormat.parse(textField_Statistik_Startwert.getText());
+
+				// Check date validationEndwert
+				if (textField_Statistik_Endwert.getText().length() != 10)
+					throw new ParseException("Fehler", 0);
+
+				Pattern pat = Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}");
+				Matcher mat = pat.matcher(textField_Statistik_Endwert.getText());
+				boolean bol = mat.matches();
+				if (bol == false)
+					throw new ParseException("Fehler", 0);
+
+				dateFormat.setLenient(false); // strenge Datumsprüfung
+				// einschalten
+				dateFormat.parse(textField_Statistik_Endwert.getText());
+
+				return true;
+
+			} catch (ParseException e) {
+				JOptionPane.showMessageDialog(null, "Falsche Datumseingabe. \n"
+						+ "Formathinweis: TT.MM.JJJJ", "Fehler",
+						JOptionPane.ERROR_MESSAGE);
+				textField_Statistik_Endwert.setText(null);
+				textField_Statistik_Startwert.setText(null);
+				return false;
+			}
+		}
+
+		public boolean Statistik_CheckDateDiff() {
+			try {
+				SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+				Date Start = sdf.parse(textField_Statistik_Startwert.getText());
+				Date End = sdf.parse(textField_Statistik_Endwert.getText());
+				long DateDiff = 0;
+				DateDiff = End.getTime() - Start.getTime();
+				if (DateDiff <= 0)
+					throw new Exception();
+				return true;
+
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(null, "Falsche Datumsgrößen. \n"
+						+ "Enddatum muss größer als Anfangsdatum sein!", "Fehler",
+						JOptionPane.ERROR_MESSAGE);
+				textField_Statistik_Endwert.setText(null);
+				textField_Statistik_Startwert.setText(null);
+
+				return false;
+			}
+		}
+	  
 		
 	/**
 	 * 
@@ -592,7 +732,19 @@ public class BudgetPlanGUI extends JFrame {
 		
 		panel_Konto = new JPanel();
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Konto</body></html>", null, panel_Konto, null);
-		panel_Konto.setLayout(null);
+		panel_Konto.setLayout(new BorderLayout(0, 0));
+		
+		panel_Kontouebersicht = new JPanel();
+		panel_Konto.add(panel_Kontouebersicht, BorderLayout.NORTH);
+		panel_Kontouebersicht.setPreferredSize(new Dimension(0, 40));
+		
+		lblKontouebersicht = new JLabel("Konto\u00FCbersicht:");
+		panel_Kontouebersicht.add(lblKontouebersicht);
+		lblKontouebersicht.setFont(new Font("Tahoma", Font.BOLD, 18));
+		
+		scrollPane = new JScrollPane();
+		panel_Konto.add(scrollPane, BorderLayout.CENTER);
+		
 		
 		Panel_Ausgaben = new JPanel();
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Ausgaben</body></html>", null, Panel_Ausgaben, null);
@@ -613,10 +765,7 @@ public class BudgetPlanGUI extends JFrame {
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Statistik</body></html>", null, Panel_Statistiken, null);
 		Panel_Statistiken.setLayout(null);
 		
-		panel_Sparfunktion = new JPanel();
-		tabbedPane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Sparfunktion</body></html>", null, panel_Sparfunktion, null);
-		panel_Sparfunktion.setLayout(null);
-		
+			
 		//Panel 1 Ende
 		
 //		///////////////////////////
@@ -635,11 +784,8 @@ public class BudgetPlanGUI extends JFrame {
 		 * 
 		 */
 		
-		
-//			textArea = new JTextArea();
-//	        textArea.setBounds(10, 34, 532, 282);
-//	        panel_Konto.add(textArea);
-	        //Panel 2 Kontoübersicht Ende
+		// Tabelle mit Uebersicht der Ausgaben		
+				
 		
 		//Panel3 Anfang
 	        
@@ -657,8 +803,10 @@ public class BudgetPlanGUI extends JFrame {
 			 * 
 			 * 
 			 */
+		
+		
 	    textField_Ausgaben = new JTextField();
-		textField_Ausgaben.setBounds(197, 11, 150, 25);
+		textField_Ausgaben.setBounds(197, 13, 150, 25);
 		Panel_Ausgaben.add(textField_Ausgaben);
 		textField_Ausgaben.setHorizontalAlignment(JTextField.RIGHT);
 		
@@ -673,7 +821,7 @@ public class BudgetPlanGUI extends JFrame {
 		Panel_Ausgaben.add(lblAusgabenKategorie);
 		
 		comboBox_Ausgaben = new JComboBox();
-		comboBox_Ausgaben.setModel(new DefaultComboBoxModel(new String[] {"(Bitte Wählen)", "Haushalt", "Elektronik", "Auto", "Sport", "Freizeit", "Sonstiges"}));
+		comboBox_Ausgaben.setModel(new DefaultComboBoxModel(new String[] {"(Bitte Wählen)", "Krankenversicherung", "Hausversicherung", "Kfz-Versicherung", "TÜV/Versicherung", "Benzin/Diesel", "Musik","Filmleihe", "Kino", "Bücher/Zeitschriften", "Kinder/Spielzeug", "Persönliche Gegenstände", "Bekleidung", "Restaurant/Mensa","Lebensmittel", "Müll", "Wasser", "Einkäufe", "Ersparnisse", "Haustiere","Party", "Haushalt", "Hotel/Unterkunft", "Kreditkarte", "Gesundheitsausgaben", "Krankenversicherung", "Internet/Telefon","Handy", "Gas/Heizung", "Strom", "Vermögenssteuer", "Mitgliedsgebür", "Miete","Kredit","Sonstiges"}));
 		comboBox_Ausgaben.setBounds(197, 69, 155, 25);
 		Panel_Ausgaben.add(comboBox_Ausgaben);
 		
@@ -683,21 +831,21 @@ public class BudgetPlanGUI extends JFrame {
 		 lblAusgabenWiederholung.setBounds(21, 130, 142, 29);
 		 Panel_Ausgaben.add(lblAusgabenWiederholung);
 		 
-		 rdbtnEinmalig = new JRadioButton("einmalig");
-		 rdbtnEinmalig.setBounds(197, 133, 109, 23);
-		 Panel_Ausgaben.add(rdbtnEinmalig);
+		 rdbtnEinmaligAusgaben = new JRadioButton("einmalig");
+		 rdbtnEinmaligAusgaben.setBounds(197, 133, 109, 23);
+		 Panel_Ausgaben.add(rdbtnEinmaligAusgaben);
 		 
-		 rdbtnMonatlich = new JRadioButton("monatlich\r\n");
-		 rdbtnMonatlich.setBounds(305, 133, 109, 23);
-		 Panel_Ausgaben.add(rdbtnMonatlich);
+		 rdbtnMonatlichAusgaben = new JRadioButton("monatlich\r\n");
+		 rdbtnMonatlichAusgaben.setBounds(308, 133, 109, 23);
+		 Panel_Ausgaben.add(rdbtnMonatlichAusgaben);
 		 
 		 lblAusgabenFaelligkeitsdatum = new JLabel("F\u00E4lligkeitsdatum:");
 		 lblAusgabenFaelligkeitsdatum.setFont(new Font("Tahoma", Font.BOLD, 11));
-		 lblAusgabenFaelligkeitsdatum.setBounds(21, 184, 142, 32);
+		 lblAusgabenFaelligkeitsdatum.setBounds(21, 189, 142, 29);
 		 Panel_Ausgaben.add(lblAusgabenFaelligkeitsdatum);
 		 
 		 txtTtmmjjjj_Ausgaben = new JTextField();
-		 txtTtmmjjjj_Ausgaben.setBounds(197, 187, 150, 26);       
+		 txtTtmmjjjj_Ausgaben.setBounds(197, 190, 150, 26);       
 		 txtTtmmjjjj_Ausgaben.setText( new SimpleDateFormat("dd.MM.yyyy").format(new Date()));
 		 txtTtmmjjjj_Ausgaben.setFont(new Font("Tahoma", Font.BOLD, 11));
 		 Panel_Ausgaben.add(txtTtmmjjjj_Ausgaben);
@@ -716,18 +864,20 @@ public class BudgetPlanGUI extends JFrame {
 		  
 		  lblNotiz_Ausgaben = new JLabel("Beschreibung:");
 		  lblNotiz_Ausgaben.setFont(new Font("Tahoma", Font.BOLD, 11));
-		  lblNotiz_Ausgaben.setBounds(21, 257, 99, 20);
+		  lblNotiz_Ausgaben.setBounds(21, 250, 142, 29);
 		  Panel_Ausgaben.add(lblNotiz_Ausgaben);
 		  
 		  lblEuroZb = new JLabel(" Euro ( z.B. 5.55)");
+		  lblEuroZb.setForeground(new Color(128, 128, 128));
 		  lblEuroZb.setFont(new Font("Tahoma", Font.BOLD, 11));
-		  lblEuroZb.setBounds(357, 16, 99, 14);
+		  lblEuroZb.setBounds(357, 18, 99, 14);
 		  Panel_Ausgaben.add(lblEuroZb);
 		  
-		  label_2 = new JLabel("TT.MM.JJJJ");
-		  label_2.setFont(new Font("Tahoma", Font.BOLD, 11));
-		  label_2.setBounds(360, 193, 67, 14);
-		  Panel_Ausgaben.add(label_2);
+		  label_Datum = new JLabel("TT.MM.JJJJ");
+		  label_Datum.setForeground(new Color(128, 128, 128));
+		  label_Datum.setFont(new Font("Tahoma", Font.BOLD, 11));
+		  label_Datum.setBounds(357, 196, 67, 14);
+		  Panel_Ausgaben.add(label_Datum);
 		  
 		  btnReset_Ausgaben = new JButton("Eingaben reseten");
 		  btnReset_Ausgaben.setBounds(21, 311, 135, 29);
@@ -766,7 +916,7 @@ public class BudgetPlanGUI extends JFrame {
 		        Panel_Einnahmen.add(lblEinnahmenKategorie);
 		        
 		        comboBox_Einnahmen = new JComboBox();
-		        comboBox_Einnahmen.setModel(new DefaultComboBoxModel(new String[] {"(Bitte Wählen)","Haushalt", "Elektronik","Lebensmittel", "Auto", "Sport", "Freizeit", "Sonstiges"}));
+		        comboBox_Einnahmen.setModel(new DefaultComboBoxModel(new String[] {"(Bitte Wählen)","Lohn/Gehalt", "Taschengeld","Erbe", "Mieteinnahmen", "Kredite", "Verkauf","Zinsen","Mitgliedsbeitrag","Spende", "Sonstiges"}));
 		        comboBox_Einnahmen.setBounds(197, 69, 155, 25);
 		        Panel_Einnahmen.add(comboBox_Einnahmen);
 		        
@@ -785,7 +935,7 @@ public class BudgetPlanGUI extends JFrame {
 		        
 		        lblEinnahmenFaelligkeitsdatum=new JLabel("F\u00E4lligkeitsdatum:");
 		        lblEinnahmenFaelligkeitsdatum.setFont(new Font("Tahoma", Font.BOLD, 11));
-		        lblEinnahmenFaelligkeitsdatum.setBounds(21, 187, 142, 32);
+		        lblEinnahmenFaelligkeitsdatum.setBounds(21, 189, 142, 29);
 		        Panel_Einnahmen.add(lblEinnahmenFaelligkeitsdatum);
 		        
 		        
@@ -801,20 +951,22 @@ public class BudgetPlanGUI extends JFrame {
 		        
 		        lblNotiz_Einnahmen = new JLabel("Beschreibung:");
 		        lblNotiz_Einnahmen.setFont(new Font("Tahoma", Font.BOLD, 11));
-		        lblNotiz_Einnahmen.setBounds(21, 254, 99, 20);
+		        lblNotiz_Einnahmen.setBounds(21, 250, 142, 29);
 		        Panel_Einnahmen.add(lblNotiz_Einnahmen);
 		        
-		        textField_Einnahmen_1 = new JTextField();
-		        textField_Einnahmen_1.setColumns(10);
-		        textField_Einnahmen_1.setBounds(197, 252, 150, 25);
-		        Panel_Einnahmen.add(textField_Einnahmen_1);
+		        textFieldNotiz_Einnahmen = new JTextField();
+		        textFieldNotiz_Einnahmen.setColumns(10);
+		        textFieldNotiz_Einnahmen.setBounds(197, 252, 150, 25);
+		        Panel_Einnahmen.add(textFieldNotiz_Einnahmen);
 		        
 		        lblEuro = new JLabel(" Euro ( z.B. 5.55)");
+		        lblEuro.setForeground(new Color(128, 128, 128));
 		        lblEuro.setFont(new Font("Tahoma", Font.BOLD, 11));
 		        lblEuro.setBounds(357, 18, 99, 14);
 		        Panel_Einnahmen.add(lblEuro);
 		        
 		        lblTtmmyyyy = new JLabel("TT.MM.JJJJ");
+		        lblTtmmyyyy.setForeground(new Color(128, 128, 128));
 		        lblTtmmyyyy.setFont(new Font("Tahoma", Font.BOLD, 11));
 		        lblTtmmyyyy.setBounds(357, 196, 67, 14);
 		        Panel_Einnahmen.add(lblTtmmyyyy);
@@ -822,70 +974,71 @@ public class BudgetPlanGUI extends JFrame {
 		        btnReset_Einnahmen = new JButton("Eingaben reseten");
 				  btnReset_Einnahmen.setBounds(21, 311, 135, 29);
 				  Panel_Einnahmen.add(btnReset_Einnahmen);
-	        //ENDE Einnahmen PANEL4
 	        
+				
+			//ANFANG PANEL 5 Daueraufträge 
+				  //				  
+				  //				  
+			//ENDE PANEL 5 Daueraufträge
+				  
+				  
+			//ANFANG PANEL 6 Statistiken  
+				  
+				  
+					btnStatistik_KategorieKreisdiag = new JButton("<html>Einnahmen vs Ausgaben<br>(Kategorie) [Kreisdiagramm]</html>");
+					btnStatistik_KategorieKreisdiag.setBounds(10, 132, 250, 46);
+					Panel_Statistiken.add(btnStatistik_KategorieKreisdiag);
+					
+					btnStatistik_KategorieBalkendiag = new JButton("<html>Einnahmen vs Ausgaben<br>(Kategorie) [Balkendiagram]</html>");
+					btnStatistik_KategorieBalkendiag.setBounds(10, 204, 250, 46);
+					Panel_Statistiken.add(btnStatistik_KategorieBalkendiag);
+					
+					btnStatistik_EinnahmenAusgaben = new JButton("<html>Einnahmen vs Ausgaben<br>(Gesamt) [Balkendiagram]</html>");
+					btnStatistik_EinnahmenAusgaben.setBounds(10, 269, 250, 46);
+					Panel_Statistiken.add(btnStatistik_EinnahmenAusgaben);
+					
+					rdbtnGesamtzeitraum = new JRadioButton("Gesamtzeitraum");
+					rdbtnGesamtzeitraum.setBounds(60, 34, 150, 23);
+					Panel_Statistiken.add(rdbtnGesamtzeitraum);
+					rdbtnGesamtzeitraum.setSelected(true);
+										
+					rdbtnIndividualZeitraum = new JRadioButton("individueller Zeitraum");
+					rdbtnIndividualZeitraum.setBounds(249, 34, 148, 23);
+					Panel_Statistiken.add(rdbtnIndividualZeitraum);
+					
+					textField_Statistik_Startwert = new JTextField();
+					textField_Statistik_Startwert.setBounds(403, 11, 86, 20);
+					Panel_Statistiken.add(textField_Statistik_Startwert);
+					textField_Statistik_Startwert.setEnabled(false);
+							
+					textField_Statistik_Endwert = new JTextField();
+					textField_Statistik_Endwert.setBounds(403, 54, 86, 20);
+					Panel_Statistiken.add(textField_Statistik_Endwert);
+					textField_Statistik_Endwert.setEnabled(false);
+					
+					lblAnfangsdatum = new JLabel("Anfangsdatum");
+					lblAnfangsdatum.setBounds(498, 14, 113, 14);
+					Panel_Statistiken.add(lblAnfangsdatum);
+					
+					lblEnddatum = new JLabel("Enddatum");
+					lblEnddatum.setBounds(499, 57, 86, 14);
+					Panel_Statistiken.add(lblEnddatum);
+										
+					
+//	        panel_Statistiken_Gesamt = new JPanel();
+//	        DefaultPieDataset pd = new DefaultPieDataset();
+//			for (Posten p : budget.Geldvermögen) {
+//				pd.setValue(p.getBezeichnung(), p.getBetrag());
+//			}
+//			JFreeChart pie = ChartFactory.createPieChart("Gesamt", pd);
+	    
 	        
-	        
-	        
-	        //Anfang Panel 5 Daueraufträge
-	        /**
-			 * 
-			 * 
-			 * Hier sollte noch ein Panel für Daueraufträge entstehen, der vor die Statistiken gesetzt wird
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 */
-	        //ENDE PANEL5
-	        
-	        //Anfang Panel 5 Statistiken
-	    	/**
-			 * 
-			 * 
-			 * Panel in dem alle Ausgaben und Einnahmen aufgeführt werden
-			 * Dieser Panel müsste dann in Panel 6 umbenannt werden
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 */
-	        JTabbedPane tabbedPane_Statistiken = new JTabbedPane(JTabbedPane.TOP);
-	        tabbedPane_Statistiken.setBounds(10, 39, 532, 277);
-	        Panel_Statistiken.add(tabbedPane_Statistiken);
-	        
-	        panel_Statistiken_Woche = new JPanel();
-	        tabbedPane_Statistiken.addTab("Woche", null, panel_Statistiken_Woche, null);
-	        
-	        panel_Statistiken_Monat = new JPanel();
-	        tabbedPane_Statistiken.addTab("Monat", null, panel_Statistiken_Monat, null);
-	        
-	        panel_Statistiken_Jahr = new JPanel();
-	        tabbedPane_Statistiken.addTab("Jahr", null, panel_Statistiken_Jahr, null);
-	        
-	        //ENDE PANEL 5 Statistiken
+	        //ENDE PANEL 6 Statistiken
+					
 	      //Anfang Panel 7 Sparfunktion
-	    	/**
-			 * 
-			 * 
-			 * Panel in dem die Sparfunktion seinen Platz findet
-			 * Dieser Panel sollte zu Panel 7 umbenannt werden, sobald Panel Daueraufträge undStatistiken geordnet wurden
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 * 
-			 */
-		
+	        panel_Sparfunktion = new JPanel();
+			tabbedPane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Sparfunktion</body></html>", null, panel_Sparfunktion, null);
+			panel_Sparfunktion.setLayout(null);
 	        //ENDE PANEL 7 Sparfunktion
 		
 		
@@ -923,10 +1076,10 @@ public class BudgetPlanGUI extends JFrame {
 	        	public void actionPerformed(ActionEvent arg0) {
 	        		
 	        		Checkdata_Ausgaben();
-	        		if ((comboBox_Ausgaben.isEnabled() == false) && (budget.Geldvermögen.size() == 0)){
+	        		if ((comboBox_Ausgaben.isEnabled() == false) && (budget.Geldvermögen.size() != 0)){
 	        			 Aktivierung();
 	        		}
-	        		}
+	        	}
 	        	
 	        });
 			
@@ -948,6 +1101,55 @@ public class BudgetPlanGUI extends JFrame {
 		        	}
 		        	
 		        });
+			
+			
+		rdbtnGesamtzeitraum.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (rdbtnIndividualZeitraum.isSelected() == true) {
+					rdbtnGesamtzeitraum.setSelected(true);
+					rdbtnIndividualZeitraum.setSelected(false);
+					textField_Statistik_Startwert.setEnabled(false);
+					textField_Statistik_Startwert.setText(null);
+					textField_Statistik_Endwert.setEnabled(false);
+					textField_Statistik_Endwert.setText(null);
+				}
+				else
+					rdbtnGesamtzeitraum.setSelected(true);
+
+			}
+		});
+			
+		
+		rdbtnIndividualZeitraum.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (rdbtnGesamtzeitraum.isSelected() == true) {
+					rdbtnIndividualZeitraum.setSelected(true);
+					textField_Statistik_Startwert.setEnabled(true);
+					textField_Statistik_Endwert.setEnabled(true);
+					rdbtnGesamtzeitraum.setSelected(false);
+				}
+				else
+					rdbtnIndividualZeitraum.setSelected(true);
+
+			}
+		});
+		
+		
+		btnStatistik_KategorieKreisdiag.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Init_Kontostand();
+				if (rdbtnIndividualZeitraum.isSelected() == true) {
+					if ((Statistik_CheckAuswahlDatum() == true) && (Statistik_CheckDateDiff() == true)) {
+						Statistik testen = new Statistik(budget);
+						testen.Kategorie_Kreisdiagramm(textField_Statistik_Startwert.getText(),textField_Statistik_Endwert.getText());
+					}
+
+				} else {
+					Statistik testen = new Statistik(budget);
+					testen.Kategorie_Kreisdiagramm("0","0");
+				}
+			}
+		});
 			
 			
 			btnSchließen.addActionListener(new ActionListener() {
@@ -983,7 +1185,7 @@ public class BudgetPlanGUI extends JFrame {
 			  			System.err
 			  					.println("Probleme beim Oeffnen der Datei data/budget.csv!");
 			  			System.exit(1);
-			  		}
+			  		} 
 			  		
 			  		budget.Geldvermögen.clear();
 			  		Init_Kontostand();
@@ -1003,17 +1205,9 @@ public class BudgetPlanGUI extends JFrame {
 					} 
 				}
 			});
-			
-				
-			
-				
+
+		
 		}
+		
 }	
-		
-		
-		
-		
-
-
-
 

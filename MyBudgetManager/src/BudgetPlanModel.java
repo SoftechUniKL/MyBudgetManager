@@ -31,7 +31,8 @@ public class BudgetPlanModel {
 				String notiz = nextLine[1];
 				String bezeichnung = nextLine[2];
 				double betrag = Double.parseDouble(nextLine[3]);
-				Geldvermögen.add(new Posten(datum,notiz, bezeichnung, betrag));
+				int intern_Einnahme_Ausgabe = Integer.parseInt(nextLine[4]);
+				Geldvermögen.add(new Posten(datum,notiz, bezeichnung, betrag, intern_Einnahme_Ausgabe));
 			}
 			reader.close();
 			

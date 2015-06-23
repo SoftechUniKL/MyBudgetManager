@@ -20,6 +20,10 @@ public class Posten {
 	 * Hoehe des Postens
 	 */
 	private double betrag;
+	/**
+	 * interner Wert für Ein-/Ausgabe
+	 */
+	private int intern_Einnahme_Ausgabe;
 
 	/**
 	 * Konstruktor
@@ -31,11 +35,12 @@ public class Posten {
 	 * @param betrag
 	 *            Hoehe des Postens
 	 */
-	public Posten(Date datum,String notiz, String bezeichnung, double betrag) {
+	public Posten(Date datum,String notiz, String bezeichnung, double betrag, int intern_Einnahme_Ausgabe) {
 		this.bezeichnung = bezeichnung;
 		this.notiz = notiz;
 		this.datum = datum;
 		this.betrag = betrag;
+		this.intern_Einnahme_Ausgabe = intern_Einnahme_Ausgabe;
 	}
 
 	public Date getDatum() {
@@ -51,7 +56,10 @@ public class Posten {
 
 	public double getBetrag() {
 		return betrag;
-		
+	}
+	
+	public int getintern_Einnahme_Ausgabe() {
+		return intern_Einnahme_Ausgabe;
 	}
 }
 
