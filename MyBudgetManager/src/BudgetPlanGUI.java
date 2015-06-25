@@ -200,21 +200,6 @@ public class BudgetPlanGUI extends JFrame {
 	
 	
 	
-	
-	
-	
-	
-	
-	private void setIconImage(URL resource) {
-		// TODO Auto-generated method stub
-		
-	}
-
-
-
-
-
-
 
 
 
