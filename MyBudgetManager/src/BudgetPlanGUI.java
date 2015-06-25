@@ -109,6 +109,7 @@ public class BudgetPlanGUI extends JFrame {
 	private JButton btnAusgabenBuchen, btnReset_Ausgaben;
 	private JRadioButton rdbtnEinmaligAusgaben,rdbtnMonatlichAusgaben;
 	private JComboBox comboBox_Ausgaben;
+	private JButton btnHelpButton_Ausgaben;
 	
 	//panel_Einnahmen:	
 	private JPanel Panel_Einnahmen;
@@ -118,6 +119,7 @@ public class BudgetPlanGUI extends JFrame {
 	private JRadioButton rdbtnEinnahmenEinmalig,rdbtnEinnahmenMonatlich;	
 	private JTextField  txtTtmmjjjj_Einnahmen,textField_Einnahmen,textFieldNotiz_Einnahmen;
 	private JComboBox comboBox_Einnahmen;
+	private JButton btnHelpButton_Einnahmen;
 	
 	//panel_Daueraufträge:
 	private JPanel panel_Dauerauftraege;
@@ -136,6 +138,9 @@ public class BudgetPlanGUI extends JFrame {
 	
 	//panel_Sparfunktion
 	private JPanel panel_Sparfunktion;
+
+
+	
 
 
 
@@ -407,6 +412,9 @@ public class BudgetPlanGUI extends JFrame {
 			else {
 				lblKontostand.setForeground(Color.RED);
 			}
+			if (i<20 && i>=0 && budget.Geldvermögen.size() != 0)
+				JOptionPane.showMessageDialog(null, "Ihr Kontostand ist sehr gering.\n"
+						+ "Bitte achten Sie auf Ihre Ausgaben.", "Kontostandswarnung", JOptionPane.WARNING_MESSAGE);
 			if (i < 0)
 				JOptionPane.showMessageDialog(null, "Ihr Kontostand befindet sich im negativen Bereich.\n"
 						+ "Bitte achten Sie auf Ihre Ausgaben.", "Kontostandswarnung", JOptionPane.WARNING_MESSAGE);
@@ -882,7 +890,27 @@ public class BudgetPlanGUI extends JFrame {
 		  btnReset_Ausgaben = new JButton("Eingaben reseten");
 		  btnReset_Ausgaben.setBounds(21, 311, 135, 29);
 		  Panel_Ausgaben.add(btnReset_Ausgaben);
-	       
+		  
+		  btnHelpButton_Ausgaben = new JButton("Hilfe");
+		  btnHelpButton_Ausgaben.setBounds(585, 0, 67, 20);
+		  Panel_Ausgaben.add(btnHelpButton_Ausgaben);
+		  btnHelpButton_Ausgaben.addActionListener(new ActionListener() {
+		  	public void actionPerformed(ActionEvent arg0) {
+
+		  		
+				JOptionPane.showMessageDialog(null, "Hilfe \n \n"
+						+ "- Bei den Ausgaben ist es Ganz wichtig den Betrag in folgender Form anzugeben: \n  \n"
+						+ "               X.XX Euro \n \n"
+						+ "  Beachten Sie hierbei, dass ein Punkt zwischen dem Euro- und Centbetrag setzen. Ansonsten kann es zu Fehlern kommen. \n \n"
+						+ "- Wählen Sie immer eine Kategorie.  \n\n"
+						+ "- Durch die Wahl eines Dauerauftrags werden die Aufträge nicht nur einmal sondern monatlich gebucht.\n "
+						+ " Dadurch müssen sie regelmäßig anfallende Ausgaben nicht jeden Monat manuel eingeben. \n\n"
+						+ "- In der Beschreibung können Angaben zur eigenen Buchung gemacht werden. \n  Dabei steht Ihnen frei, wie die Eingabe aussieht oder ob sie überhaupt gemacht wird." 
+						, "Hilfe", JOptionPane.INFORMATION_MESSAGE); 
+			
+	  	
+		  	}
+		  });
 	        
 	        //Panel 3 Ende
 	        
@@ -974,7 +1002,24 @@ public class BudgetPlanGUI extends JFrame {
 		        btnReset_Einnahmen = new JButton("Eingaben reseten");
 				  btnReset_Einnahmen.setBounds(21, 311, 135, 29);
 				  Panel_Einnahmen.add(btnReset_Einnahmen);
-	        
+				  btnHelpButton_Einnahmen = new JButton("Hilfe");
+				  btnHelpButton_Einnahmen.addActionListener(new ActionListener() {
+				  	public void actionPerformed(ActionEvent e) {
+				  		
+							JOptionPane.showMessageDialog(null, "Hilfe \n \n"
+									+ "- Bei den Einnahmen ist es Ganz wichtig den Betrag in folgender Form anzugeben: \n  \n"
+									+ "               X.XX Euro \n \n"
+									+ "  Beachten Sie hierbei, dass ein Punkt zwischen dem Euro- und Centbetrag setzen. Ansonsten kann es zu Fehlern kommen. \n \n"
+									+ "- Wählen Sie immer eine Kategorie.  \n\n"
+									+ "- Durch die Wahl eines Dauerauftrags werden die Aufträge nicht nur einmal sondern monatlich gebucht.\n "
+									+ " Dadurch müssen sie regelmäßig anfallende Einnahmen nicht jeden Monat manuel eingeben. \n\n"
+									+ "- In der Beschreibung können Angaben zur eigenen Buchung gemacht werden. \n  Dabei steht Ihnen frei, wie die Eingabe aussieht oder ob sie überhaupt gemacht wird." 
+									, "Hilfe", JOptionPane.INFORMATION_MESSAGE); 
+						
+				  	}
+				  });
+				  btnHelpButton_Einnahmen.setBounds(585, 0, 67, 20);
+				  Panel_Einnahmen.add(btnHelpButton_Einnahmen);
 				
 			//ANFANG PANEL 5 Daueraufträge 
 				  //				  
@@ -1206,7 +1251,22 @@ public class BudgetPlanGUI extends JFrame {
 				}
 			});
 
+			
+			btnInfo.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					JOptionPane.showMessageDialog(null, "MyBudgetManager (Version 1.0.2 beta) 2015 \n \n"
+							+ "Programmierprojekt SS2015 \n Leitung: Dr. Annette Bieniusa \n "
+							+ "Fachbereich Informatik \n Lehrstuhl AG Softwaretechnik \n \n "
+							+ "Programmierer: \n Philipp Heintz \n Lukas Breit \n Markus Dittmann \n \n"
+							+ "Technische Universität Kaiserslautern \n \u00a9 copyright 2015 \n "
+							+ "Die Programmierer übernehmen keine Haftung für enthaltene Fehler oder für Schäden, \n "
+							+ "die im Zusammenhang mit der Verwendung der Software entstehen.", "Info", JOptionPane.INFORMATION_MESSAGE); 
+				}
+			});
 		
+		
+	
+			
 		}
 		
 }	
