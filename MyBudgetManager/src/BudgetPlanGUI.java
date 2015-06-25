@@ -36,6 +36,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
 import java.io.*; 
+import java.net.URL;
 import java.awt.*; 
 
 import javax.swing.*; 
@@ -52,6 +53,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.general.DefaultPieDataset;
+import java.awt.Window.Type;
 
 
 /**
@@ -163,8 +165,21 @@ public class BudgetPlanGUI extends JFrame {
 	 * @param budget
 	 *            Modell der Daten
 	 */
+	
+	
 	public BudgetPlanGUI(BudgetPlanModel budget) {
 		super("MyBudgetManager");
+		
+		 try {
+		     ClassLoader cl = this.getClass().getClassLoader();
+		     ImageIcon programIcon = new ImageIcon(cl.getResource("img/walletklein.png"));
+		     setIconImage(Toolkit.getDefaultToolkit().getImage(BudgetPlanGUI.class.getResource("/img/Money.png")));
+		  } catch (Exception whoJackedMyIcon) {
+		     System.out.println("Could not load program icon.");
+		  }
+		 
+		 
+
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		setBounds(100, 100, 450, 300); // Groesse des Frames
@@ -190,6 +205,21 @@ public class BudgetPlanGUI extends JFrame {
 	
 	
 	
+	private void setIconImage(URL resource) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+
+
+
+
+
+
+
+
 	public void Anfangsabfrage(){
 		
 		if (budget.Geldvermögen.size() == 0) {
