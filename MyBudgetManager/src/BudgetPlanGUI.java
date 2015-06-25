@@ -100,6 +100,7 @@ public class BudgetPlanGUI extends JFrame {
 	private JLabel lblKontouebersicht;
 	private JScrollPane scrollPane;
 	private JTable table;
+	private JButton btnKontoDrucken;
 	
 	//panel_Ausgaben:
 	private JPanel Panel_Ausgaben;
@@ -138,6 +139,9 @@ public class BudgetPlanGUI extends JFrame {
 	
 	//panel_Sparfunktion
 	private JPanel panel_Sparfunktion;
+
+
+	
 
 
 	
@@ -761,9 +765,14 @@ public class BudgetPlanGUI extends JFrame {
 		panel_Konto.add(panel_Kontouebersicht, BorderLayout.NORTH);
 		panel_Kontouebersicht.setPreferredSize(new Dimension(0, 40));
 		
-		lblKontouebersicht = new JLabel("Konto\u00FCbersicht:");
+		lblKontouebersicht = new JLabel("Konto\u00FCbersicht:                                                                  ");
 		panel_Kontouebersicht.add(lblKontouebersicht);
 		lblKontouebersicht.setFont(new Font("Tahoma", Font.BOLD, 18));
+		
+	    btnKontoDrucken = new JButton("Drucken");
+		panel_Kontouebersicht.add(btnKontoDrucken);
+	
+		
 		
 		scrollPane = new JScrollPane();
 		panel_Konto.add(scrollPane, BorderLayout.CENTER);
@@ -1123,6 +1132,17 @@ public class BudgetPlanGUI extends JFrame {
 			Anfangsabfrage();
 			Init_Kontostand();
 			
+			btnKontoDrucken.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent arg0) {
+				try {
+				     if (! table.print()) {
+				         System.err.println("User cancelled printing");
+				     } 
+				 } catch (java.awt.print.PrinterException e) {
+				     System.err.format("Cannot print %s%n", e.getMessage()); 
+				 } 
+				}
+	        });
 			
 			btnReset_Ausgaben.addActionListener(new ActionListener() {
 	        	public void actionPerformed(ActionEvent arg0) {
@@ -1279,6 +1299,5 @@ public class BudgetPlanGUI extends JFrame {
 	
 			
 		}
-		
 }	
 
