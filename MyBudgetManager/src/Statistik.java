@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.BoxLayout;
@@ -21,7 +22,17 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JButton;
+
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.general.DefaultPieDataset;
+import org.jfree.ui.RectangleInsets;
+
 import com.opencsv.CSVReader;
+
 import java.awt.Font;
 
 public class Statistik {
@@ -59,7 +70,6 @@ public class Statistik {
 		Statistic.setBounds(100, 100, 450, 300); // Groesse des Frames
 		Statistic.setVisible(true);
 		Statistic.setMinimumSize(new Dimension(800, 550));
-		Statistic.setLocationRelativeTo(null);
 		Statistic.getContentPane().setLayout(new BorderLayout(0, 0));
 
 		panel = new JPanel();
@@ -138,93 +148,8 @@ public class Statistik {
 		Statistic.getContentPane().add(panel_2, BorderLayout.CENTER);
 		panel_2.setLayout(new GridLayout(1, 2));
 
-		// **********Beispiele für Grafiken (Buttons als Ersatz)*************
-		// JButton btnNewButton_1 = new JButton("New button");
-		// panel_2.add(btnNewButton_1);
-		//
-		// JButton btnNewButton = new JButton("New button");
-		// panel_2.add(btnNewButton);
-
 		this.budget = budget;
 
-	}
-
-	public void Kategorie_Kreisdiagramm(String Start, String End) {
-		if ((Start != "0") && (End != "0"))
-			Init_Posten_Zeitraum(Start, End);
-		else
-			Buchungsübersicht();
-		//
-		//
-		// dazugehörige Grafik (fehlt noch)
-		//
-		//
-		//
-		//
-		//
-
-	}
-
-	public void Init_Posten_Zeitraum(String StartingDate, String EndingDate) {
-
-		budget.Geldvermögen.clear();
-		SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
-		Date startDate = null;
-		Date endDate = null;
-		try {
-			startDate = formatter.parse(StartingDate);
-			endDate = formatter.parse(EndingDate);
-		} catch (ParseException e) {
-			System.err
-					.println("Formatfehler: Datum konnte nicht formatiert werden!");
-			System.exit(1);
-		}
-		Calendar start = Calendar.getInstance();
-		start.setTime(startDate);
-		Calendar end = Calendar.getInstance();
-		end.setTime(endDate);
-
-		try {
-			// Zeilenweises Einlesen der Daten
-			CSVReader reader = new CSVReader(new FileReader("data/budget.csv"));
-			DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,
-					Locale.GERMAN);
-
-			String[] nextLine;
-			while ((nextLine = reader.readNext()) != null) {
-				start.setTime(startDate);
-				for (Date date = start.getTime(); !start.after(end); start.add(
-						Calendar.DATE, 1), date = start.getTime()) {
-					if (formatter.format(date).toString().equals(nextLine[0])) {
-						Date datum = df.parse(nextLine[0]);
-						String notiz = nextLine[1];
-						String bezeichnung = nextLine[2];
-						double betrag = Double.parseDouble(nextLine[3]);
-						int intern_Einnahme_Ausgabe = Integer
-								.parseInt(nextLine[4]);
-						budget.Geldvermögen.add(new Posten(datum, notiz,
-								bezeichnung, betrag, intern_Einnahme_Ausgabe));
-					}
-				}
-
-			}
-			reader.close();
-
-		} catch (FileNotFoundException e) {
-			System.err
-					.println("Die Datei data/budget.csv wurde nicht gefunden!");
-			System.exit(1);
-		} catch (IOException e) {
-			System.err
-					.println("Probleme beim Oeffnen der Datei data/budget.csv!");
-			System.exit(1);
-		} catch (ParseException e) {
-			System.err
-					.println("Formatfehler: Die Datei konnte nicht eingelesen werden!");
-			System.exit(1);
-		}
-
-		Buchungsübersicht();
 	}
 
 	public void Buchungsübersicht() {
@@ -301,4 +226,137 @@ public class Statistik {
 		else
 			lblSaldowert.setForeground(new Color(20, 170, 20));
 	}
+
+	public void Init_Posten_Zeitraum(String StartingDate, String EndingDate) {
+
+		budget.Geldvermögen.clear();
+		SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+		Date startDate = null;
+		Date endDate = null;
+		try {
+			startDate = formatter.parse(StartingDate);
+			endDate = formatter.parse(EndingDate);
+		} catch (ParseException e) {
+			System.err
+					.println("Formatfehler: Datum konnte nicht formatiert werden!");
+			System.exit(1);
+		}
+		Calendar start = Calendar.getInstance();
+		start.setTime(startDate);
+		Calendar end = Calendar.getInstance();
+		end.setTime(endDate);
+
+		try {
+			// Zeilenweises Einlesen der Daten
+			CSVReader reader = new CSVReader(new FileReader("data/budget.csv"));
+			DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,
+					Locale.GERMAN);
+
+			String[] nextLine;
+			while ((nextLine = reader.readNext()) != null) {
+				start.setTime(startDate);
+				for (Date date = start.getTime(); !start.after(end); start.add(
+						Calendar.DATE, 1), date = start.getTime()) {
+					if (formatter.format(date).toString().equals(nextLine[0])) {
+						Date datum = df.parse(nextLine[0]);
+						String notiz = nextLine[1];
+						String bezeichnung = nextLine[2];
+						double betrag = Double.parseDouble(nextLine[3]);
+						int intern_Einnahme_Ausgabe = Integer
+								.parseInt(nextLine[4]);
+						budget.Geldvermögen.add(new Posten(datum, notiz,
+								bezeichnung, betrag, intern_Einnahme_Ausgabe));
+					}
+				}
+
+			}
+			reader.close();
+
+		} catch (FileNotFoundException e) {
+			System.err
+					.println("Die Datei data/budget.csv wurde nicht gefunden!");
+			System.exit(1);
+		} catch (IOException e) {
+			System.err
+					.println("Probleme beim Oeffnen der Datei data/budget.csv!");
+			System.exit(1);
+		} catch (ParseException e) {
+			System.err
+					.println("Formatfehler: Die Datei konnte nicht eingelesen werden!");
+			System.exit(1);
+		}
+
+		Buchungsübersicht();
+	}
+
+	public void Kategorie_Kreisdiagramm_Grafik() {
+		DefaultPieDataset pd = new DefaultPieDataset();
+		for (Posten p : budget.Geldvermögen)
+			if (p.getintern_Einnahme_Ausgabe() == 0)
+				pd.setValue(p.getBezeichnung(), p.getBetrag());
+
+		JFreeChart pie = ChartFactory.createPieChart3D("Einnahmen", pd);
+		ChartPanel chartpanel = new ChartPanel(pie);
+		panel_2.add(chartpanel);
+
+		DefaultPieDataset pd2 = new DefaultPieDataset();
+		for (Posten p : budget.Geldvermögen)
+			if (p.getintern_Einnahme_Ausgabe() == 1)
+				pd2.setValue(p.getBezeichnung(), Math.abs(p.getBetrag()));
+
+		JFreeChart pie2 = ChartFactory.createPieChart3D("Ausgaben", pd2);
+		ChartPanel chartpanel2 = new ChartPanel(pie2);
+		panel_2.add(chartpanel2);
+
+	}
+
+	public void Statistik_Manager(String selection, String Start, String End) {
+		if ((Start != "0") && (End != "0")) {
+			Init_Posten_Zeitraum(Start, End);
+			switch (selection) {
+			case "Kategorie_Kreisdiagramm":
+				Kategorie_Kreisdiagramm_Grafik();
+				break;
+			case "Kategorie_Balkendiagramm":
+				Kategorie_Balkendiagramm_Grafik();
+				break;
+			}
+		} else {
+			Buchungsübersicht();
+			switch (selection) {
+			case "Kategorie_Kreisdiagramm":
+				Kategorie_Kreisdiagramm_Grafik();
+				break;
+			case "Kategorie_Balkendiagramm":
+				Kategorie_Balkendiagramm_Grafik();
+				break;
+			}
+		}
+	}
+
+	public void Kategorie_Balkendiagramm_Grafik() {
+		DefaultCategoryDataset cd = new DefaultCategoryDataset();
+		for (Posten p : budget.Geldvermögen)
+			if (p.getintern_Einnahme_Ausgabe() == 0)
+				cd.addValue(p.getBetrag(), "Einnahmen", p.getBezeichnung());
+
+		JFreeChart bar = ChartFactory.createBarChart(
+				"Einnahmen nach Kategorien", null, null, (CategoryDataset) cd);
+		ChartPanel chartpanel = new ChartPanel(bar);
+		panel_2.add(chartpanel);
+
+		DefaultCategoryDataset cd2 = new DefaultCategoryDataset();
+		for (Posten p : budget.Geldvermögen)
+			if (p.getintern_Einnahme_Ausgabe() == 1)
+				cd2.addValue(Math.abs(p.getBetrag()), "Ausgaben",
+						p.getBezeichnung());
+
+		JFreeChart bar2 = ChartFactory.createBarChart(
+				"Ausgaben nach Kategorien", null, null, (CategoryDataset) cd2);
+		ChartPanel chartpanel2 = new ChartPanel(bar2);
+		panel_2.add(chartpanel2);
+
+	}
+
 }
+

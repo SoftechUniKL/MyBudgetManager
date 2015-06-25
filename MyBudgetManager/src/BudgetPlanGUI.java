@@ -331,7 +331,7 @@ public class BudgetPlanGUI extends JFrame {
 		}
 
 	}
-	  void Clear_Ausgaben() {
+	  public void Clear_Ausgaben() {
 			textField_Ausgaben.setText(null);
 			txtTtmmjjjj_Ausgaben.setText(new SimpleDateFormat("dd.MM.yyyy")
 					.format(new Date()));
@@ -339,7 +339,7 @@ public class BudgetPlanGUI extends JFrame {
 			textFieldNotiz_Ausgabe.setText(null);
 		}
 	  
-	  void Init_Kontoübersicht(){
+	  public void Init_Kontoübersicht(){
 		  Object[][] data = new Object[budget.Geldvermögen.size()][5];		
 			int i = 0;	
 			String m;
@@ -365,7 +365,7 @@ public class BudgetPlanGUI extends JFrame {
 			scrollPane.setViewportView(table);
 	  }
 	  
-	  void Init_Kontostand(){
+	  public void Init_Kontostand(){
 		  NumberFormat nf = NumberFormat.getInstance(new Locale("de", "DE"));
 			double i = 0;
 			budget.Geldvermögen.clear();
@@ -522,7 +522,7 @@ public class BudgetPlanGUI extends JFrame {
 	  
 		  
 	  
-	  void Clear_Einnahmen(){
+	  public void Clear_Einnahmen(){
 		  textField_Einnahmen.setText(null);
 			txtTtmmjjjj_Einnahmen.setText(new SimpleDateFormat("dd.MM.yyyy")
 					.format(new Date()));
@@ -541,7 +541,22 @@ public class BudgetPlanGUI extends JFrame {
 		 * 
 		 */
 		
-	  
+	  public void Grafikmodellauswahl(String selection) {
+			Init_Kontostand();
+			if (rdbtnIndividualZeitraum.isSelected() == true) {
+				if ((Statistik_CheckAuswahlDatum() == true)
+						&& (Statistik_CheckDateDiff() == true)) {
+					Statistik testen = new Statistik(budget);
+					testen.Statistik_Manager(selection,
+							textField_Statistik_Startwert.getText(),
+							textField_Statistik_Endwert.getText());
+				}
+	
+			} else {
+				Statistik testen = new Statistik(budget);
+				testen.Statistik_Manager(selection, "0", "0");
+			}
+		}
 	  
 		public boolean Statistik_CheckAuswahlDatum() {
 
@@ -1034,11 +1049,11 @@ public class BudgetPlanGUI extends JFrame {
 					btnStatistik_KategorieKreisdiag.setBounds(10, 132, 250, 46);
 					Panel_Statistiken.add(btnStatistik_KategorieKreisdiag);
 					
-					btnStatistik_KategorieBalkendiag = new JButton("<html>Einnahmen vs Ausgaben<br>(Kategorie) [Balkendiagram]</html>");
+					btnStatistik_KategorieBalkendiag = new JButton("<html>Einnahmen vs Ausgaben<br>(Kategorie) [Balkendiagramm]</html>");
 					btnStatistik_KategorieBalkendiag.setBounds(10, 204, 250, 46);
 					Panel_Statistiken.add(btnStatistik_KategorieBalkendiag);
 					
-					btnStatistik_EinnahmenAusgaben = new JButton("<html>Einnahmen vs Ausgaben<br>(Gesamt) [Balkendiagram]</html>");
+					btnStatistik_EinnahmenAusgaben = new JButton("<html>Einnahmen vs Ausgaben<br>(Gesamt) [Balkendiagramm]</html>");
 					btnStatistik_EinnahmenAusgaben.setBounds(10, 269, 250, 46);
 					Panel_Statistiken.add(btnStatistik_EinnahmenAusgaben);
 					
@@ -1182,17 +1197,13 @@ public class BudgetPlanGUI extends JFrame {
 		
 		btnStatistik_KategorieKreisdiag.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				Init_Kontostand();
-				if (rdbtnIndividualZeitraum.isSelected() == true) {
-					if ((Statistik_CheckAuswahlDatum() == true) && (Statistik_CheckDateDiff() == true)) {
-						Statistik testen = new Statistik(budget);
-						testen.Kategorie_Kreisdiagramm(textField_Statistik_Startwert.getText(),textField_Statistik_Endwert.getText());
-					}
-
-				} else {
-					Statistik testen = new Statistik(budget);
-					testen.Kategorie_Kreisdiagramm("0","0");
-				}
+				Grafikmodellauswahl("Kategorie_Kreisdiagramm");
+			}
+		});
+		
+		btnStatistik_KategorieBalkendiag.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent arg0) {
+				Grafikmodellauswahl("Kategorie_Balkendiagramm");
 			}
 		});
 			
