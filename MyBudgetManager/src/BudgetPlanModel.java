@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -49,7 +51,12 @@ public class BudgetPlanModel {
 					.println("Formatfehler: Die Datei konnte nicht eingelesen werden!");
 			System.exit(1);
 		}
-			
+		Collections.sort(Geldvermögen, new Comparator<Posten>() {
+			@Override
+			public int compare(Posten o1, Posten o2) {
+				return o1.getDatum().compareTo(o2.getDatum());
+			}
+		});
 	}
 }
 	
