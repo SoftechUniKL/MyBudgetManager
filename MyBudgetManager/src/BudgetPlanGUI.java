@@ -145,7 +145,7 @@ public class BudgetPlanGUI extends JFrame {
 
 
 	
-	//Fehlermeldungen als Vorgeschriebene Strings
+	//Fehlermeldungen als vorgeschriebene Strings
 
 	String falsche_betragseingabe = "Falsche Betragseingabe. \n"
 			+ "Formathinweis: \n"
@@ -161,9 +161,58 @@ public class BudgetPlanGUI extends JFrame {
 	String falsches_datum = "Falsche Datumseingabe. \n"
 			+ "Formathinweis: TT.MM.JJJJ";
 
-	String kategorie = "Bitte wählen sie eine Kategorie";
+	String kategorie = "Bitte wählen sie eine Kategorie aus.";
 	
+	String taschenrechner = "Taschenrechner konnte nicht aufgerufen worden.";
+	
+	//Hilfe Meldungen als vorgeschriebene Strings
+	
+	String hilfe_a = "Hilfe \n \n"
+			+ "- Bei den Ausgaben ist es Ganz wichtig den Betrag in folgender Form anzugeben: \n  \n"
+			+ "               X.XX Euro \n \n"
+			+ "  Beachten Sie hierbei, dass ein Punkt zwischen dem Euro- und Centbetrag setzen. Ansonsten kann es zu Fehlern kommen. \n \n"
+			+ "- Wählen Sie immer eine Kategorie.  \n\n"
+			+ "- Durch die Wahl eines Dauerauftrags werden die Aufträge nicht nur einmal sondern monatlich gebucht.\n "
+			+ " Dadurch müssen sie regelmäßig anfallende Ausgaben nicht jeden Monat manuel eingeben. \n\n"
+			+ "- In der Beschreibung können Angaben zur eigenen Buchung gemacht werden. \n  Dabei steht Ihnen frei, wie die Eingabe aussieht oder ob sie überhaupt gemacht wird." ;
 
+	String hilfe_e = "Hilfe \n \n"
+			+ "- Bei den Einnahmen ist es Ganz wichtig den Betrag in folgender Form anzugeben: \n  \n"
+			+ "               X.XX Euro \n \n"
+			+ "  Beachten Sie hierbei, dass ein Punkt zwischen dem Euro- und Centbetrag setzen. Ansonsten kann es zu Fehlern kommen. \n \n"
+			+ "- Wählen Sie immer eine Kategorie.  \n\n"
+			+ "- Durch die Wahl eines Dauerauftrags werden die Aufträge nicht nur einmal sondern monatlich gebucht.\n "
+			+ " Dadurch müssen sie regelmäßig anfallende Einnahmen nicht jeden Monat manuel eingeben. \n\n"
+			+ "- In der Beschreibung können Angaben zur eigenen Buchung gemacht werden. \n  Dabei steht Ihnen frei, wie die Eingabe aussieht oder ob sie überhaupt gemacht wird." ;
+	
+	//Willkommensmeldung als vorgeschriebene Strings
+	
+	String willkommen = "Willkommen bei MyBudgetManager! \n"
+			+ "Um das Programm anwenden zu können, legen Sie einen Startwert Ihres Kontos fest. \n"
+			+ "Befindet sich dieser im positiven Breich, tätigen Sie ihre Eröffnungsbuchung unter dem Menüunterpunkt: Einnahmen. \n"
+			+ "Anderenfalls gehen Sie auf Ausgaben.  \n"
+			+ "\n"
+			+ "Wir wünschen Ihnen viel Freunde an unserem tollen Produkt\n"
+			+ "";
+	
+	//Dialoge als vorgeschriebene Strings
+	
+	String buchung_a = "Ausgabe erfolgreich gebucht.";
+	
+	String buchung_e = "Einnahme erfolgreich gebucht.";
+	
+	String konto_l = "Möchten Sie wirklich ihr Konto löschen? \n"
+			+ "Sämtliche Daten gehen dabei verloren!";
+	
+	String info = "MyBudgetManager (Version 1.0.2 beta) 2015 \n \n"
+			+ "Programmierprojekt SS2015 \n Leitung: Dr. Annette Bieniusa \n "
+			+ "Fachbereich Informatik \n Lehrstuhl AG Softwaretechnik \n \n "
+			+ "Programmierer: \n Philipp Heintz \n Lukas Breit \n Markus Dittmann \n \n"
+			+ "Technische Universität Kaiserslautern \n \u00a9 copyright 2015 \n "
+			+ "Die Programmierer übernehmen keine Haftung für enthaltene Fehler oder für Schäden, \n "
+			+ "die im Zusammenhang mit der Verwendung der Software entstehen.";
+	
+	
 	/**
 	 * Konstruktor fuer die GUI.
 	 * 
@@ -213,13 +262,7 @@ public class BudgetPlanGUI extends JFrame {
 	public void Anfangsabfrage(){
 		
 		if (budget.Geldvermögen.size() == 0) {
-			JOptionPane.showMessageDialog(null, "Willkommen bei MyBudgetManager! \n"
-					+ "Um das Programm anwenden zu können, legen Sie einen Startwert Ihres Kontos fest. \n"
-					+ "Befindet sich dieser im positiven Breich, tätigen Sie ihre Eröffnungsbuchung unter dem Menüunterpunkt: Einnahmen. \n"
-					+ "Anderenfalls gehen Sie auf Ausgaben.  \n"
-					+ "\n"
-					+ "Wir wünschen Ihnen viel Freunde an unserem tollen Produkt\n"
-					+ "" ,"Willkommen bei MyBudgetManager", JOptionPane.INFORMATION_MESSAGE);
+			JOptionPane.showMessageDialog(null, willkommen ,"Willkommen bei MyBudgetManager", JOptionPane.INFORMATION_MESSAGE);
 			
 			tabbedPane.setEnabledAt(0, false);
 			tabbedPane.setEnabledAt(3, false);
@@ -317,7 +360,7 @@ public class BudgetPlanGUI extends JFrame {
   			writer.writeNext(entries);
   			writer.close();
   			Clear_Ausgaben();
-  			JOptionPane.showMessageDialog(null, "Ausgabe erfolgreich gebucht.", "Ausgabenbuchung", JOptionPane.INFORMATION_MESSAGE);
+  			JOptionPane.showMessageDialog(null, buchung_a, "Ausgabenbuchung", JOptionPane.INFORMATION_MESSAGE);
   			Init_Kontostand();
   			
   		} catch (FileNotFoundException ex) {
@@ -509,7 +552,7 @@ public class BudgetPlanGUI extends JFrame {
 	  			writer.writeNext(entries);
 	  			writer.close();
 	  			Clear_Einnahmen();
-	  			JOptionPane.showMessageDialog(null, "Einnahme erfolgreich gebucht.", "Einnahmenbuchung", JOptionPane.INFORMATION_MESSAGE);
+	  			JOptionPane.showMessageDialog(null, buchung_e, "Einnahmenbuchung", JOptionPane.INFORMATION_MESSAGE);
 	  			Init_Kontostand();
 	  			
 	  		} catch (FileNotFoundException ex) {
@@ -534,7 +577,7 @@ public class BudgetPlanGUI extends JFrame {
 			}
 			
 			catch ( IndexOutOfBoundsException e)
-			{JOptionPane.showMessageDialog(null, "Bitte wählen sie eine Kategorie aus.", "Fehler", JOptionPane.ERROR_MESSAGE); 
+			{JOptionPane.showMessageDialog(null, kategorie, "Fehler", JOptionPane.ERROR_MESSAGE); 
 		
 			}
 		}
@@ -629,8 +672,7 @@ public class BudgetPlanGUI extends JFrame {
 			return true;
 
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, "Falsche Datumsgrößen. \n"
-					+ "Enddatum muss größer als Anfangsdatum sein!", "Fehler",
+			JOptionPane.showMessageDialog(null, falsches_datum, "Fehler",
 					JOptionPane.ERROR_MESSAGE);
 			textField_Statistik_Endwert.setText(null);
 			textField_Statistik_Startwert.setText(null);
@@ -930,14 +972,7 @@ public class BudgetPlanGUI extends JFrame {
 		  	public void actionPerformed(ActionEvent arg0) {
 
 		  		
-				JOptionPane.showMessageDialog(null, "Hilfe \n \n"
-						+ "- Bei den Ausgaben ist es Ganz wichtig den Betrag in folgender Form anzugeben: \n  \n"
-						+ "               X.XX Euro \n \n"
-						+ "  Beachten Sie hierbei, dass ein Punkt zwischen dem Euro- und Centbetrag setzen. Ansonsten kann es zu Fehlern kommen. \n \n"
-						+ "- Wählen Sie immer eine Kategorie.  \n\n"
-						+ "- Durch die Wahl eines Dauerauftrags werden die Aufträge nicht nur einmal sondern monatlich gebucht.\n "
-						+ " Dadurch müssen sie regelmäßig anfallende Ausgaben nicht jeden Monat manuel eingeben. \n\n"
-						+ "- In der Beschreibung können Angaben zur eigenen Buchung gemacht werden. \n  Dabei steht Ihnen frei, wie die Eingabe aussieht oder ob sie überhaupt gemacht wird." 
+				JOptionPane.showMessageDialog(null, hilfe_a
 						, "Hilfe", JOptionPane.INFORMATION_MESSAGE); 
 			
 	  	
@@ -1038,14 +1073,7 @@ public class BudgetPlanGUI extends JFrame {
 				  btnHelpButton_Einnahmen.addActionListener(new ActionListener() {
 				  	public void actionPerformed(ActionEvent e) {
 				  		
-							JOptionPane.showMessageDialog(null, "Hilfe \n \n"
-									+ "- Bei den Einnahmen ist es Ganz wichtig den Betrag in folgender Form anzugeben: \n  \n"
-									+ "               X.XX Euro \n \n"
-									+ "  Beachten Sie hierbei, dass ein Punkt zwischen dem Euro- und Centbetrag setzen. Ansonsten kann es zu Fehlern kommen. \n \n"
-									+ "- Wählen Sie immer eine Kategorie.  \n\n"
-									+ "- Durch die Wahl eines Dauerauftrags werden die Aufträge nicht nur einmal sondern monatlich gebucht.\n "
-									+ " Dadurch müssen sie regelmäßig anfallende Einnahmen nicht jeden Monat manuel eingeben. \n\n"
-									+ "- In der Beschreibung können Angaben zur eigenen Buchung gemacht werden. \n  Dabei steht Ihnen frei, wie die Eingabe aussieht oder ob sie überhaupt gemacht wird." 
+							JOptionPane.showMessageDialog(null, hilfe_e
 									, "Hilfe", JOptionPane.INFORMATION_MESSAGE); 
 						
 				  	}
@@ -1265,8 +1293,7 @@ public class BudgetPlanGUI extends JFrame {
 				public void actionPerformed(ActionEvent arg0) {
 					//, JOptionPane.YES_NO_OPTION);
 					
-					int n = JOptionPane.showConfirmDialog(null, "Möchten Sie wirklich ihr Konto löschen? \n"
-							+ "Sämtliche Daten gehen dabei verloren!", "Konto löschen",
+					int n = JOptionPane.showConfirmDialog(null, konto_l, "Konto löschen",
 						    JOptionPane.YES_NO_OPTION);
 					if (n == 0){			
 					
@@ -1278,11 +1305,11 @@ public class BudgetPlanGUI extends JFrame {
 			  			
 			  		} catch (FileNotFoundException ex) {
 			  			System.err
-			  					.println("Die Datei data/budget.csv wurde nicht gefunden!");
+			  					.println("csv_nichtgefunden");
 			  			System.exit(1);
 			  		} catch (IOException ex) {
 			  			System.err
-			  					.println("Probleme beim Oeffnen der Datei data/budget.csv!");
+			  					.println("csv_problemöffnen");
 			  			System.exit(1);
 			  		} 
 			  		
@@ -1300,7 +1327,7 @@ public class BudgetPlanGUI extends JFrame {
 					try {
 					    Runtime.getRuntime().exec("calc.exe");
 				} catch (IOException ex) {
-						JOptionPane.showMessageDialog(null, "Taschenrechner konnte nicht aufgerufen worden.", "ERROR", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(null, taschenrechner, "ERROR", JOptionPane.ERROR_MESSAGE);
 					} 
 				}
 			});
@@ -1308,13 +1335,7 @@ public class BudgetPlanGUI extends JFrame {
 			
 			btnInfo.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
-					JOptionPane.showMessageDialog(null, "MyBudgetManager (Version 1.0.2 beta) 2015 \n \n"
-							+ "Programmierprojekt SS2015 \n Leitung: Dr. Annette Bieniusa \n "
-							+ "Fachbereich Informatik \n Lehrstuhl AG Softwaretechnik \n \n "
-							+ "Programmierer: \n Philipp Heintz \n Lukas Breit \n Markus Dittmann \n \n"
-							+ "Technische Universität Kaiserslautern \n \u00a9 copyright 2015 \n "
-							+ "Die Programmierer übernehmen keine Haftung für enthaltene Fehler oder für Schäden, \n "
-							+ "die im Zusammenhang mit der Verwendung der Software entstehen.", "Info", JOptionPane.INFORMATION_MESSAGE); 
+					JOptionPane.showMessageDialog(null, info, "Info", JOptionPane.INFORMATION_MESSAGE); 
 				}
 			});
 		
