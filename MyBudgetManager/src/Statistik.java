@@ -1,35 +1,56 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
+import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.JButton;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
+import org.jfree.chart.axis.TickUnits;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
+import org.jfree.chart.plot.CategoryPlot;
+import org.jfree.chart.plot.CombinedDomainCategoryPlot;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.category.BarRenderer;
+import org.jfree.chart.renderer.category.LineAndShapeRenderer;
+import org.jfree.chart.renderer.xy.XYDifferenceRenderer;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.general.DefaultPieDataset;
-import org.jfree.ui.RectangleInsets;
+import org.jfree.data.time.Day;
+import org.jfree.data.time.Month;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.xy.XYDataset;
 
 import com.opencsv.CSVReader;
 
@@ -286,28 +307,733 @@ public class Statistik {
 			System.exit(1);
 		}
 
+		Collections.sort(budget.Geldvermögen, new Comparator<Posten>() {
+
+			@Override
+			public int compare(Posten o1, Posten o2) {
+				return o1.getDatum().compareTo(o2.getDatum());
+			}
+		});
+
 		Buchungsübersicht();
 	}
 
-	public void Kategorie_Kreisdiagramm_Grafik() {
-		DefaultPieDataset pd = new DefaultPieDataset();
-		for (Posten p : budget.Geldvermögen)
-			if (p.getintern_Einnahme_Ausgabe() == 0)
-				pd.setValue(p.getBezeichnung(), p.getBetrag());
+	private JFreeChart createChartPieAusgaben(DefaultPieDataset dataset) {
+		JFreeChart chart = ChartFactory.createPieChart3D("Ausgaben", dataset,
+				true, true, false);
+		return chart;
+	}
 
-		JFreeChart pie = ChartFactory.createPieChart3D("Einnahmen", pd);
+	private JFreeChart createChartPieEinnahmen(DefaultPieDataset dataset) {
+		JFreeChart chart = ChartFactory.createPieChart3D("Einnahmen", dataset,
+				true, true, false);
+		return chart;
+	}
+
+	private DefaultPieDataset createDataset_Auswahl2(int selection_data_ein_aus) {
+		int einnahme_ausgabe = -1;
+		if (selection_data_ein_aus == 0)
+			einnahme_ausgabe = 0;
+
+		else
+			einnahme_ausgabe = 1;
+
+		List<Posten> Sortierte_Kategorie_Liste = new ArrayList<Posten>();
+		for (Posten p : budget.Geldvermögen)
+			Sortierte_Kategorie_Liste.add(p);
+
+		Collections.sort(Sortierte_Kategorie_Liste, new Comparator<Posten>() {
+
+			@Override
+			public int compare(Posten o1, Posten o2) {
+				return o1.getBezeichnung().compareTo(o2.getBezeichnung());
+			}
+		});
+
+		double betrag = 0;
+		int twin = 0, i = 0;
+		DefaultPieDataset piedataset = new DefaultPieDataset();
+		for (Posten p : Sortierte_Kategorie_Liste) {
+			i++;
+			if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
+				if (i < Sortierte_Kategorie_Liste.size()) {
+					if (Sortierte_Kategorie_Liste
+							.get(i - 1)
+							.getBezeichnung()
+							.equals(Sortierte_Kategorie_Liste.get(i)
+									.getBezeichnung())) {
+						twin = 1;
+						betrag += Math.abs(p.getBetrag());
+
+					} else if (twin == 1) {
+						betrag += Math.abs(p.getBetrag());
+						piedataset.setValue(p.getBezeichnung(), betrag);
+						twin = 0;
+						betrag = 0;
+					} else
+						piedataset.setValue(p.getBezeichnung(),
+								Math.abs(p.getBetrag()));
+				} else {
+					if (twin == 1) {
+						betrag += Math.abs(p.getBetrag());
+						piedataset.setValue(p.getBezeichnung(), betrag);
+						twin = 0;
+						betrag = 0;
+					} else
+						piedataset.setValue(p.getBezeichnung(),
+								Math.abs(p.getBetrag()));
+				}
+			}
+		}
+
+		return piedataset;
+	}
+
+	public void Kategorie_Kreisdiagramm_Grafik() {
+		JFreeChart pie = createChartPieEinnahmen((DefaultPieDataset) createDataset_Auswahl2(0));
 		ChartPanel chartpanel = new ChartPanel(pie);
+		chartpanel.setMouseWheelEnabled(true);
 		panel_2.add(chartpanel);
 
-		DefaultPieDataset pd2 = new DefaultPieDataset();
-		for (Posten p : budget.Geldvermögen)
-			if (p.getintern_Einnahme_Ausgabe() == 1)
-				pd2.setValue(p.getBezeichnung(), Math.abs(p.getBetrag()));
-
-		JFreeChart pie2 = ChartFactory.createPieChart3D("Ausgaben", pd2);
+		JFreeChart pie2 = createChartPieAusgaben((DefaultPieDataset) createDataset_Auswahl2(1));
 		ChartPanel chartpanel2 = new ChartPanel(pie2);
+		chartpanel2.setMouseWheelEnabled(true);
 		panel_2.add(chartpanel2);
+	}
 
+	private CategoryDataset createDataset_Auswahl3(int selection_data_ein_aus) {
+		DefaultCategoryDataset categorydataset = new DefaultCategoryDataset();
+		int einnahme_ausgabe = -1;
+		String einnahme_ausgabe_text = null;
+		if (selection_data_ein_aus == 0) {
+			einnahme_ausgabe = 0;
+			einnahme_ausgabe_text = "Einnahmen";
+		} else {
+			einnahme_ausgabe = 1;
+			einnahme_ausgabe_text = "Ausgaben";
+		}
+
+		List<Posten> Sortierte_Kategorie_Liste = new ArrayList<Posten>();
+		for (Posten p : budget.Geldvermögen)
+			Sortierte_Kategorie_Liste.add(p);
+
+		Collections.sort(Sortierte_Kategorie_Liste, new Comparator<Posten>() {
+
+			@Override
+			public int compare(Posten o1, Posten o2) {
+				return o1.getBezeichnung().compareTo(o2.getBezeichnung());
+			}
+		});
+
+		if (selection_data_ein_aus == 2)
+			for (int data_einnahme_ausgabe = 0; data_einnahme_ausgabe < 2; data_einnahme_ausgabe++) {
+				double betrag = 0;
+				int twin = 0, i = 0;
+				for (Posten p : Sortierte_Kategorie_Liste) {
+					i++;
+					if (p.getintern_Einnahme_Ausgabe() == data_einnahme_ausgabe) {
+						if (i < Sortierte_Kategorie_Liste.size()) {
+							if (Sortierte_Kategorie_Liste
+									.get(i - 1)
+									.getBezeichnung()
+									.equals(Sortierte_Kategorie_Liste.get(i)
+											.getBezeichnung())) {
+								twin = 1;
+								betrag += p.getBetrag();
+
+							} else if (twin == 1) {
+								betrag += p.getBetrag();
+								categorydataset
+										.addValue(
+												betrag,
+												"Einnahmen (pos. Werte) und Ausgaben (neg. Werte)",
+												p.getBezeichnung());
+								twin = 0;
+								betrag = 0;
+							} else
+								categorydataset
+										.addValue(
+												p.getBetrag(),
+												"Einnahmen (pos. Werte) und Ausgaben (neg. Werte)",
+												p.getBezeichnung());
+						} else {
+							if (twin == 1) {
+								betrag += p.getBetrag();
+								categorydataset
+										.addValue(
+												betrag,
+												"Einnahmen (pos. Werte) und Ausgaben (neg. Werte)",
+												p.getBezeichnung());
+								twin = 0;
+								betrag = 0;
+							} else
+								categorydataset
+										.addValue(
+												p.getBetrag(),
+												"Einnahmen (pos. Werte) und Ausgaben (neg. Werte)",
+												p.getBezeichnung());
+						}
+					}
+				}
+			}
+		else {
+			double betrag = 0;
+			int twin = 0, i = 0;
+			for (Posten p : Sortierte_Kategorie_Liste) {
+				i++;
+				if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
+					if (i < Sortierte_Kategorie_Liste.size()) {
+						if (Sortierte_Kategorie_Liste
+								.get(i - 1)
+								.getBezeichnung()
+								.equals(Sortierte_Kategorie_Liste.get(i)
+										.getBezeichnung())) {
+							twin = 1;
+							betrag += Math.abs(p.getBetrag());
+
+						} else if (twin == 1) {
+							betrag += Math.abs(p.getBetrag());
+							categorydataset.addValue(betrag,
+									einnahme_ausgabe_text, p.getBezeichnung());
+							twin = 0;
+							betrag = 0;
+						} else
+							categorydataset.addValue(Math.abs(p.getBetrag()),
+									einnahme_ausgabe_text, p.getBezeichnung());
+					} else {
+						if (twin == 1) {
+							betrag += Math.abs(p.getBetrag());
+							categorydataset.addValue(betrag,
+									einnahme_ausgabe_text, p.getBezeichnung());
+							twin = 0;
+							betrag = 0;
+						} else
+							categorydataset.addValue(Math.abs(p.getBetrag()),
+									einnahme_ausgabe_text, p.getBezeichnung());
+					}
+				}
+			}
+
+		}
+		return categorydataset;
+	}
+
+	private JFreeChart createChartBarAusgaben(CategoryDataset dataset) {
+		JFreeChart chart = ChartFactory.createBarChart(
+				"Ausgaben nach Kategorien", "Kategorie", "Euro",
+				(CategoryDataset) dataset);
+		return chart;
+	}
+
+	private JFreeChart createChartBarEinnahmen(CategoryDataset dataset) {
+		JFreeChart chart = ChartFactory.createBarChart(
+				"Einnahmen nach Kategorien", "Kategorie", "Euro",
+				(CategoryDataset) dataset);
+		return chart;
+	}
+
+	public void Kategorie_Balkendiagramm_Grafik() {
+		JFreeChart bar = createChartBarEinnahmen((CategoryDataset) createDataset_Auswahl3(0));
+		ChartPanel chartpanel = new ChartPanel(bar);
+		panel_2.add(chartpanel);
+
+		JFreeChart bar2 = createChartBarAusgaben((CategoryDataset) createDataset_Auswahl3(1));
+		ChartPanel chartpanel2 = new ChartPanel(bar2);
+		panel_2.add(chartpanel2);
+	}
+
+	public void Vergleich_Balkendiagramm_Grafik() {
+		double einnahmen = 0, ausgaben = 0;
+		DefaultCategoryDataset cd = new DefaultCategoryDataset();
+		for (Posten p : budget.Geldvermögen)
+			if (p.getintern_Einnahme_Ausgabe() == 0)
+				einnahmen += p.getBetrag();
+			else
+				ausgaben += Math.abs(p.getBetrag());
+		cd.addValue(einnahmen, "Einnahmen", "");
+		cd.addValue(ausgaben, "Ausgaben", "");
+		JFreeChart bar = ChartFactory.createBarChart(
+				"Gesamt-Einnahmen  vs  Gesamt-Ausgaben", null, "Euro",
+				(CategoryDataset) cd);
+		ChartPanel chartpanel = new ChartPanel(bar);
+		panel_2.add(chartpanel);
+
+	}
+
+	private JFreeChart createChartBarGesamt(CategoryDataset dataset) {
+		JFreeChart chart = ChartFactory.createBarChart(
+				"Einnahmen und Ausgaben nach Kategorien", "Kategorie", "Euro",
+				(CategoryDataset) dataset);
+		return chart;
+	}
+
+	public void GesamtKategorie_Balkendiagramm_Grafik() {
+		JFreeChart bar = createChartBarGesamt((CategoryDataset) createDataset_Auswahl3(2));
+		ChartPanel chartpanel = new ChartPanel(bar);
+		panel_2.add(chartpanel);
+	}
+
+	public void Zeit_Kombidiagramm_Ausgaben_Grafik() {
+		JFreeChart KombiChart_Ausgaben = createChart_Auswahl(1);
+		ChartPanel chartpanel = new ChartPanel(KombiChart_Ausgaben);
+		panel_2.add(chartpanel);
+	}
+
+	public void Zeit_Kombidiagramm_Einnahmen_Grafik() {
+		JFreeChart KombiChart_Einnahmen = createChart_Auswahl(0);
+		ChartPanel chartpanel = new ChartPanel(KombiChart_Einnahmen);
+		panel_2.add(chartpanel);
+	}
+
+	private CategoryDataset createDataset_Auswahl(int selection_data_ein_aus) {
+		int einnahme_ausgabe = -1;
+		String einnahme_ausgabe_text = null;
+		if (selection_data_ein_aus == 0) {
+			einnahme_ausgabe = 0;
+			einnahme_ausgabe_text = "Einnahmen";
+		} else {
+			einnahme_ausgabe = 1;
+			einnahme_ausgabe_text = "Ausgaben";
+		}
+
+		List<Posten> Only_Einnahmen_Or_Ausgaben = new ArrayList<Posten>();
+		for (Posten p : budget.Geldvermögen) {
+			if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
+				Only_Einnahmen_Or_Ausgaben.add(p);
+			}
+		}
+
+		double betrag = 0;
+		int twin = 0, i = 0;
+		DefaultCategoryDataset defaultcategorydataset = new DefaultCategoryDataset();
+		for (Posten p : Only_Einnahmen_Or_Ausgaben) {
+			i++;
+			if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
+				if (i < Only_Einnahmen_Or_Ausgaben.size()) {
+					if (Only_Einnahmen_Or_Ausgaben
+							.get(i - 1)
+							.getDatum()
+							.equals(Only_Einnahmen_Or_Ausgaben.get(i)
+									.getDatum())) {
+						twin = 1;
+						betrag += Math.abs(p.getBetrag());
+
+					} else if (twin == 1) {
+						betrag += Math.abs(p.getBetrag());
+						defaultcategorydataset.addValue(betrag,
+								einnahme_ausgabe_text, new SimpleDateFormat(
+										"dd.MM.yyyy").format(p.getDatum()));
+						twin = 0;
+						betrag = 0;
+					} else
+						defaultcategorydataset.addValue(
+								Math.abs(p.getBetrag()), einnahme_ausgabe_text,
+								new SimpleDateFormat("dd.MM.yyyy").format(p
+										.getDatum()));
+				} else {
+					if (twin == 1) {
+						betrag += Math.abs(p.getBetrag());
+						defaultcategorydataset.addValue(betrag,
+								einnahme_ausgabe_text, new SimpleDateFormat(
+										"dd.MM.yyyy").format(p.getDatum()));
+						twin = 0;
+						betrag = 0;
+					} else
+						defaultcategorydataset.addValue(
+								Math.abs(p.getBetrag()), einnahme_ausgabe_text,
+								new SimpleDateFormat("dd.MM.yyyy").format(p
+										.getDatum()));
+				}
+			}
+		}
+		return defaultcategorydataset;
+	}
+
+	private JFreeChart createChart_Auswahl(int selection_ein_aus) {
+		String einnahme_ausgabe_text = null;
+		if (selection_ein_aus == 0)
+			einnahme_ausgabe_text = "Einnahmen";
+		else
+			einnahme_ausgabe_text = "Ausgaben";
+		CategoryDataset categorydataset = createDataset_Auswahl(selection_ein_aus);
+		NumberAxis numberaxis = new NumberAxis("Euro");
+		numberaxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+		LineAndShapeRenderer lineandshaperenderer = new LineAndShapeRenderer();
+		lineandshaperenderer
+				.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator());
+		CategoryPlot categoryplot = new CategoryPlot(categorydataset, null,
+				numberaxis, lineandshaperenderer);
+		categoryplot.setDomainGridlinesVisible(true);
+
+		NumberAxis numberaxis1 = new NumberAxis("Euro");
+		numberaxis1.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+		BarRenderer barrenderer = new BarRenderer();
+		barrenderer
+				.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator());
+		CategoryPlot categoryplot1 = new CategoryPlot(categorydataset, null,
+				numberaxis1, barrenderer);
+
+		categoryplot1.setDomainGridlinesVisible(true);
+		CategoryAxis categoryaxis = new CategoryAxis("Zeit");
+		CombinedDomainCategoryPlot combineddomaincategoryplot = new CombinedDomainCategoryPlot(
+				categoryaxis);
+		combineddomaincategoryplot.add(categoryplot, 2);
+		combineddomaincategoryplot.add(categoryplot1, 1);
+		JFreeChart jfreechart = new JFreeChart(einnahme_ausgabe_text
+				+ " nach Zeit - Kombidiagramm", new Font("SansSerif", 1, 12),
+				combineddomaincategoryplot, true);
+		return jfreechart;
+	}
+
+	private XYDataset createDataset(int selection_model) {
+
+		TimeSeries series1 = new TimeSeries("Einnahmen");
+		TimeSeries series2 = new TimeSeries("Ausgaben");
+		if (selection_model == 0) {
+			for (int einnahme_ausgabe = 0; einnahme_ausgabe < 2; einnahme_ausgabe++) {
+
+				List<Posten> Only_Einnahmen_Or_Ausgaben = new ArrayList<Posten>();
+				for (Posten p : budget.Geldvermögen) {
+					if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
+						Only_Einnahmen_Or_Ausgaben.add(p);
+					}
+				}
+
+				double betrag = 0;
+				int twin = 0, i = 0;
+
+				for (Posten p : Only_Einnahmen_Or_Ausgaben) {
+					i++;
+					if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
+						if (i < Only_Einnahmen_Or_Ausgaben.size()) {
+							if (Only_Einnahmen_Or_Ausgaben
+									.get(i - 1)
+									.getDatum()
+									.equals(Only_Einnahmen_Or_Ausgaben.get(i)
+											.getDatum())) {
+								twin = 1;
+								betrag += Math.abs(p.getBetrag());
+
+							} else if (twin == 1) {
+								betrag += Math.abs(p.getBetrag());
+								if (einnahme_ausgabe == 0)
+									series1.add(new Day(p.getDatum()), betrag);
+								else
+									series2.add(new Day(p.getDatum()), betrag);
+								twin = 0;
+								betrag = 0;
+							} else if (einnahme_ausgabe == 0)
+								series1.add(new Day(p.getDatum()),
+										Math.abs(p.getBetrag()));
+							else
+								series2.add(new Day(p.getDatum()),
+										Math.abs(p.getBetrag()));
+						} else {
+							if (twin == 1) {
+								betrag += Math.abs(p.getBetrag());
+								if (einnahme_ausgabe == 0)
+									series1.add(new Day(p.getDatum()), betrag);
+								else
+									series2.add(new Day(p.getDatum()), betrag);
+								twin = 0;
+								betrag = 0;
+							} else if (einnahme_ausgabe == 0)
+								series1.add(new Day(p.getDatum()),
+										Math.abs(p.getBetrag()));
+							else
+								series2.add(new Day(p.getDatum()),
+										Math.abs(p.getBetrag()));
+						}
+					}
+				}
+			}
+		} else {
+			for (int einnahme_ausgabe = 0; einnahme_ausgabe < 2; einnahme_ausgabe++) {
+
+				List<Posten> Only_Einnahmen_Or_Ausgaben = new ArrayList<Posten>();
+				for (Posten p : budget.Geldvermögen) {
+					if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
+						Only_Einnahmen_Or_Ausgaben.add(p);
+					}
+				}
+
+				double betrag = 0;
+				int twin = 0, i = 0;
+
+				for (Posten p : Only_Einnahmen_Or_Ausgaben) {
+					i++;
+					if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
+						if (i < Only_Einnahmen_Or_Ausgaben.size()) {
+							if (new SimpleDateFormat("MM.yyyy").format(
+									Only_Einnahmen_Or_Ausgaben.get(i - 1)
+											.getDatum()).equals(
+									new SimpleDateFormat("MM.yyyy")
+											.format(Only_Einnahmen_Or_Ausgaben
+													.get(i).getDatum()))) {
+								twin = 1;
+								betrag += Math.abs(p.getBetrag());
+
+							} else if (twin == 1) {
+								betrag += Math.abs(p.getBetrag());
+								if (einnahme_ausgabe == 0)
+									series1.add(
+											new Month(
+													Integer.valueOf((new SimpleDateFormat(
+															"MM").format(p
+															.getDatum()))
+															.toString()),
+													Integer.valueOf((new SimpleDateFormat(
+															"yyyy").format(p
+															.getDatum()))
+															.toString())),
+											betrag);
+								else
+									series2.add(
+											new Month(
+													Integer.valueOf((new SimpleDateFormat(
+															"MM").format(p
+															.getDatum()))
+															.toString()),
+													Integer.valueOf((new SimpleDateFormat(
+															"yyyy").format(p
+															.getDatum()))
+															.toString())),
+											betrag);
+								twin = 0;
+								betrag = 0;
+							} else if (einnahme_ausgabe == 0)
+								series1.add(
+										new Month(Integer
+												.valueOf((new SimpleDateFormat(
+														"MM").format(p
+														.getDatum()))
+														.toString()), Integer
+												.valueOf((new SimpleDateFormat(
+														"yyyy").format(p
+														.getDatum()))
+														.toString())), Math
+												.abs(p.getBetrag()));
+							else
+								series2.add(
+										new Month(Integer
+												.valueOf((new SimpleDateFormat(
+														"MM").format(p
+														.getDatum()))
+														.toString()), Integer
+												.valueOf((new SimpleDateFormat(
+														"yyyy").format(p
+														.getDatum()))
+														.toString())), Math
+												.abs(p.getBetrag()));
+						} else {
+							if (twin == 1) {
+								betrag += Math.abs(p.getBetrag());
+								if (einnahme_ausgabe == 0)
+									series1.add(
+											new Month(
+													Integer.valueOf((new SimpleDateFormat(
+															"MM").format(p
+															.getDatum()))
+															.toString()),
+													Integer.valueOf((new SimpleDateFormat(
+															"yyyy").format(p
+															.getDatum()))
+															.toString())),
+											betrag);
+								else
+									series2.add(
+											new Month(
+													Integer.valueOf((new SimpleDateFormat(
+															"MM").format(p
+															.getDatum()))
+															.toString()),
+													Integer.valueOf((new SimpleDateFormat(
+															"yyyy").format(p
+															.getDatum()))
+															.toString())),
+											betrag);
+								twin = 0;
+								betrag = 0;
+							} else if (einnahme_ausgabe == 0)
+								series1.add(
+										new Month(Integer
+												.valueOf((new SimpleDateFormat(
+														"MM").format(p
+														.getDatum()))
+														.toString()), Integer
+												.valueOf((new SimpleDateFormat(
+														"yyyy").format(p
+														.getDatum()))
+														.toString())), Math
+												.abs(p.getBetrag()));
+							else
+								series2.add(
+										new Month(Integer
+												.valueOf((new SimpleDateFormat(
+														"MM").format(p
+														.getDatum()))
+														.toString()), Integer
+												.valueOf((new SimpleDateFormat(
+														"yyyy").format(p
+														.getDatum()))
+														.toString())), Math
+												.abs(p.getBetrag()));
+						}
+					}
+				}
+			}
+		}
+		TimeSeriesCollection dataset = new TimeSeriesCollection();
+		dataset.addSeries(series1);
+		dataset.addSeries(series2);
+		return dataset;
+	}
+
+	private static JFreeChart createChart(XYDataset dataset) {
+		JFreeChart chart = ChartFactory.createTimeSeriesChart(
+				"Differenz zw. Einnahmen & Ausgaben", "Zeit", "Euro", dataset,
+				true, true, false);
+
+		XYPlot plot = chart.getXYPlot();
+		plot.setRenderer(new XYDifferenceRenderer(Color.green, Color.red, false));
+
+		ValueAxis domainAxis = new DateAxis("Zeit");
+		domainAxis.setLowerMargin(0.0);
+		domainAxis.setUpperMargin(0.0);
+		plot.setDomainAxis(domainAxis);
+		plot.setForegroundAlpha(0.5f);
+		return chart;
+	}
+
+	public void Zeit_Liniendiagramm_Differenz_Gesamt_Grafik() {
+		JFreeChart chart = createChart(createDataset(0));
+		ChartPanel chartpanel = new ChartPanel(chart);
+		panel_2.add(chartpanel);
+	}
+
+	private static JFreeChart createChart2(XYDataset dataset) {
+		JFreeChart chart = ChartFactory.createTimeSeriesChart(
+				"Einnahmen  vs  Ausgaben (monatlich)", "Datum", "Euro",
+				dataset, true, true, false);
+
+		XYPlot plot = (XYPlot) chart.getPlot();
+		XYItemRenderer r = plot.getRenderer();
+		if (r instanceof XYLineAndShapeRenderer) {
+			XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) r;
+			renderer.setBaseShapesVisible(true);
+			renderer.setBaseShapesFilled(true);
+			renderer.setDrawSeriesLineAsPath(true);
+		}
+		DateAxis axis = (DateAxis) plot.getDomainAxis();
+		axis.setDateFormatOverride(new SimpleDateFormat("MMM-yyyy"));
+		return chart;
+	}
+
+	public void Zeit_Liniendiagramm_Gesamt_Grafik() {
+		JFreeChart chart = createChart2(createDataset(1));
+		ChartPanel chartpanel = new ChartPanel(chart);
+		panel_2.add(chartpanel);
+	}
+
+	private CategoryDataset createDataset_Wasserfall(int selection_data_ein_aus) {
+		double m = 0;
+		int einnahme_ausgabe = -1;
+		String einnahme_ausgabe_text = null;
+		if (selection_data_ein_aus == 0) {
+			einnahme_ausgabe = 0;
+			einnahme_ausgabe_text = "Einnahmen";
+		} else {
+			einnahme_ausgabe = 1;
+			einnahme_ausgabe_text = "Ausgaben";
+		}
+
+		List<Posten> Sortierte_Kategorie_Liste = new ArrayList<Posten>();
+		for (Posten p : budget.Geldvermögen)
+			Sortierte_Kategorie_Liste.add(p);
+
+		Collections.sort(Sortierte_Kategorie_Liste, new Comparator<Posten>() {
+
+			@Override
+			public int compare(Posten o1, Posten o2) {
+				return o1.getBezeichnung().compareTo(o2.getBezeichnung());
+			}
+		});
+
+		double betrag = 0;
+		int twin = 0, i = 0;
+		DefaultCategoryDataset defaultcategorydataset = new DefaultCategoryDataset();
+		for (Posten p : Sortierte_Kategorie_Liste) {
+			i++;
+			if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
+				if (i < Sortierte_Kategorie_Liste.size()) {
+					if (Sortierte_Kategorie_Liste
+							.get(i - 1)
+							.getBezeichnung()
+							.equals(Sortierte_Kategorie_Liste.get(i)
+									.getBezeichnung())) {
+						twin = 1;
+						betrag += p.getBetrag();
+
+					} else if (twin == 1) {
+						betrag += p.getBetrag();
+						defaultcategorydataset.addValue(betrag,
+								einnahme_ausgabe_text, p.getBezeichnung());
+						twin = 0;
+						betrag = 0;
+					} else
+						defaultcategorydataset.addValue(p.getBetrag(),
+								einnahme_ausgabe_text, p.getBezeichnung());
+				} else {
+					if (twin == 1) {
+						betrag += p.getBetrag();
+						defaultcategorydataset.addValue(betrag,
+								einnahme_ausgabe_text, p.getBezeichnung());
+						twin = 0;
+						betrag = 0;
+					} else
+						defaultcategorydataset.addValue(p.getBetrag(),
+								einnahme_ausgabe_text, p.getBezeichnung());
+				}
+			}
+		}
+		for (Posten p : Sortierte_Kategorie_Liste)
+			if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe)
+				m += p.getBetrag();
+		defaultcategorydataset.addValue(m, einnahme_ausgabe_text, "Total");
+		return defaultcategorydataset;
+	}
+
+	private JFreeChart createChartWasserfall_Einnahmen(CategoryDataset dataset) {
+
+		final JFreeChart chart = ChartFactory.createWaterfallChart(
+				"Einnahmen nach Kategorien", "Kategorie", "Euro", dataset,
+				PlotOrientation.VERTICAL, true, true, false);
+		CategoryPlot plot = chart.getCategoryPlot();
+		plot.setForegroundAlpha(0.7f);
+
+		return chart;
+	}
+
+	private JFreeChart createChartWasserfall_Ausgaben(CategoryDataset dataset) {
+
+		final JFreeChart chart = ChartFactory.createWaterfallChart(
+				"Ausgaben nach Kategorien", "Kategorie", "Euro", dataset,
+				PlotOrientation.VERTICAL, true, true, false);
+
+		CategoryPlot plot = chart.getCategoryPlot();
+		plot.setForegroundAlpha(0.7f);
+
+		return chart;
+	}
+
+	public void Kategorie_Wasserfalldiagramm_Gesamt_Grafik() {
+		JFreeChart chart = createChartWasserfall_Einnahmen((CategoryDataset) createDataset_Wasserfall(0));
+		ChartPanel chartpanel = new ChartPanel(chart);
+		panel_2.add(chartpanel);
+
+		JFreeChart chart2 = createChartWasserfall_Ausgaben((CategoryDataset) createDataset_Wasserfall(1));
+		ChartPanel chartpanel2 = new ChartPanel(chart2);
+		panel_2.add(chartpanel2);
 	}
 
 	public void Statistik_Manager(String selection, String Start, String End) {
@@ -320,6 +1046,28 @@ public class Statistik {
 			case "Kategorie_Balkendiagramm":
 				Kategorie_Balkendiagramm_Grafik();
 				break;
+			case "GesamtKategorie_Balkendiagramm":
+				GesamtKategorie_Balkendiagramm_Grafik();
+				break;
+			case "Zeit_Kombidiagramm_Einnahmen":
+				Zeit_Kombidiagramm_Einnahmen_Grafik();
+				break;
+			case "Zeit_Kombidiagramm_Ausgaben":
+				Zeit_Kombidiagramm_Ausgaben_Grafik();
+				break;
+			case "Vergleich_Balkendiagramm":
+				Vergleich_Balkendiagramm_Grafik();
+				break;
+			case "Zeit_Liniendiagramm_Differenz_Gesamt":
+				Zeit_Liniendiagramm_Differenz_Gesamt_Grafik();
+				break;
+			case "Zeit_Liniendiagramm_Gesamt":
+				Zeit_Liniendiagramm_Gesamt_Grafik();
+				break;
+			case "Kategorie_Wasserfalldiagramm":
+				Kategorie_Wasserfalldiagramm_Gesamt_Grafik();
+				break;
+
 			}
 		} else {
 			Buchungsübersicht();
@@ -330,33 +1078,28 @@ public class Statistik {
 			case "Kategorie_Balkendiagramm":
 				Kategorie_Balkendiagramm_Grafik();
 				break;
+			case "GesamtKategorie_Balkendiagramm":
+				GesamtKategorie_Balkendiagramm_Grafik();
+				break;
+			case "Zeit_Kombidiagramm_Einnahmen":
+				Zeit_Kombidiagramm_Einnahmen_Grafik();
+				break;
+			case "Zeit_Kombidiagramm_Ausgaben":
+				Zeit_Kombidiagramm_Ausgaben_Grafik();
+				break;
+			case "Vergleich_Balkendiagramm":
+				Vergleich_Balkendiagramm_Grafik();
+				break;
+			case "Zeit_Liniendiagramm_Differenz_Gesamt":
+				Zeit_Liniendiagramm_Differenz_Gesamt_Grafik();
+				break;
+			case "Zeit_Liniendiagramm_Gesamt":
+				Zeit_Liniendiagramm_Gesamt_Grafik();
+				break;
+			case "Kategorie_Wasserfalldiagramm":
+				Kategorie_Wasserfalldiagramm_Gesamt_Grafik();
+				break;
 			}
 		}
 	}
-
-	public void Kategorie_Balkendiagramm_Grafik() {
-		DefaultCategoryDataset cd = new DefaultCategoryDataset();
-		for (Posten p : budget.Geldvermögen)
-			if (p.getintern_Einnahme_Ausgabe() == 0)
-				cd.addValue(p.getBetrag(), "Einnahmen", p.getBezeichnung());
-
-		JFreeChart bar = ChartFactory.createBarChart(
-				"Einnahmen nach Kategorien", null, null, (CategoryDataset) cd);
-		ChartPanel chartpanel = new ChartPanel(bar);
-		panel_2.add(chartpanel);
-
-		DefaultCategoryDataset cd2 = new DefaultCategoryDataset();
-		for (Posten p : budget.Geldvermögen)
-			if (p.getintern_Einnahme_Ausgabe() == 1)
-				cd2.addValue(Math.abs(p.getBetrag()), "Ausgaben",
-						p.getBezeichnung());
-
-		JFreeChart bar2 = ChartFactory.createBarChart(
-				"Ausgaben nach Kategorien", null, null, (CategoryDataset) cd2);
-		ChartPanel chartpanel2 = new ChartPanel(bar2);
-		panel_2.add(chartpanel2);
-
-	}
-
 }
-
