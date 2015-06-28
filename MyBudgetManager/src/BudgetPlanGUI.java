@@ -145,17 +145,23 @@ public class BudgetPlanGUI extends JFrame {
 
 
 	
+	//Fehlermeldungen als Vorgeschriebene Strings
 
+	String falsche_betragseingabe = "Falsche Betragseingabe. \n"
+			+ "Formathinweis: \n"
+			+ "- Bitte verwenden Sie nur Zahlen \n"
+			+ "- Benutzen Sie bitte Punkt statt Komma \n"
+			+ "- Achten Sie bitte auf die evtl. fehlenden zwei Nachkommastellen \n"
+			+ "- Benutzen Sie bitte kein Negativzeichen";
 
-	
+	String csv_nichtgefunden = "Die Datei data/budget.csv wurde nicht gefunden!";
 
+	String csv_problemöffnen = "Probleme beim Oeffnen der Datei data/budget.csv!";
 
+	String falsches_datum = "Falsche Datumseingabe. \n"
+			+ "Formathinweis: TT.MM.JJJJ";
 
-
-
-
-
-
+	String kategorie = "Bitte wählen sie eine Kategorie";
 	
 
 	/**
@@ -172,9 +178,7 @@ public class BudgetPlanGUI extends JFrame {
 		super("MyBudgetManager");
 		
 		 try {
-		     ClassLoader cl = this.getClass().getClassLoader();
-		     ImageIcon programIcon = new ImageIcon(cl.getResource("img/walletklein.png"));
-		     setIconImage(Toolkit.getDefaultToolkit().getImage(BudgetPlanGUI.class.getResource("/img/Money.png")));
+		     setIconImage(getToolkit().getImage("src/img/Money.png"));
 		  } catch (Exception whoJackedMyIcon) {
 		     System.out.println("Could not load program icon.");
 		  }
@@ -318,35 +322,29 @@ public class BudgetPlanGUI extends JFrame {
   			
   		} catch (FileNotFoundException ex) {
   			System.err
-  					.println("Die Datei data/budget.csv wurde nicht gefunden!");
+  					.println(csv_nichtgefunden); 
   			System.exit(1);
   		} catch (IOException ex) {
   			System.err
-  					.println("Probleme beim Oeffnen der Datei data/budget.csv!");
+  					.println(csv_problemöffnen);
   			System.exit(1);
   		} 
 			
 		} 
 
 		catch (ParseException e) {
-			JOptionPane.showMessageDialog(null, "Falsche Datumseingabe. \n"
-					+ "Formathinweis: TT.MM.JJJJ", "Fehler", JOptionPane.ERROR_MESSAGE); 
+			JOptionPane.showMessageDialog(null, falsches_datum, "Fehler", JOptionPane.ERROR_MESSAGE); 
 			txtTtmmjjjj_Ausgaben.setText(null);
 			}
 					
 		
 		catch ( NumberFormatException e)
-		{JOptionPane.showMessageDialog(null, "Falsche Betragseingabe. \n"
-				+ "Formathinweis: \n"
-				+ "- Bitte verwenden Sie nur Zahlen \n"
-				+ "- Benutzen Sie bitte Punkt statt Komma \n"
-				+ "- Achten Sie bitte auf die evtl. fehlenden zwei Nachkommastellen \n"
-				+ "- Benutzen Sie bitte kein Negativzeichen", "Fehler", JOptionPane.ERROR_MESSAGE); 
+		{JOptionPane.showMessageDialog(null, falsche_betragseingabe, "Fehler", JOptionPane.ERROR_MESSAGE); 
 		textField_Ausgaben.setText(null);
 	}
 		
 		catch ( IndexOutOfBoundsException e)
-		{JOptionPane.showMessageDialog(null, "Bitte wählen sie eine Kategorie", "Fehler", JOptionPane.ERROR_MESSAGE); 
+		{JOptionPane.showMessageDialog(null, kategorie, "Fehler", JOptionPane.ERROR_MESSAGE); 
 	
 		}
 
@@ -408,11 +406,11 @@ public class BudgetPlanGUI extends JFrame {
 
 			} catch (FileNotFoundException e) {
 				System.err
-						.println("Die Datei data/budget.csv wurde nicht gefunden!");
+						.println(csv_nichtgefunden);
 				System.exit(1);
 			} catch (IOException e) {
 				System.err
-						.println("Probleme beim Oeffnen der Datei data/budget.csv!");
+						.println(csv_problemöffnen);
 				System.exit(1);
 			} catch (ParseException e) {
 				System.err
@@ -516,27 +514,22 @@ public class BudgetPlanGUI extends JFrame {
 	  			
 	  		} catch (FileNotFoundException ex) {
 	  			System.err
-	  					.println("Die Datei data/budget.csv wurde nicht gefunden!");
+	  					.println(csv_nichtgefunden);
 	  			System.exit(1);
 	  		} catch (IOException ex) {
 	  			System.err
-	  					.println("Probleme beim Oeffnen der Datei data/budget.csv!");
+	  					.println(csv_problemöffnen);
 	  			System.exit(1);
 	  		} 
 				
 			}
 			catch (ParseException e) {
-				JOptionPane.showMessageDialog(null, "Falsche Datumseingabe. \n"
-						+ "Formathinweis: TT.MM.JJJJ", "Fehler", JOptionPane.ERROR_MESSAGE); 
+				JOptionPane.showMessageDialog(null, falsches_datum, "Fehler", JOptionPane.ERROR_MESSAGE); 
 				txtTtmmjjjj_Einnahmen.setText(null);
 			}
 			
 			catch ( NumberFormatException e)
-			{JOptionPane.showMessageDialog(null, "Falsche Betragseingabe.\n"
-					+ "Formathinweis: \n"
-					+ "- Bitte verwenden Sie nur Zahlen \n"
-					+ "- Benutzen Sie bitte Punkt statt Komma \n"
-					+ "- Achten Sie bitte auf die evtl. fehlenden zwei Nachkommastellen", "Fehler", JOptionPane.ERROR_MESSAGE); 
+			{JOptionPane.showMessageDialog(null, falsche_betragseingabe, "Fehler", JOptionPane.ERROR_MESSAGE); 
 			textField_Einnahmen.setText(null);
 			}
 			
@@ -616,8 +609,7 @@ public class BudgetPlanGUI extends JFrame {
 			return true;
 
 		} catch (ParseException e) {
-			JOptionPane.showMessageDialog(null, "Falsche Datumseingabe. \n"
-					+ "Formathinweis: TT.MM.JJJJ", "Fehler",
+			JOptionPane.showMessageDialog(null, falsches_datum, "Fehler",
 					JOptionPane.ERROR_MESSAGE);
 			textField_Statistik_Endwert.setText(null);
 			textField_Statistik_Startwert.setText(null);
