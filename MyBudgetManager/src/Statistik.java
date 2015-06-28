@@ -85,6 +85,8 @@ public class Statistik {
 	private JLabel lblSaldowert;
 	private JTable table_Einnahmen;
 	private JTable table_Ausgaben;
+	private JLabel lblLückenfüller;
+	private JLabel lblZeitraum;
 	private SimpleDateFormat formatter;
 
 	private int size_Einnahmen;
@@ -122,7 +124,14 @@ public class Statistik {
 
 		panel_4 = new JPanel();
 		panel.add(panel_4, BorderLayout.NORTH);
-		panel_4.setLayout(new GridLayout(1, 2));
+		panel_4.setLayout(new GridLayout(2, 2));
+		
+		lblZeitraum = new JLabel("Zeitraum");
+		panel_4.add(lblZeitraum);
+		lblZeitraum.setFont(new Font("Tahoma", Font.BOLD, 13));
+		
+		lblLückenfüller = new JLabel("");
+		panel_4.add(lblLückenfüller);
 
 		lblKontoübersicht_Einnahmen = new JLabel(
 				"Konto\u00FCbersicht:  Einnahmen:");
@@ -1060,6 +1069,7 @@ public class Statistik {
 	public void Statistik_Manager(String selection, String Start, String End) {
 		Buchungen_ohne_Kontoeröffnung();
 		if ((Start != "0") && (End != "0")) {
+			lblZeitraum.setText("  Zeitraum:  "   + Start + " - " + End );
 			Init_Posten_Zeitraum(Start, End);
 			switch (selection) {
 			case "Kategorie_Kreisdiagramm":
@@ -1092,6 +1102,7 @@ public class Statistik {
 
 			}
 		} else {
+			lblZeitraum.setText("  Zeitraum:  Gesamtzeitraum");
 			Buchungsübersicht();
 			switch (selection) {
 			case "Kategorie_Kreisdiagramm":
