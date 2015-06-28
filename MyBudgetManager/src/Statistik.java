@@ -2,11 +2,12 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,8 +31,6 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.NumberTickUnit;
-import org.jfree.chart.axis.TickUnits;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.StandardCategoryToolTipGenerator;
 import org.jfree.chart.plot.CategoryPlot;
@@ -62,13 +61,12 @@ public class Statistik {
 			+ new SimpleDateFormat("dd.MM.yyyy  HH:mm:ss").format(new Date())
 			+ "]");
 
-	private JScrollPane scrollPane1;
 	private static final long serialVersionUID = 1L;
+
 	private BudgetPlanModel budget;
+
 	private JScrollPane scrollPane_Einnahmen;
 	private JScrollPane scrollPane_Ausgaben;
-	private int size_Einnahmen;
-	private int size_Ausgaben;
 	private JPanel panel;
 	private JPanel panel_3;
 	private JPanel panel_4;
@@ -85,6 +83,14 @@ public class Statistik {
 	private JLabel lblEinnhamenwert;
 	private JLabel lblAusgabenwert;
 	private JLabel lblSaldowert;
+	private JTable table_Einnahmen;
+	private JTable table_Ausgaben;
+	private SimpleDateFormat formatter;
+
+	private int size_Einnahmen;
+	private int size_Ausgaben;
+
+	Image icon = Toolkit.getDefaultToolkit().getImage("src/img/Money.png");
 
 	public Statistik(BudgetPlanModel budget) {
 		Statistic.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -92,6 +98,12 @@ public class Statistik {
 		Statistic.setVisible(true);
 		Statistic.setMinimumSize(new Dimension(800, 550));
 		Statistic.getContentPane().setLayout(new BorderLayout(0, 0));
+
+		try {
+			Statistic.setIconImage(icon);
+		} catch (Exception whoJackedMyIcon) {
+			System.out.println("Could not load program icon.");
+		}
 
 		panel = new JPanel();
 		Statistic.getContentPane().add(panel, BorderLayout.NORTH);
@@ -173,17 +185,24 @@ public class Statistik {
 
 	}
 
+	public void Buchungen_ohne_Kontoeröffnung() {
+		List<Posten> tmp = new ArrayList<Posten>();
+		for (Posten p : budget.Geldvermögen)
+			if (!p.getBezeichnung().equals("Kontoeröffnung"))
+				tmp.add(p);
+		budget.Geldvermögen.clear();
+		for (Posten t : tmp)
+			budget.Geldvermögen.add(t);
+
+	}
+
 	public void Buchungsübersicht() {
 
-		for (Posten pos : budget.Geldvermögen) {
+		for (Posten pos : budget.Geldvermögen)
 			if (pos.getintern_Einnahme_Ausgabe() == 0)
 				size_Einnahmen += 1;
-		}
-
-		for (Posten po : budget.Geldvermögen) {
-			if (po.getintern_Einnahme_Ausgabe() == 1)
+			else
 				size_Ausgaben += 1;
-		}
 
 		Object[][] data_Ausgaben = new Object[size_Ausgaben][4];
 		Object[][] data_Einnahmen = new Object[size_Einnahmen][4];
@@ -208,15 +227,15 @@ public class Statistik {
 
 		}
 
-		JTable table_Einnahmen = new JTable(data_Einnahmen, new Object[] {
-				"Datum", "Kategorie", "Beschreibung", "Betrag" });
+		table_Einnahmen = new JTable(data_Einnahmen, new Object[] { "Datum",
+				"Kategorie", "Beschreibung", "Betrag" });
 		table_Einnahmen.enable(false);
 		table_Einnahmen.setAutoCreateRowSorter(true);
 		table_Einnahmen.setBackground(new Color(180, 250, 200));
 		scrollPane_Einnahmen.setViewportView(table_Einnahmen);
 
-		JTable table_Ausgaben = new JTable(data_Ausgaben, new Object[] {
-				"Datum", "Kategorie", "Beschreibung", "Betrag" });
+		table_Ausgaben = new JTable(data_Ausgaben, new Object[] { "Datum",
+				"Kategorie", "Beschreibung", "Betrag" });
 		table_Ausgaben.enable(false);
 		table_Ausgaben.setAutoCreateRowSorter(true);
 		table_Ausgaben.setBackground(new Color(250, 210, 210));
@@ -251,7 +270,7 @@ public class Statistik {
 	public void Init_Posten_Zeitraum(String StartingDate, String EndingDate) {
 
 		budget.Geldvermögen.clear();
-		SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+		formatter = new SimpleDateFormat("dd.MM.yyyy");
 		Date startDate = null;
 		Date endDate = null;
 		try {
@@ -278,7 +297,7 @@ public class Statistik {
 				start.setTime(startDate);
 				for (Date date = start.getTime(); !start.after(end); start.add(
 						Calendar.DATE, 1), date = start.getTime()) {
-					if (formatter.format(date).toString().equals(nextLine[0])) {
+					if (formatter.format(date).compareTo(nextLine[0]) == 0) {
 						Date datum = df.parse(nextLine[0]);
 						String notiz = nextLine[1];
 						String bezeichnung = nextLine[2];
@@ -306,6 +325,8 @@ public class Statistik {
 					.println("Formatfehler: Die Datei konnte nicht eingelesen werden!");
 			System.exit(1);
 		}
+
+		Buchungen_ohne_Kontoeröffnung();
 
 		Collections.sort(budget.Geldvermögen, new Comparator<Posten>() {
 
@@ -1005,23 +1026,23 @@ public class Statistik {
 
 	private JFreeChart createChartWasserfall_Einnahmen(CategoryDataset dataset) {
 
-		final JFreeChart chart = ChartFactory.createWaterfallChart(
+		JFreeChart chart = ChartFactory.createWaterfallChart(
 				"Einnahmen nach Kategorien", "Kategorie", "Euro", dataset,
 				PlotOrientation.VERTICAL, true, true, false);
 		CategoryPlot plot = chart.getCategoryPlot();
-		plot.setForegroundAlpha(0.7f);
+		plot.setForegroundAlpha(0.8f);
 
 		return chart;
 	}
 
 	private JFreeChart createChartWasserfall_Ausgaben(CategoryDataset dataset) {
 
-		final JFreeChart chart = ChartFactory.createWaterfallChart(
+		JFreeChart chart = ChartFactory.createWaterfallChart(
 				"Ausgaben nach Kategorien", "Kategorie", "Euro", dataset,
 				PlotOrientation.VERTICAL, true, true, false);
 
 		CategoryPlot plot = chart.getCategoryPlot();
-		plot.setForegroundAlpha(0.7f);
+		plot.setForegroundAlpha(0.8f);
 
 		return chart;
 	}
@@ -1037,6 +1058,7 @@ public class Statistik {
 	}
 
 	public void Statistik_Manager(String selection, String Start, String End) {
+		Buchungen_ohne_Kontoeröffnung();
 		if ((Start != "0") && (End != "0")) {
 			Init_Posten_Zeitraum(Start, End);
 			switch (selection) {
