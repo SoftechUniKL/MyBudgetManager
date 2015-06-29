@@ -10,9 +10,11 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -110,9 +112,18 @@ public class BudgetPlanGUI extends JFrame {
 	private JTextField textField_Statistik_Startwert;
 	private JTextField textField_Statistik_Endwert;
 	private JLabel lblAnfangsdatum;
+	private JLabel lblStatistikWarnung;
 	private JLabel lblEnddatum;
 	private JComboBox comboBoxStatistikModelle;
 	private JButton btnStatistikanzeigen;
+	private Date Start;
+	private Date End;
+	private SimpleDateFormat sdf;
+	private DateFormat dateFormat;
+	private Pattern p;
+	private Matcher m;
+	private Matcher m2;
+	private SimpleDateFormat monatformat;
 	
 	//panel_Sparfunktion
 	private JPanel panel_Sparfunktion;
@@ -149,6 +160,9 @@ public class BudgetPlanGUI extends JFrame {
 	 */
 	String falsches_datum = "Falsche Datumseingabe. \n"
 			+ "Formathinweis: TT.MM.JJJJ";
+	
+	String falsche_datumsgroesse = "Falsche Datumsgrößen. \n"
+			+ "Enddatum muss größer/gleich dem Anfangsdatum sein!";
 	/**
 	 * 		Nachricht beim Nichtauswählen der Kategorie	
 	 */
@@ -386,7 +400,7 @@ public class BudgetPlanGUI extends JFrame {
   			writer.close();
   			Clear_Ausgaben();
   			JOptionPane.showMessageDialog(null, buchung_a, "Ausgabenbuchung", JOptionPane.INFORMATION_MESSAGE);
-  			Init_Kontostand(0);
+  			Init_Kontostand(1);
   			
   			/**
   			 *@exception <FileNotFoundException ex>  @throws <Ausgabe, dass die csv Datei nicht da ist>
@@ -542,6 +556,7 @@ public class BudgetPlanGUI extends JFrame {
 			}
 			}
 			Init_Kontoübersicht();
+			Statistik_Warnung();
 			}
 	  
 	  
@@ -687,35 +702,25 @@ public class BudgetPlanGUI extends JFrame {
 			testen.Statistik_Manager(selection, "0", "0");
 		}
 	}
-	  
+
 	public boolean Statistik_CheckAuswahlDatum() {
 
 		try {
-			// Check date validation Startwert
-			if (textField_Statistik_Startwert.getText().length() != 10)
+			// Check date validation Datumsstartwert & Datumsendwert
+			if ((textField_Statistik_Startwert.getText().length() != 10)
+					|| (textField_Statistik_Endwert.getText().length() != 10))
 				throw new ParseException("Fehler", 0);
 
-			Pattern p = Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}");
-			Matcher m = p.matcher(textField_Statistik_Startwert.getText());
-			boolean b = m.matches();
-			if (b == false)
+			p = Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}");
+			m = p.matcher(textField_Statistik_Startwert.getText());
+			m2 = p.matcher(textField_Statistik_Endwert.getText());
+			boolean b = m.matches(), b2 = m2.matches();
+			if ((b == false) || (b2 == false))
 				throw new ParseException("Fehler", 0);
 
-			SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+			dateFormat = new SimpleDateFormat("dd.MM.yyyy");
 			dateFormat.setLenient(false); // strenge Datumsprüfung einschalten
 			dateFormat.parse(textField_Statistik_Startwert.getText());
-
-			// Check date validationEndwert
-			if (textField_Statistik_Endwert.getText().length() != 10)
-				throw new ParseException("Fehler", 0);
-
-			Pattern pat = Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}");
-			Matcher mat = pat.matcher(textField_Statistik_Endwert.getText());
-			boolean bol = mat.matches();
-			if (bol == false)
-				throw new ParseException("Fehler", 0);
-
-			dateFormat.setLenient(false); // strenge Datumsprüfung einschalten
 			dateFormat.parse(textField_Statistik_Endwert.getText());
 
 			return true;
@@ -731,25 +736,75 @@ public class BudgetPlanGUI extends JFrame {
 
 	public boolean Statistik_CheckDateDiff() {
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-			Date Start = sdf.parse(textField_Statistik_Startwert.getText());
-			Date End = sdf.parse(textField_Statistik_Endwert.getText());
-			long DateDiff = 0;
-			DateDiff = End.getTime() - Start.getTime();
-			if (DateDiff <= 0)
+			sdf = new SimpleDateFormat("dd.MM.yyyy");
+			Start = sdf.parse(textField_Statistik_Startwert.getText());
+			End = sdf.parse(textField_Statistik_Endwert.getText());
+			if (End.compareTo(Start) < 0)
 				throw new Exception();
 			return true;
 
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, falsches_datum, "Fehler",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(null, falsche_datumsgroesse,
+					"Fehler", JOptionPane.ERROR_MESSAGE);
 			textField_Statistik_Endwert.setText(null);
 			textField_Statistik_Startwert.setText(null);
 
 			return false;
 		}
 	}
-	  
+
+	public void Statistik_Warnung() {
+		int Zaehler_einnahmen = 0, Zaehler_ausgaben = 0, x = -1, y = -1;
+		String monat_einnahmen = null, monat_ausgaben = null;
+		boolean month_einnahmen = false, month_ausgaben = false;
+		monatformat = new SimpleDateFormat("MM.yyyy");
+
+		List<Posten> tmp = new ArrayList<Posten>();
+		for (Posten p : budget.Geldvermögen)
+			if (!p.getBezeichnung().equals("Kontoeröffnung"))
+				tmp.add(p);
+		for (Posten p : tmp) {
+			x++;
+			if (p.getintern_Einnahme_Ausgabe() == 0)
+				break;
+		}
+		if (!tmp.isEmpty())
+			monat_einnahmen = monatformat.format(tmp.get(x).getDatum());
+
+		for (Posten p : tmp) {
+			y++;
+			if (p.getintern_Einnahme_Ausgabe() == 1)
+				break;
+		}
+		if (!tmp.isEmpty())
+			monat_ausgaben = monatformat.format(tmp.get(y).getDatum());
+
+		for (Posten p : tmp) {
+			if (p.getintern_Einnahme_Ausgabe() == 0) {
+				Zaehler_einnahmen++;
+				if (monatformat.format(p.getDatum()).compareTo(monat_einnahmen) != 0)
+					month_einnahmen = true;
+				monat_einnahmen = monatformat.format(p.getDatum());
+			} else {
+				Zaehler_ausgaben++;
+
+				if (monatformat.format(p.getDatum()).compareTo(monat_ausgaben) != 0)
+					month_ausgaben = true;
+				monat_ausgaben = monatformat.format(p.getDatum());
+			}
+		}
+		if ((Zaehler_einnahmen > 20) && (Zaehler_ausgaben > 20)
+				&& (month_einnahmen == true) && (month_ausgaben == true)) {
+			lblStatistikWarnung.setText("");
+			lblStatistikWarnung.setBackground(new Color(240, 240, 240));
+
+		} else {
+			lblStatistikWarnung
+					.setText("<html><body><center><u>ACHTUNG!</u></center>Für eine sinnvolle Statistik<br>sind für einige Modelle<br>zu wenig Daten vorhanden!</body></html>");
+			lblStatistikWarnung.setBackground(new Color(250, 250, 120));
+			lblStatistikWarnung.setOpaque(true);
+		}
+	}
 		
 	/**
 	 * 
@@ -801,7 +856,6 @@ public class BudgetPlanGUI extends JFrame {
 		lblKontostand.setBounds(170, 35, 470, 35);
 		lblKontostand.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblKontostand);
-		
 		
 		lblDatum = new JLabel("Datum: " + new SimpleDateFormat("E, dd.MM.yyyy").format(new Date()));
 		lblDatum.setBounds(10, 49, 142, 14);
@@ -1163,38 +1217,38 @@ public class BudgetPlanGUI extends JFrame {
 			//ANFANG PANEL 6 Statistiken  
 				  
 		rdbtnGesamtzeitraum = new JRadioButton("Gesamtzeitraum");
-		rdbtnGesamtzeitraum.setBounds(60, 34, 150, 23);
+		rdbtnGesamtzeitraum.setBounds(60, 81, 150, 23);
 		Panel_Statistiken.add(rdbtnGesamtzeitraum);
 		rdbtnGesamtzeitraum.setSelected(true);
 
 		rdbtnIndividualZeitraum = new JRadioButton("individueller Zeitraum");
-		rdbtnIndividualZeitraum.setBounds(249, 34, 148, 23);
+		rdbtnIndividualZeitraum.setBounds(249, 81, 148, 23);
 		Panel_Statistiken.add(rdbtnIndividualZeitraum);
 
 		textField_Statistik_Startwert = new JTextField();
-		textField_Statistik_Startwert.setBounds(403, 11, 86, 20);
+		textField_Statistik_Startwert.setBounds(403, 58, 86, 20);
 		Panel_Statistiken.add(textField_Statistik_Startwert);
 		textField_Statistik_Startwert.setEnabled(false);
 
 		textField_Statistik_Endwert = new JTextField();
-		textField_Statistik_Endwert.setBounds(403, 54, 86, 20);
+		textField_Statistik_Endwert.setBounds(403, 101, 86, 20);
 		Panel_Statistiken.add(textField_Statistik_Endwert);
 		textField_Statistik_Endwert.setEnabled(false);
 
 		lblAnfangsdatum = new JLabel("Anfangsdatum");
-		lblAnfangsdatum.setBounds(498, 14, 113, 14);
+		lblAnfangsdatum.setBounds(498, 61, 113, 14);
 		Panel_Statistiken.add(lblAnfangsdatum);
 
 		lblEnddatum = new JLabel("Enddatum");
-		lblEnddatum.setBounds(499, 57, 86, 14);
+		lblEnddatum.setBounds(499, 104, 86, 14);
 		Panel_Statistiken.add(lblEnddatum);
 
 		btnStatistikanzeigen = new JButton("Statistik anzeigen");
-		btnStatistikanzeigen.setBounds(249, 241, 159, 45);
+		btnStatistikanzeigen.setBounds(249, 247, 159, 45);
 		Panel_Statistiken.add(btnStatistikanzeigen);
 
 		comboBoxStatistikModelle = new JComboBox();
-		comboBoxStatistikModelle.setBounds(161, 159, 328, 23);
+		comboBoxStatistikModelle.setBounds(128, 179, 407, 23);
 		comboBoxStatistikModelle
 				.setModel(new DefaultComboBoxModel(
 						new String[] {
@@ -1208,6 +1262,10 @@ public class BudgetPlanGUI extends JFrame {
 								"Einnahmen vs Ausgaben: Differenz (Zeit: Buchungsdatum) [Liniendiagramm]",
 								"Einnahmen vs Ausgaben (Kategorie) [Wasserfalldiagramm]" }));
 		Panel_Statistiken.add(comboBoxStatistikModelle);
+
+		lblStatistikWarnung = new JLabel("");
+		lblStatistikWarnung.setBounds(473, 261, 155, 87);
+		Panel_Statistiken.add(lblStatistikWarnung);
   
 	        //ENDE PANEL 6 Statistiken
 					
@@ -1234,7 +1292,7 @@ public class BudgetPlanGUI extends JFrame {
 	 */
 		public void addBehavior() {
 			Anfangsabfrage();
-			Init_Kontostand(0);
+			Init_Kontostand(1);
 			//Button der die Kontoübersicht druckt. 
 			btnKontoDrucken.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
@@ -1373,7 +1431,8 @@ public class BudgetPlanGUI extends JFrame {
 					int n = JOptionPane.showConfirmDialog(null, konto_l, "Konto löschen",
 						    JOptionPane.YES_NO_OPTION);
 					if (n == 0){			
-					
+					comboBox_Ausgaben.removeItem("Kontoeröffnung");
+					comboBox_Einnahmen.removeItem("Kontoeröffnung");
 					CSVWriter writer = null;  		
 			  		try {
 			  			writer = new CSVWriter(new FileWriter("data/budget.csv"));

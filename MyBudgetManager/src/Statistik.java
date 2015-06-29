@@ -128,8 +128,9 @@ public class Statistik {
 		panel_4.setLayout(new GridLayout(2, 2));
 
 		lblZeitraum = new JLabel("Zeitraum");
-		panel_4.add(lblZeitraum);
 		lblZeitraum.setFont(new Font("Tahoma", Font.BOLD, 13));
+		lblZeitraum.setForeground(new Color(35,35,130));
+		panel_4.add(lblZeitraum);
 
 		lblLückenfüller = new JLabel("");
 		panel_4.add(lblLückenfüller);
@@ -147,7 +148,7 @@ public class Statistik {
 		panel_1.setLayout(null);
 
 		lblKurzübersicht = new JLabel(
-				"<html><body><u>Kurz\u00FCbersicht:</></body></html>");
+				"<html><body><u>Kurz\u00FCbersicht:</u></body></html>");
 		lblKurzübersicht.setFont(new Font("Tahoma", Font.BOLD, 12));
 		lblKurzübersicht.setBounds(73, 0, 96, 14);
 		panel_1.add(lblKurzübersicht);
