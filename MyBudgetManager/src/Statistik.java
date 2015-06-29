@@ -79,7 +79,8 @@ public class Statistik {
 	private JLabel lblEinnahmen;
 	private JLabel lblAusgaben;
 	private JLabel lblSaldo;
-	private JLabel lblBuchungswert;
+	private JLabel lblBuchungswert_gesamt;
+	private JLabel lblBuchungswert_detail;
 	private JLabel lblEinnhamenwert;
 	private JLabel lblAusgabenwert;
 	private JLabel lblSaldowert;
@@ -109,7 +110,7 @@ public class Statistik {
 
 		panel = new JPanel();
 		Statistic.getContentPane().add(panel, BorderLayout.NORTH);
-		panel.setPreferredSize(new Dimension(0, 180));
+		panel.setPreferredSize(new Dimension(0, 185));
 		panel.setLayout(new BorderLayout(0, 0));
 
 		panel_3 = new JPanel();
@@ -125,11 +126,11 @@ public class Statistik {
 		panel_4 = new JPanel();
 		panel.add(panel_4, BorderLayout.NORTH);
 		panel_4.setLayout(new GridLayout(2, 2));
-		
+
 		lblZeitraum = new JLabel("Zeitraum");
 		panel_4.add(lblZeitraum);
 		lblZeitraum.setFont(new Font("Tahoma", Font.BOLD, 13));
-		
+
 		lblLückenfüller = new JLabel("");
 		panel_4.add(lblLückenfüller);
 
@@ -142,48 +143,54 @@ public class Statistik {
 
 		panel_1 = new JPanel();
 		panel.add(panel_1, BorderLayout.EAST);
-		panel_1.setPreferredSize(new Dimension(270, 180));
+		panel_1.setPreferredSize(new Dimension(270, 185));
 		panel_1.setLayout(null);
 
-		lblKurzübersicht = new JLabel("Kurz\u00FCbersicht:");
+		lblKurzübersicht = new JLabel(
+				"<html><body><u>Kurz\u00FCbersicht:</></body></html>");
 		lblKurzübersicht.setFont(new Font("Tahoma", Font.BOLD, 12));
-		lblKurzübersicht.setBounds(73, 5, 96, 14);
+		lblKurzübersicht.setBounds(73, 0, 96, 14);
 		panel_1.add(lblKurzübersicht);
 
 		lblBuchungen = new JLabel("Buchungen:");
-		lblBuchungen.setBounds(10, 40, 74, 14);
+		lblBuchungen.setBounds(10, 30, 74, 14);
 		panel_1.add(lblBuchungen);
 
 		lblEinnahmen = new JLabel("Einnahmen:");
-		lblEinnahmen.setBounds(10, 70, 74, 14);
+		lblEinnahmen.setBounds(10, 65, 74, 14);
 		panel_1.add(lblEinnahmen);
 
 		lblAusgaben = new JLabel("Ausgaben:");
-		lblAusgaben.setBounds(10, 100, 74, 14);
+		lblAusgaben.setBounds(10, 95, 74, 14);
 		panel_1.add(lblAusgaben);
 
 		lblSaldo = new JLabel("Saldo:");
-		lblSaldo.setBounds(10, 135, 46, 14);
+		lblSaldo.setBounds(10, 125, 46, 14);
 		panel_1.add(lblSaldo);
 
-		lblBuchungswert = new JLabel("");
-		lblBuchungswert.setFont(new Font("Tahoma", Font.BOLD, 14));
-		lblBuchungswert.setBounds(94, 40, 150, 17);
-		panel_1.add(lblBuchungswert);
+		lblBuchungswert_gesamt = new JLabel("");
+		lblBuchungswert_gesamt.setFont(new Font("Tahoma", Font.BOLD, 13));
+		lblBuchungswert_gesamt.setBounds(94, 20, 160, 17);
+		panel_1.add(lblBuchungswert_gesamt);
+
+		lblBuchungswert_detail = new JLabel("");
+		lblBuchungswert_detail.setFont(new Font("Tahoma", Font.BOLD, 13));
+		lblBuchungswert_detail.setBounds(94, 38, 160, 17);
+		panel_1.add(lblBuchungswert_detail);
 
 		lblEinnhamenwert = new JLabel("");
 		lblEinnhamenwert.setFont(new Font("Tahoma", Font.BOLD, 14));
-		lblEinnhamenwert.setBounds(94, 70, 140, 14);
+		lblEinnhamenwert.setBounds(94, 64, 160, 14);
 		panel_1.add(lblEinnhamenwert);
 
 		lblAusgabenwert = new JLabel("");
 		lblAusgabenwert.setFont(new Font("Tahoma", Font.BOLD, 14));
-		lblAusgabenwert.setBounds(94, 100, 140, 14);
+		lblAusgabenwert.setBounds(94, 94, 160, 14);
 		panel_1.add(lblAusgabenwert);
 
 		lblSaldowert = new JLabel("");
 		lblSaldowert.setFont(new Font("Tahoma", Font.BOLD, 14));
-		lblSaldowert.setBounds(94, 135, 140, 14);
+		lblSaldowert.setBounds(94, 124, 160, 14);
 		panel_1.add(lblSaldowert);
 
 		panel_2 = new JPanel();
@@ -256,8 +263,10 @@ public class Statistik {
 	public void Init_Kurzübersicht() {
 		NumberFormat nf = NumberFormat.getInstance(new Locale("de", "DE"));
 		double i = 0, a = 0, e = 0;
-		lblBuchungswert.setText((size_Ausgaben + size_Einnahmen) + "   [Ein ("
-				+ size_Einnahmen + ") " + ", Aus (" + size_Ausgaben + ")]");
+		lblBuchungswert_gesamt.setText("Gesamt: "
+				+ (size_Ausgaben + size_Einnahmen));
+		lblBuchungswert_detail.setText("Ein (" + size_Einnahmen + ") "
+				+ ", Aus (" + size_Ausgaben + ")");
 		for (Posten p : budget.Geldvermögen) {
 			i += p.getBetrag();
 			if (p.getintern_Einnahme_Ausgabe() == 0)
@@ -1069,7 +1078,7 @@ public class Statistik {
 	public void Statistik_Manager(String selection, String Start, String End) {
 		Buchungen_ohne_Kontoeröffnung();
 		if ((Start != "0") && (End != "0")) {
-			lblZeitraum.setText("  Zeitraum:  "   + Start + " - " + End );
+			lblZeitraum.setText("  Zeitraum:  " + Start + " - " + End);
 			Init_Posten_Zeitraum(Start, End);
 			switch (selection) {
 			case "Kategorie_Kreisdiagramm":
