@@ -4,22 +4,28 @@ import java.util.Date;
  * Posten in der Budgetplanung
  */
 public class Posten {
+	
 	/**
-	 * Datum, wann der Posten verbucht wurde
+	 * Datum, wann der Posten verbucht wurde.
 	 */
 	private Date datum;
+	
 	/**
-	 * Kurze Beschreibung
+	 * Notiz, die bei der Eingabe vom Benutzer individuell eingegeben werden kann
+	 * und den Posten beschreiben soll.
 	 */
 	private String notiz;
+	
 	/**
-	 * Kurze Beschreibung
+	 * Bezeichnung, die die Kategorie der Einnahme/Ausgabe angibt.
 	 */
 	private String bezeichnung;
+	
 	/**
-	 * Hoehe des Postens
+	 * Betrag, der einmaligen Einnahme/Ausgabe
 	 */
 	private double betrag;
+	
 	/**
 	 * interner Wert für Ein-/Ausgabe
 	 */
@@ -28,12 +34,21 @@ public class Posten {
 	/**
 	 * Konstruktor
 	 * 
-	 * @param datum
-	 *            Datum, wann der Posten verbucht wurde
-	 * @param bezeichnung
-	 *            Kurze Beschreibung
-	 * @param betrag
-	 *            Hoehe des Postens
+	 * @param <datum>
+	 *            <Datum, wann der Posten verbucht wurde>
+	 *            
+	 * @param <bezeichnung>
+	 *            <Kurze Beschreibung in Form einer vordefinierten Kategorie>
+	 *            
+	 * @param <betrag>
+	 *            <Hoehe des Postens>
+	 * 
+	 * @param <notiz>
+	 * 			  <Kurze Beschreib, die der Benutzer individuell angeben kann>
+	 * 
+	 * @param intern_Einnahme_Ausgabe
+	 * 			  Dieser Wert ist entwerder eine 0 oder eine 1. Die 0 steht für Einnahme und die 1 für Ausgabe.  
+	 *    
 	 */
 	public Posten(Date datum,String notiz, String bezeichnung, double betrag, int intern_Einnahme_Ausgabe) {
 		this.bezeichnung = bezeichnung;
@@ -44,21 +59,36 @@ public class Posten {
 	}
 
 	public Date getDatum() {
-		return datum;
+		/**
+		 *@return <Gibt das Datum der Buchung zurück>
+		 */
+		return datum; 
 	}
 	public String getnotiz() {
+		/**
+		 *@return <Gibt die eingegebene Notzi zurück>
+		 */
 		return notiz;
 	}
 
 	public String getBezeichnung() {
+		/**
+		 *@return <Gibt die ausgewählte Kategorie zurück>
+		 */
 		return bezeichnung;
 	}
 
 	public double getBetrag() {
+		/**
+		 *@return <Gibt den eingegebenen Geldbetrag zurück>
+		 */
 		return betrag;
 	}
 	
 	public int getintern_Einnahme_Ausgabe() {
+		/**
+		 *@return <Gibt intern eine 0 oder eine 1 zurück>
+		 */
 		return intern_Einnahme_Ausgabe;
 	}
 }
