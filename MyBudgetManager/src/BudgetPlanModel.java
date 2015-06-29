@@ -19,7 +19,7 @@ import com.opencsv.CSVReader;
  * Hierbei handelt es sich um die 4 @param <datum,notiz,bezeichnung,betrag,intern_Einnahme_Ausgabe> (nähere Beschreibung unter Posten), 
  * die durch den Benutzer in der Gui @class <BudgetPlanGUI> eingelesen werden.
  * 
- * @param <Geldvermögen><>
+ * 
  */
 public class BudgetPlanModel {
 	List<Posten> Geldvermögen;

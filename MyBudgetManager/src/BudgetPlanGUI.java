@@ -1,6 +1,5 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -28,7 +27,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.GroupLayout.Alignment;
@@ -38,24 +36,10 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
 import java.io.*; 
-import java.net.URL;
-import java.awt.*; 
+
 
 import javax.swing.*; 
 
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.MouseMotionAdapter;
-import java.awt.event.MouseEvent;
-
-import javax.swing.JSpinner;
-import javax.swing.border.MatteBorder;
-
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
-import org.jfree.data.general.DefaultPieDataset;
-import java.awt.Window.Type;
 
 
 /**
@@ -70,27 +54,13 @@ public class BudgetPlanGUI extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	
-	//	/**
-//	 * Tabelle mit Uebersicht der Ausgaben
-//	 */
-//	private JTable table;
-//	/**
-//	 * Scrollelemente, das die Tabelle umfasst
-//	 */
-//	private JScrollPane scrollpane;
-//	/**
-//	 * Schaltflaeche, die beim Klicken einen Dialog anzeigt
-//	 */
-//	private JButton button;
-	
-	
-	
 	
 	/**
 	/* Modell der Daten
 	 */
 	private BudgetPlanModel budget;
 	//panel Headline:	
+
 	private JPanel panel;
 	private JLabel lblKontostandsanzeige,lblKontostand,lblDatum;
 	
@@ -150,36 +120,48 @@ public class BudgetPlanGUI extends JFrame {
 	/**
 	 * 
 	 * 
-	 * 
-	 * 
-	 * 
+	 * Abschnitt in dem vorgefertige Strings abgespeichert werden
 	 * 
 	 * 
 	 * 
 	 */
 	
 	//Fehlermeldungen als vorgeschriebene Strings
-
+	/**
+	 * 			Nachricht bei einer falschen Betragseingabe
+	 */
 	String falsche_betragseingabe = "Falsche Betragseingabe. \n"
 			+ "Formathinweis: \n"
 			+ "- Bitte verwenden Sie nur Zahlen \n"
 			+ "- Benutzen Sie bitte Punkt statt Komma \n"
 			+ "- Achten Sie bitte auf die evtl. fehlenden zwei Nachkommastellen \n"
 			+ "- Benutzen Sie bitte kein Negativzeichen";
-
+	/**
+	 * 		Nachricht bei fehlender csv Datei	
+	 */
 	String csv_nichtgefunden = "Die Datei data/budget.csv wurde nicht gefunden!";
-
+	/**
+	 * 		Nachrichtentext, wenn die csv Datein probleme hat 	
+	 */
 	String csv_problemöffnen = "Probleme beim Oeffnen der Datei data/budget.csv!";
-
+	/**
+	 * 		Nachrichtentext bei falscher Datumsanzeige	
+	 */
 	String falsches_datum = "Falsche Datumseingabe. \n"
 			+ "Formathinweis: TT.MM.JJJJ";
-
+	/**
+	 * 		Nachricht beim Nichtauswählen der Kategorie	
+	 */
 	String kategorie = "Bitte wählen sie eine Kategorie aus.";
-	
+	/**
+	 * 		Nachrichtentext für den Taschenrechner
+	 */
 	String taschenrechner = "Taschenrechner konnte nicht aufgerufen worden.";
 	
 	//Hilfe Meldungen als vorgeschriebene Strings
-	
+	/**
+	 * 		Nachrichtentext für den Hilfebutton im Panel Ausgaben	
+	 */
 	String hilfe_a = "Hilfe \n \n"
 			+ "- Bei den Ausgaben ist es Ganz wichtig den Betrag in folgender Form anzugeben: \n  \n"
 			+ "               X.XX Euro \n \n"
@@ -188,7 +170,9 @@ public class BudgetPlanGUI extends JFrame {
 			+ "- Durch die Wahl eines Dauerauftrags werden die Aufträge nicht nur einmal sondern monatlich gebucht.\n "
 			+ " Dadurch müssen sie regelmäßig anfallende Ausgaben nicht jeden Monat manuel eingeben. \n\n"
 			+ "- In der Beschreibung können Angaben zur eigenen Buchung gemacht werden. \n  Dabei steht Ihnen frei, wie die Eingabe aussieht oder ob sie überhaupt gemacht wird." ;
-
+	/**
+	 * 		Nachrichtentext für den Hilfebutton im Panel Einnahmen	
+	 */
 	String hilfe_e = "Hilfe \n \n"
 			+ "- Bei den Einnahmen ist es Ganz wichtig den Betrag in folgender Form anzugeben: \n  \n"
 			+ "               X.XX Euro \n \n"
@@ -199,7 +183,9 @@ public class BudgetPlanGUI extends JFrame {
 			+ "- In der Beschreibung können Angaben zur eigenen Buchung gemacht werden. \n  Dabei steht Ihnen frei, wie die Eingabe aussieht oder ob sie überhaupt gemacht wird." ;
 	
 	//Willkommensmeldung als vorgeschriebene Strings
-	
+	/**
+	 * 		Willkommensnachricht, die sich öffnet, wenn ein neues Konto geöffnet wird	
+	 */
 	String willkommen = "Willkommen bei MyBudgetManager! \n"
 			+ "Um das Programm anwenden zu können, legen Sie einen Startwert Ihres Kontos fest. \n"
 			+ "Befindet sich dieser im positiven Breich, tätigen Sie ihre Eröffnungsbuchung unter dem Menüunterpunkt: Einnahmen. \n"
@@ -209,14 +195,22 @@ public class BudgetPlanGUI extends JFrame {
 			+ "";
 	
 	//Dialoge als vorgeschriebene Strings
-	
+	/**
+	 * 		Nachricht bei Ausgabenbuchung
+	 */
 	String buchung_a = "Ausgabe erfolgreich gebucht.";
-	
+	/**
+	 * 		Nachricht bei der Einnahmenbuchung
+	 */
 	String buchung_e = "Einnahme erfolgreich gebucht.";
-	
+	/**
+	 * 		Nachricht beim Kontolöschen	
+	 */
 	String konto_l = "Möchten Sie wirklich ihr Konto löschen? \n"
 			+ "Sämtliche Daten gehen dabei verloren!";
-	
+	/**
+	 * 			Nachricht beim Klicken des Infobuttons
+	 */
 	String info = "MyBudgetManager (Version 1.0.2 beta) 2015 \n \n"
 			+ "Programmierprojekt SS2015 \n Leitung: Dr. Annette Bieniusa \n "
 			+ "Fachbereich Informatik \n Lehrstuhl AG Softwaretechnik \n \n "
@@ -226,19 +220,24 @@ public class BudgetPlanGUI extends JFrame {
 			+ "die im Zusammenhang mit der Verwendung der Software entstehen.";
 	
 	
+	
+	
+	
+	
 	/**
 	 * Konstruktor fuer die GUI.
 	 * 
 	 * Hier wird das Hauptfenster initialisiert und aktiviert.
 	 * 
-	 * @param budget
-	 *            Modell der Daten
+	 * @param <budget>
+	 *            <Modell der Daten>
 	 */
 	
 	
 	public BudgetPlanGUI(BudgetPlanModel budget) {
 		//Name im Fenster
 		super("MyBudgetManager");
+		setBackground(new Color(135, 206, 235));
 		//Setzt das Icon des Programms
 		 try {
 		     setIconImage(getToolkit().getImage("src/img/Money.png"));
@@ -271,32 +270,35 @@ public class BudgetPlanGUI extends JFrame {
 
 	/**
 	 * 
-	 * 
+	 * Die Methoden des Budgetplan werden hier festgelegt
 	 * 
 	 * @param <budget>
-	 *            <Modell der Daten>
-	 *            
+	 *            <Modell der Daten>       
 	 * @param <Geldvermögen>
-	 * 			  <>
+	 * 			  <Arraylist mit benötigten Daten>
+	 * 
+	 * 
+	 * 
 	 */
 
 
 
 	public void Anfangsabfrage(){
 		
+		// Infomessage, die gezeigt wird, wenn die Csv Datei leer ist und von einem neuen Kontostart zu rechnen ist. 
 		if (budget.Geldvermögen.size() == 0) {
 			JOptionPane.showMessageDialog(null, willkommen ,"Willkommen bei MyBudgetManager", JOptionPane.INFORMATION_MESSAGE);
-			
+			// Deaktivierung von Zugriffsmöglichkeiten
 			tabbedPane.setEnabledAt(0, false);
 			tabbedPane.setEnabledAt(3, false);
 			tabbedPane.setEnabledAt(4, false);
 			tabbedPane.setEnabledAt(5, false);
 			tabbedPane.setSelectedIndex(2);
-			
+			//ComboBox nur mit dem Startwert
 			comboBox_Ausgaben.insertItemAt("Kontoeröffnung", 1);
 			comboBox_Ausgaben.setSelectedIndex(1);
 			comboBox_Ausgaben.setEnabled(false);
-			
+			//ComboBox nur mit dem Startwert
 			comboBox_Einnahmen.insertItemAt("Kontoeröffnung", 1);
 			comboBox_Einnahmen.setSelectedIndex(1);
 			comboBox_Einnahmen.setEnabled(false);
@@ -306,7 +308,7 @@ public class BudgetPlanGUI extends JFrame {
 			}
 		
 	}
-	
+	//Auflösen der Deaktivierung 
 	public void Aktivierung(){
 		tabbedPane.setEnabledAt(0, true);
 		tabbedPane.setEnabledAt(3, true);
@@ -384,12 +386,18 @@ public class BudgetPlanGUI extends JFrame {
   			writer.close();
   			Clear_Ausgaben();
   			JOptionPane.showMessageDialog(null, buchung_a, "Ausgabenbuchung", JOptionPane.INFORMATION_MESSAGE);
-  			Init_Kontostand();
+  			Init_Kontostand(0);
   			
+  			/**
+  			 *@exception <FileNotFoundException ex>  @throws <Ausgabe, dass die csv Datei nicht da ist>
+  			 */
   		} catch (FileNotFoundException ex) {
   			System.err
   					.println(csv_nichtgefunden); 
   			System.exit(1);
+  			/**
+  			 *@exception <IOException e>  @throws <Ausgabe, dass die csv Datei probleme hat>
+  			 */
   		} catch (IOException ex) {
   			System.err
   					.println(csv_problemöffnen);
@@ -397,24 +405,31 @@ public class BudgetPlanGUI extends JFrame {
   		} 
 			
 		} 
-
+		/**
+		 *@exception <ParseException e>  @throws <Falsche Datumseingabe>
+		 */
 		catch (ParseException e) {
 			JOptionPane.showMessageDialog(null, falsches_datum, "Fehler", JOptionPane.ERROR_MESSAGE); 
 			txtTtmmjjjj_Ausgaben.setText(null);
 			}
 					
-		
+		/**
+		 *@exception <NumberFormatException e>  @throws <Ausgabe, dass es eine fasche Betragseingabe gab>
+		 */
 		catch ( NumberFormatException e)
 		{JOptionPane.showMessageDialog(null, falsche_betragseingabe, "Fehler", JOptionPane.ERROR_MESSAGE); 
 		textField_Ausgaben.setText(null);
 	}
-		
+		/**
+		 *@exception <IndexOutofBoundsException e>  @throws <Ausgabe, dass eine Kategorie gewählt werden soll>
+		 */
 		catch ( IndexOutOfBoundsException e)
 		{JOptionPane.showMessageDialog(null, kategorie, "Fehler", JOptionPane.ERROR_MESSAGE); 
 	
 		}
 
 	}
+	//Methode, die die Daten der Ausgabe löscht
 	  public void Clear_Ausgaben() {
 			textField_Ausgaben.setText(null);
 			txtTtmmjjjj_Ausgaben.setText(new SimpleDateFormat("dd.MM.yyyy")
@@ -423,6 +438,7 @@ public class BudgetPlanGUI extends JFrame {
 			textFieldNotiz_Ausgabe.setText(null);
 		}
 	  
+	  // Methode, die die Kontoübersicht initiiert
 	  public void Init_Kontoübersicht(){
 		  Object[][] data = new Object[budget.Geldvermögen.size()][5];		
 			int i = 0;	
@@ -448,8 +464,8 @@ public class BudgetPlanGUI extends JFrame {
 			table.setAutoCreateRowSorter(true);
 			scrollPane.setViewportView(table);
 	  }
-	  
-	  public void Init_Kontostand(){
+	  // Methode, die den Kontostand initiiert 
+	  public void Init_Kontostand(int k){
 		  NumberFormat nf = NumberFormat.getInstance(new Locale("de", "DE"));
 			double i = 0;
 			budget.Geldvermögen.clear();
@@ -469,15 +485,23 @@ public class BudgetPlanGUI extends JFrame {
 				    
 				}
 				reader.close();
-
+				/**
+	  			 *@exception <FileNotFoundException e>  @throws <Ausgabe, dass die csv Datei nicht da ist>
+	  			 */
 			} catch (FileNotFoundException e) {
 				System.err
 						.println(csv_nichtgefunden);
 				System.exit(1);
+				/**
+	  			 *@exception <IOException e>  @throws <Ausgabe, dass es mit der Csv Datein ein Problem gibt>
+	  			 */
 			} catch (IOException e) {
 				System.err
 						.println(csv_problemöffnen);
 				System.exit(1);
+				/**
+	  			 *@exception <ParseException e>  @throws <Ausgabe, dass die Datein nicht eingelesen werden kann>
+	  			 */
 			} catch (ParseException e) {
 				System.err
 						.println("Formatfehler: Die Datei konnte nicht eingelesen werden!");
@@ -502,6 +526,12 @@ public class BudgetPlanGUI extends JFrame {
 			else {
 				lblKontostand.setForeground(Color.RED);
 			}
+			
+			//Warnungen, wenn der Kontostand sehr niedrig ist. Der Startwert ist davon ausgeschlossen
+			
+			if (k == 1){
+			
+			if (budget.Geldvermögen.size()>= 2){
 			if (i<20 && i>=0 && budget.Geldvermögen.size() != 0)
 				JOptionPane.showMessageDialog(null, "Ihr Kontostand ist sehr gering.\n"
 						+ "Bitte achten Sie auf Ihre Ausgaben.", "Kontostandswarnung", JOptionPane.WARNING_MESSAGE);
@@ -509,7 +539,8 @@ public class BudgetPlanGUI extends JFrame {
 				JOptionPane.showMessageDialog(null, "Ihr Kontostand befindet sich im negativen Bereich.\n"
 						+ "Bitte achten Sie auf Ihre Ausgaben.", "Kontostandswarnung", JOptionPane.WARNING_MESSAGE);
 			
-			
+			}
+			}
 			Init_Kontoübersicht();
 			}
 	  
@@ -576,12 +607,20 @@ public class BudgetPlanGUI extends JFrame {
 	  			writer.close();
 	  			Clear_Einnahmen();
 	  			JOptionPane.showMessageDialog(null, buchung_e, "Einnahmenbuchung", JOptionPane.INFORMATION_MESSAGE);
-	  			Init_Kontostand();
+	  			Init_Kontostand(1);
 	  			
+	  			
+	  			
+	  			/**
+	  			 *@exception <FileNotFoundException ex>  @throws <Ausgabe, dass die csv Datei nicht da ist>
+	  			 */
 	  		} catch (FileNotFoundException ex) {
 	  			System.err
 	  					.println(csv_nichtgefunden);
 	  			System.exit(1);
+	  			/**
+	  			 *@exception <IOException ex>  @throws <Ausgabe, dass die csv Datei Probleme hat>
+	  			 */
 	  		} catch (IOException ex) {
 	  			System.err
 	  					.println(csv_problemöffnen);
@@ -589,16 +628,23 @@ public class BudgetPlanGUI extends JFrame {
 	  		} 
 				
 			}
+		  /**
+			 *@exception <ParseException e>  @throws <Ausgabe, dass das Datum falsch eingegeben wurde>
+			 */
 			catch (ParseException e) {
 				JOptionPane.showMessageDialog(null, falsches_datum, "Fehler", JOptionPane.ERROR_MESSAGE); 
 				txtTtmmjjjj_Einnahmen.setText(null);
 			}
-			
+		  /**
+			 *@exception <NumberFormatException e>  @throws <Ausgabe, dass es einen Fehler bei der Betrageingabe gab>
+			 */
 			catch ( NumberFormatException e)
 			{JOptionPane.showMessageDialog(null, falsche_betragseingabe, "Fehler", JOptionPane.ERROR_MESSAGE); 
 			textField_Einnahmen.setText(null);
 			}
-			
+		  /**
+			 *@exception <IndexOutOfBoundsException e>  @throws <Ausgabe, dass ein Fehler bei der Kategorie gab>
+			 */
 			catch ( IndexOutOfBoundsException e)
 			{JOptionPane.showMessageDialog(null, kategorie, "Fehler", JOptionPane.ERROR_MESSAGE); 
 		
@@ -606,7 +652,7 @@ public class BudgetPlanGUI extends JFrame {
 		}
 	  
 		  
-	  
+	  //Die Felder der Einnahmen werden hier gelöscht
 	  public void Clear_Einnahmen(){
 		  textField_Einnahmen.setText(null);
 			txtTtmmjjjj_Einnahmen.setText(new SimpleDateFormat("dd.MM.yyyy")
@@ -627,7 +673,7 @@ public class BudgetPlanGUI extends JFrame {
 		 */
 		
 	public void Grafikmodellauswahl(String selection) {
-		Init_Kontostand();
+		Init_Kontostand(0);
 		if (rdbtnIndividualZeitraum.isSelected() == true) {
 			if ((Statistik_CheckAuswahlDatum() == true)
 					&& (Statistik_CheckDateDiff() == true)) {
@@ -722,6 +768,7 @@ public class BudgetPlanGUI extends JFrame {
 
 		
 		panel = new JPanel();
+		panel.setBackground(new Color(255, 255, 255));
 		getContentPane().add(panel, BorderLayout.NORTH);
 		panel.setPreferredSize(new Dimension(0,80));
 		panel.setLayout(null);
@@ -774,6 +821,7 @@ public class BudgetPlanGUI extends JFrame {
 		 * 
 		 */
 		panel_1 = new JPanel();
+		panel_1.setBackground(new Color(255, 255, 255));
 		getContentPane().add(panel_1, BorderLayout.SOUTH);
 		panel_1.setPreferredSize(new Dimension(0,50));
 		
@@ -786,6 +834,7 @@ public class BudgetPlanGUI extends JFrame {
 		btnSchließen = new JButton("Schlie\u00DFen");
 		
 		btnKontoLöschen = new JButton("Konto l\u00F6schen");
+		btnKontoLöschen.setBackground(UIManager.getColor("CheckBox.shadow"));
 		
 		
 		gl_panel_1 = new GroupLayout(panel_1);
@@ -818,7 +867,7 @@ public class BudgetPlanGUI extends JFrame {
 		/**
 		 * 
 		 * 
-		 * Panel für Hauptmenue
+		 * Panel für das Hauptmenü
 		 * 
 		 * 
 		 * 
@@ -830,6 +879,7 @@ public class BudgetPlanGUI extends JFrame {
 		 */
 		
 		tabbedPane = new JTabbedPane(JTabbedPane.LEFT);
+		tabbedPane.setBackground(new Color(135, 206, 235));
 		getContentPane().add(tabbedPane, BorderLayout.CENTER);
 		
 		panel_Konto = new JPanel();
@@ -876,10 +926,11 @@ public class BudgetPlanGUI extends JFrame {
 		
 		// Tabelle mit Uebersicht der Ausgaben und Einnahmen
 		panel_Kontouebersicht = new JPanel();
+		panel_Kontouebersicht.setBackground(new Color(135, 206, 235));
 		panel_Konto.add(panel_Kontouebersicht, BorderLayout.NORTH);
 		panel_Kontouebersicht.setPreferredSize(new Dimension(0, 40));
 		
-		lblKontouebersicht = new JLabel("Konto\u00FCbersicht:                                                                  ");
+		lblKontouebersicht = new JLabel("Konto\u00FCbersicht:                                                                    ");
 		panel_Kontouebersicht.add(lblKontouebersicht);
 		lblKontouebersicht.setFont(new Font("Tahoma", Font.BOLD, 18));
 		
@@ -1183,8 +1234,8 @@ public class BudgetPlanGUI extends JFrame {
 	 */
 		public void addBehavior() {
 			Anfangsabfrage();
-			Init_Kontostand();
-			
+			Init_Kontostand(0);
+			//Button der die Kontoübersicht druckt. 
 			btnKontoDrucken.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 				try {
@@ -1197,6 +1248,7 @@ public class BudgetPlanGUI extends JFrame {
 				}
 	        });
 			
+			//Button der die Ausgaben resettet und dabei die Methoden Clear_Ausgaben verwendet.
 			btnReset_Ausgaben.addActionListener(new ActionListener() {
 	        	public void actionPerformed(ActionEvent arg0) {
 	        			Clear_Ausgaben();
@@ -1204,7 +1256,7 @@ public class BudgetPlanGUI extends JFrame {
 	        	
 	        });
 			
-		
+			//Button der die Ausgaben bucht und dabei die Methode Checkdata_Ausgaben verwendet. 
 			btnAusgabenBuchen.addActionListener(new ActionListener() {
 	        	public void actionPerformed(ActionEvent arg0) {
 	        		
@@ -1216,14 +1268,15 @@ public class BudgetPlanGUI extends JFrame {
 	        	
 	        });
 			
-			
+			//Button der die Einnahmen resettet und dabei die Methoden Clear_Ausgaben verwendet.
 			btnReset_Einnahmen.addActionListener(new ActionListener() {
 	        	public void actionPerformed(ActionEvent arg0) {
 	        		Clear_Einnahmen();	
 	        		}
 	        	
 	        });
-			 
+			
+			//Button der die Einnahmen bucht und dabei die Methode CheckData_Einnahmen verwendet
 			btnEinnahmenBuchen.addActionListener(new ActionListener() {
 		        	public void actionPerformed(ActionEvent arg0) {
 		        		
@@ -1235,72 +1288,74 @@ public class BudgetPlanGUI extends JFrame {
 		        	
 		        });
 			
-			
-		rdbtnGesamtzeitraum.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (rdbtnIndividualZeitraum.isSelected() == true) {
-					rdbtnGesamtzeitraum.setSelected(true);
-					rdbtnIndividualZeitraum.setSelected(false);
-					textField_Statistik_Startwert.setEnabled(false);
-					textField_Statistik_Startwert.setText(null);
-					textField_Statistik_Endwert.setEnabled(false);
-					textField_Statistik_Endwert.setText(null);
-				}
-				else
+			//Radiobutton der den gesamten Zeitraum nimmt
+			rdbtnGesamtzeitraum.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (rdbtnIndividualZeitraum.isSelected() == true) {
+						rdbtnGesamtzeitraum.setSelected(true);
+						rdbtnIndividualZeitraum.setSelected(false);
+						textField_Statistik_Startwert.setEnabled(false);
+						textField_Statistik_Startwert.setText(null);
+						textField_Statistik_Endwert.setEnabled(false);
+						textField_Statistik_Endwert.setText(null);
+					}
+					else
 					rdbtnGesamtzeitraum.setSelected(true);
 
-			}
-		});
+					}
+				});
 			
-		
-		rdbtnIndividualZeitraum.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (rdbtnGesamtzeitraum.isSelected() == true) {
-					rdbtnIndividualZeitraum.setSelected(true);
-					textField_Statistik_Startwert.setEnabled(true);
-					textField_Statistik_Endwert.setEnabled(true);
-					rdbtnGesamtzeitraum.setSelected(false);
-				}
-				else
-					rdbtnIndividualZeitraum.setSelected(true);
+			//Radiobutton der einen bestimmten Zeitraum nimmt
+			rdbtnIndividualZeitraum.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					if (rdbtnGesamtzeitraum.isSelected() == true) {
+						rdbtnIndividualZeitraum.setSelected(true);
+						textField_Statistik_Startwert.setEnabled(true);
+						textField_Statistik_Endwert.setEnabled(true);
+						rdbtnGesamtzeitraum.setSelected(false);
+					}
+					else
+						rdbtnIndividualZeitraum.setSelected(true);
 
-			}
-		});
+					}
+				});
 		
-		btnStatistikanzeigen.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				switch (comboBoxStatistikModelle.getSelectedIndex()) {
-				case 0:
-					Grafikmodellauswahl("Kategorie_Kreisdiagramm");
-					break;
-				case 1:
-					Grafikmodellauswahl("Kategorie_Balkendiagramm");
-					break;
-				case 2:
-					Grafikmodellauswahl("GesamtKategorie_Balkendiagramm");
-					break;
-				case 3:
-					Grafikmodellauswahl("Zeit_Kombidiagramm_Einnahmen");
-					break;
-				case 4:
-					Grafikmodellauswahl("Zeit_Kombidiagramm_Ausgaben");
-					break;
-				case 5:
-					Grafikmodellauswahl("Vergleich_Balkendiagramm");
-					break;
-				case 6:
-					Grafikmodellauswahl("Zeit_Liniendiagramm_Gesamt");
-					break;
-				case 7:
-					Grafikmodellauswahl("Zeit_Liniendiagramm_Differenz_Gesamt");
-					break;
-				case 8:
-					Grafikmodellauswahl("Kategorie_Wasserfalldiagramm");
-					break;
+			// Button, der die Statistik anzeigt
+			btnStatistikanzeigen.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					switch (comboBoxStatistikModelle.getSelectedIndex()) {
+						case 0:
+							Grafikmodellauswahl("Kategorie_Kreisdiagramm");
+							break;
+						case 1:
+							Grafikmodellauswahl("Kategorie_Balkendiagramm");
+							break;
+						case 2:
+							Grafikmodellauswahl("GesamtKategorie_Balkendiagramm");
+							break;
+						case 3:
+							Grafikmodellauswahl("Zeit_Kombidiagramm_Einnahmen");
+							break;
+						case 4:
+							Grafikmodellauswahl("Zeit_Kombidiagramm_Ausgaben");
+							break;
+						case 5:
+							Grafikmodellauswahl("Vergleich_Balkendiagramm");
+							break;
+						case 6:
+							Grafikmodellauswahl("Zeit_Liniendiagramm_Gesamt");
+							break;
+						case 7:
+							Grafikmodellauswahl("Zeit_Liniendiagramm_Differenz_Gesamt");
+							break;
+						case 8:
+							Grafikmodellauswahl("Kategorie_Wasserfalldiagramm");
+							break;
+					}
 				}
-			}
-		});
+			});
 			
+			//Button der das Programm schließt
 			btnSchließen.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					setVisible(false);
@@ -1310,7 +1365,7 @@ public class BudgetPlanGUI extends JFrame {
 				}
 			});
 	
-		
+			//Button der das Konto schließt
 			btnKontoLöschen.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					//, JOptionPane.YES_NO_OPTION);
@@ -1325,10 +1380,16 @@ public class BudgetPlanGUI extends JFrame {
 			  			writer.writeNext(null);;
 			  			writer.close();
 			  			
+			  		/**
+			  		*@exception <FileNotFoundException ex>  @throws <Ausgabe, dass die csv Datei nicht da ist>
+			  		*/		
 			  		} catch (FileNotFoundException ex) {
 			  			System.err
 			  					.println("csv_nichtgefunden");
 			  			System.exit(1);
+			  		/**
+			  		*@exception <IOException ex>  @throws <Ausgabe, dass es Probleme beim Öffnen der csv Datei gab>
+			  		*/
 			  		} catch (IOException ex) {
 			  			System.err
 			  					.println("csv_problemöffnen");
@@ -1336,14 +1397,14 @@ public class BudgetPlanGUI extends JFrame {
 			  		} 
 			  		
 			  		budget.Geldvermögen.clear();
-			  		Init_Kontostand();
+			  		Init_Kontostand(0);
 			  		Anfangsabfrage();
 								  		
 				}
 				}
 			});
 			
-			
+			//Button der den Taschenrechner auslöst
 			btnTaschenrechner.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent arg0) {
 					try {
@@ -1356,7 +1417,7 @@ public class BudgetPlanGUI extends JFrame {
 
 			
 			
-			
+			//Button der eine Infoanzeige auslöst
 			btnInfo.addActionListener(new ActionListener() {
 				public void actionPerformed(ActionEvent e) {
 					 

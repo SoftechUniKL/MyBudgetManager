@@ -33,21 +33,7 @@ public class Posten {
 
 	/**
 	 * Konstruktor
-	 * 
-	 * @param <datum>
-	 *            <Datum, wann der Posten verbucht wurde>
-	 *            
-	 * @param <bezeichnung>
-	 *            <Kurze Beschreibung in Form einer vordefinierten Kategorie>
-	 *            
-	 * @param <betrag>
-	 *            <Hoehe des Postens>
-	 * 
-	 * @param <notiz>
-	 * 			  <Kurze Beschreib, die der Benutzer individuell angeben kann>
-	 * 
-	 * @param intern_Einnahme_Ausgabe
-	 * 			  Dieser Wert ist entwerder eine 0 oder eine 1. Die 0 steht für Einnahme und die 1 für Ausgabe.  
+	 
 	 *    
 	 */
 	public Posten(Date datum,String notiz, String bezeichnung, double betrag, int intern_Einnahme_Ausgabe) {
