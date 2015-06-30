@@ -232,6 +232,7 @@ public class BudgetPlanGUI extends JFrame {
 			+ "Technische Universität Kaiserslautern \n \u00a9 copyright 2015 \n "
 			+ "Die Programmierer übernehmen keine Haftung für enthaltene Fehler oder für Schäden, \n "
 			+ "die im Zusammenhang mit der Verwendung der Software entstehen.";
+	private JLabel lblKontostandWarnung;
 	
 	
 	
@@ -540,6 +541,20 @@ public class BudgetPlanGUI extends JFrame {
 			else {
 				lblKontostand.setForeground(Color.RED);
 			}
+			//Warnung, wenn der Kontostand sehr niedrig ist
+			
+			if (budget.Geldvermögen.size()>=2){
+			if (i<20 && i>=0 && budget.Geldvermögen.size() != 0) {
+				lblKontostandWarnung.setText("");
+				lblKontostandWarnung.setBackground(new Color(240, 240, 240));
+
+			} else {
+				lblKontostandWarnung
+						.setText("<html><body><center><u>ACHTUNG!</u></center></body></html>");
+				lblKontostandWarnung.setBackground(new Color(250, 250, 120));
+				lblKontostandWarnung.setOpaque(true);
+			}
+			}
 			
 			//Warnungen, wenn der Kontostand sehr niedrig ist. Der Startwert ist davon ausgeschlossen
 			
@@ -557,6 +572,7 @@ public class BudgetPlanGUI extends JFrame {
 			}
 			Init_Kontoübersicht();
 			Statistik_Warnung();
+			
 			}
 	  
 	  
@@ -805,6 +821,8 @@ public class BudgetPlanGUI extends JFrame {
 			lblStatistikWarnung.setOpaque(true);
 		}
 	}
+	
+	
 		
 	/**
 	 * 
@@ -860,6 +878,11 @@ public class BudgetPlanGUI extends JFrame {
 		lblDatum = new JLabel("Datum: " + new SimpleDateFormat("E, dd.MM.yyyy").format(new Date()));
 		lblDatum.setBounds(10, 49, 142, 14);
 		panel.add(lblDatum);
+		
+		//In Init Kontostnd wird der Button befüllt
+		lblKontostandWarnung = new JLabel("");
+		lblKontostandWarnung.setBounds(588, 24, 142, 46);
+		panel.add(lblKontostandWarnung);
 
 		/**
 		 * 
@@ -882,13 +905,18 @@ public class BudgetPlanGUI extends JFrame {
 		
 		
 		btnInfo = new JButton("Info");
+		btnInfo.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/Info.png")));
 				
 		btnTaschenrechner = new JButton("Taschenrechner");
+		btnTaschenrechner.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/calculator.png")));
 		
 		btnSchließen = new JButton("Schlie\u00DFen");
+		btnSchließen.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/close.png")));
 		
-		btnKontoLöschen = new JButton("Konto l\u00F6schen");
-		btnKontoLöschen.setBackground(UIManager.getColor("CheckBox.shadow"));
+		btnKontoLöschen = new JButton("");
+		btnKontoLöschen.setFont(btnKontoLöschen.getFont().deriveFont(btnKontoLöschen.getFont().getStyle() & ~Font.BOLD & ~Font.ITALIC));
+		btnKontoLöschen.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/trash.png")));
+		btnKontoLöschen.setBackground(Color.WHITE);
 		
 		
 		gl_panel_1 = new GroupLayout(panel_1);
@@ -896,10 +924,10 @@ public class BudgetPlanGUI extends JFrame {
 			gl_panel_1.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel_1.createSequentialGroup()
 					.addContainerGap()
-					.addComponent(btnKontoLöschen)
-					.addGap(45)
+					.addComponent(btnKontoLöschen, GroupLayout.PREFERRED_SIZE, 91, GroupLayout.PREFERRED_SIZE)
+					.addGap(46)
 					.addComponent(btnTaschenrechner)
-					.addPreferredGap(ComponentPlacement.RELATED, 354, Short.MAX_VALUE)
+					.addPreferredGap(ComponentPlacement.RELATED, 267, Short.MAX_VALUE)
 					.addComponent(btnSchließen)
 					.addGap(27)
 					.addComponent(btnInfo)
@@ -908,12 +936,12 @@ public class BudgetPlanGUI extends JFrame {
 		gl_panel_1.setVerticalGroup(
 			gl_panel_1.createParallelGroup(Alignment.TRAILING)
 				.addGroup(gl_panel_1.createSequentialGroup()
-					.addContainerGap(16, Short.MAX_VALUE)
+					.addContainerGap(GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
 					.addGroup(gl_panel_1.createParallelGroup(Alignment.BASELINE)
 						.addComponent(btnInfo)
-						.addComponent(btnTaschenrechner)
 						.addComponent(btnSchließen)
-						.addComponent(btnKontoLöschen))
+						.addComponent(btnKontoLöschen, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE)
+						.addComponent(btnTaschenrechner, GroupLayout.PREFERRED_SIZE, 35, GroupLayout.PREFERRED_SIZE))
 					.addContainerGap())
 		);
 		panel_1.setLayout(gl_panel_1);
@@ -940,17 +968,118 @@ public class BudgetPlanGUI extends JFrame {
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Konto</body></html>", null, panel_Konto, null);
 		panel_Konto.setLayout(new BorderLayout(0, 0));
 		
+		Panel_Einnahmen = new JPanel();
+		tabbedPane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Einnahmen</body></html>", null, Panel_Einnahmen, null);
+		Panel_Einnahmen.setLayout(null);
+		
 		Panel_Ausgaben = new JPanel();
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Ausgaben</body></html>", null, Panel_Ausgaben, null);
 		Panel_Ausgaben.setLayout(null);
 		
-		Panel_Einnahmen = new JPanel();
-		tabbedPane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Einnahmen</body></html>", null, Panel_Einnahmen, null);
-		Panel_Einnahmen.setLayout(null);
+		
+	    textField_Ausgaben = new JTextField();
+	    textField_Ausgaben.setBounds(197, 13, 150, 25);
+	    Panel_Ausgaben.add(textField_Ausgaben);
+	    textField_Ausgaben.setHorizontalAlignment(JTextField.RIGHT);
+	    
+	    lblAusgabenBuchungsbetrag = new JLabel("Buchungsbetrag:");
+	    lblAusgabenBuchungsbetrag.setFont(new Font("Tahoma", Font.BOLD, 11));
+	    lblAusgabenBuchungsbetrag.setBounds(21, 11, 142, 29);
+	    Panel_Ausgaben.add(lblAusgabenBuchungsbetrag);
+	    
+	    lblAusgabenKategorie = new JLabel("Kategorie:");
+	    lblAusgabenKategorie.setFont(new Font("Tahoma", Font.BOLD, 11));
+	    lblAusgabenKategorie.setBounds(21, 67, 142, 29);
+	    Panel_Ausgaben.add(lblAusgabenKategorie);
+	    
+	    comboBox_Ausgaben = new JComboBox();
+	    comboBox_Ausgaben.setModel(new DefaultComboBoxModel(new String[] {"(Bitte Wählen)", "Krankenversicherung", "Hausversicherung", "Kfz-Versicherung", "TÜV/Versicherung", "Benzin/Diesel", "Musik","Filmleihe", "Kino", "Bücher/Zeitschriften", "Kinder/Spielzeug", "Persönliche Gegenstände", "Bekleidung", "Restaurant/Mensa","Lebensmittel", "Müll", "Wasser", "Einkäufe", "Ersparnisse", "Haustiere","Party", "Haushalt", "Hotel/Unterkunft", "Kreditkarte", "Gesundheitsausgaben", "Krankenversicherung", "Internet/Telefon","Handy", "Gas/Heizung", "Strom", "Vermögenssteuer", "Mitgliedsgebür", "Miete","Kredit","Sonstiges"}));
+	    comboBox_Ausgaben.setBounds(197, 69, 155, 25);
+	    Panel_Ausgaben.add(comboBox_Ausgaben);
+	    
+	     
+	     lblAusgabenWiederholung = new JLabel("Wiederholung:");
+	     lblAusgabenWiederholung.setFont(new Font("Tahoma", Font.BOLD, 11));
+	     lblAusgabenWiederholung.setBounds(21, 130, 142, 29);
+	     Panel_Ausgaben.add(lblAusgabenWiederholung);
+	     
+	     rdbtnEinmaligAusgaben = new JRadioButton("einmalig");
+	     rdbtnEinmaligAusgaben.setBounds(197, 133, 109, 23);
+	     Panel_Ausgaben.add(rdbtnEinmaligAusgaben);
+	     
+	     rdbtnMonatlichAusgaben = new JRadioButton("monatlich\r\n");
+	     rdbtnMonatlichAusgaben.setBounds(308, 133, 109, 23);
+	     Panel_Ausgaben.add(rdbtnMonatlichAusgaben);
+	     
+	     lblAusgabenFaelligkeitsdatum = new JLabel("F\u00E4lligkeitsdatum:");
+	     lblAusgabenFaelligkeitsdatum.setFont(new Font("Tahoma", Font.BOLD, 11));
+	     lblAusgabenFaelligkeitsdatum.setBounds(21, 189, 142, 29);
+	     Panel_Ausgaben.add(lblAusgabenFaelligkeitsdatum);
+	     
+	     txtTtmmjjjj_Ausgaben = new JTextField();
+	     txtTtmmjjjj_Ausgaben.setBounds(197, 190, 150, 26);       
+	     txtTtmmjjjj_Ausgaben.setText( new SimpleDateFormat("dd.MM.yyyy").format(new Date()));
+	     txtTtmmjjjj_Ausgaben.setFont(new Font("Tahoma", Font.BOLD, 11));
+	     Panel_Ausgaben.add(txtTtmmjjjj_Ausgaben);
+	     
+	      
+	      
+	      
+	      btnAusgabenBuchen = new JButton("Buchen");
+	      btnAusgabenBuchen.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/account.png")));
+	      btnAusgabenBuchen.setBounds(421, 311, 150, 29);
+	      Panel_Ausgaben.add(btnAusgabenBuchen);		
+	      
+	      textFieldNotiz_Ausgabe = new JTextField();
+	      textFieldNotiz_Ausgabe.setBounds(197, 252, 150, 25);
+	      Panel_Ausgaben.add(textFieldNotiz_Ausgabe);
+	      
+	      		  
+	      		  lblNotiz_Ausgaben = new JLabel("Beschreibung:");
+	      		  lblNotiz_Ausgaben.setFont(new Font("Tahoma", Font.BOLD, 11));
+	      		  lblNotiz_Ausgaben.setBounds(21, 250, 142, 29);
+	      		  Panel_Ausgaben.add(lblNotiz_Ausgaben);
+	      		  
+	      		  lblEuroZb = new JLabel(" Euro ( z.B. 5.55)");
+	      		  lblEuroZb.setForeground(new Color(128, 128, 128));
+	      		  lblEuroZb.setFont(new Font("Tahoma", Font.BOLD, 11));
+	      		  lblEuroZb.setBounds(357, 18, 99, 14);
+	      		  Panel_Ausgaben.add(lblEuroZb);
+	      		  
+	      		  label_Datum = new JLabel("TT.MM.JJJJ");
+	      		  label_Datum.setForeground(new Color(128, 128, 128));
+	      		  label_Datum.setFont(new Font("Tahoma", Font.BOLD, 11));
+	      		  label_Datum.setBounds(357, 196, 67, 14);
+	      		  Panel_Ausgaben.add(label_Datum);
+	      		  
+	      		  btnReset_Ausgaben = new JButton("Reset");
+	      		  btnReset_Ausgaben.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/reset.png")));
+	      		  btnReset_Ausgaben.setBounds(21, 311, 150, 29);
+	      		  Panel_Ausgaben.add(btnReset_Ausgaben);
+	      		  
+	      		  btnHelpButton_Ausgaben = new JButton("");
+	      		  btnHelpButton_Ausgaben.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/help.png")));
+	      		  btnHelpButton_Ausgaben.setBounds(559, 11, 81, 58);
+	      		  Panel_Ausgaben.add(btnHelpButton_Ausgaben);
+	      		  btnHelpButton_Ausgaben.addActionListener(new ActionListener() {
+	      		  	public void actionPerformed(ActionEvent arg0) {
+
+	      		  		
+				JOptionPane.showMessageDialog(null, hilfe_a
+						, "Hilfe", JOptionPane.INFORMATION_MESSAGE); 
+			
+	  	
+	      		  	}
+	      		  });
 			
 		panel_Dauerauftraege = new JPanel();
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Daueraufträge</body></html>", null, panel_Dauerauftraege, null);
 		panel_Dauerauftraege.setLayout(null);
+		
+		JLabel label = new JLabel("");
+		label.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/work.png")));
+		label.setBounds(232, 123, 207, 138);
+		panel_Dauerauftraege.add(label);
 		
 		Panel_Statistiken = new JPanel();
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Statistik</body></html>", null, Panel_Statistiken, null);
@@ -989,6 +1118,7 @@ public class BudgetPlanGUI extends JFrame {
 		lblKontouebersicht.setFont(new Font("Tahoma", Font.BOLD, 18));
 		
 	    btnKontoDrucken = new JButton("Drucken");
+	    btnKontoDrucken.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/printer.png")));
 		panel_Kontouebersicht.add(btnKontoDrucken);
 	
 		scrollPane = new JScrollPane();
@@ -1012,99 +1142,6 @@ public class BudgetPlanGUI extends JFrame {
 			 * 
 			 * 
 			 */
-		
-		
-	    textField_Ausgaben = new JTextField();
-		textField_Ausgaben.setBounds(197, 13, 150, 25);
-		Panel_Ausgaben.add(textField_Ausgaben);
-		textField_Ausgaben.setHorizontalAlignment(JTextField.RIGHT);
-		
-		lblAusgabenBuchungsbetrag = new JLabel("Buchungsbetrag:");
-		lblAusgabenBuchungsbetrag.setFont(new Font("Tahoma", Font.BOLD, 11));
-		lblAusgabenBuchungsbetrag.setBounds(21, 11, 142, 29);
-		Panel_Ausgaben.add(lblAusgabenBuchungsbetrag);
-		
-		lblAusgabenKategorie = new JLabel("Kategorie:");
-		lblAusgabenKategorie.setFont(new Font("Tahoma", Font.BOLD, 11));
-		lblAusgabenKategorie.setBounds(21, 67, 142, 29);
-		Panel_Ausgaben.add(lblAusgabenKategorie);
-		
-		comboBox_Ausgaben = new JComboBox();
-		comboBox_Ausgaben.setModel(new DefaultComboBoxModel(new String[] {"(Bitte Wählen)", "Krankenversicherung", "Hausversicherung", "Kfz-Versicherung", "TÜV/Versicherung", "Benzin/Diesel", "Musik","Filmleihe", "Kino", "Bücher/Zeitschriften", "Kinder/Spielzeug", "Persönliche Gegenstände", "Bekleidung", "Restaurant/Mensa","Lebensmittel", "Müll", "Wasser", "Einkäufe", "Ersparnisse", "Haustiere","Party", "Haushalt", "Hotel/Unterkunft", "Kreditkarte", "Gesundheitsausgaben", "Krankenversicherung", "Internet/Telefon","Handy", "Gas/Heizung", "Strom", "Vermögenssteuer", "Mitgliedsgebür", "Miete","Kredit","Sonstiges"}));
-		comboBox_Ausgaben.setBounds(197, 69, 155, 25);
-		Panel_Ausgaben.add(comboBox_Ausgaben);
-		
-		 
-		 lblAusgabenWiederholung = new JLabel("Wiederholung:");
-		 lblAusgabenWiederholung.setFont(new Font("Tahoma", Font.BOLD, 11));
-		 lblAusgabenWiederholung.setBounds(21, 130, 142, 29);
-		 Panel_Ausgaben.add(lblAusgabenWiederholung);
-		 
-		 rdbtnEinmaligAusgaben = new JRadioButton("einmalig");
-		 rdbtnEinmaligAusgaben.setBounds(197, 133, 109, 23);
-		 Panel_Ausgaben.add(rdbtnEinmaligAusgaben);
-		 
-		 rdbtnMonatlichAusgaben = new JRadioButton("monatlich\r\n");
-		 rdbtnMonatlichAusgaben.setBounds(308, 133, 109, 23);
-		 Panel_Ausgaben.add(rdbtnMonatlichAusgaben);
-		 
-		 lblAusgabenFaelligkeitsdatum = new JLabel("F\u00E4lligkeitsdatum:");
-		 lblAusgabenFaelligkeitsdatum.setFont(new Font("Tahoma", Font.BOLD, 11));
-		 lblAusgabenFaelligkeitsdatum.setBounds(21, 189, 142, 29);
-		 Panel_Ausgaben.add(lblAusgabenFaelligkeitsdatum);
-		 
-		 txtTtmmjjjj_Ausgaben = new JTextField();
-		 txtTtmmjjjj_Ausgaben.setBounds(197, 190, 150, 26);       
-		 txtTtmmjjjj_Ausgaben.setText( new SimpleDateFormat("dd.MM.yyyy").format(new Date()));
-		 txtTtmmjjjj_Ausgaben.setFont(new Font("Tahoma", Font.BOLD, 11));
-		 Panel_Ausgaben.add(txtTtmmjjjj_Ausgaben);
-		 
-	      
-		  
-		  
-		  btnAusgabenBuchen = new JButton("Ausgabe Buchen!");
-		  btnAusgabenBuchen.setBounds(421, 311, 142, 29);
-		  Panel_Ausgaben.add(btnAusgabenBuchen);		
-		  
-		  textFieldNotiz_Ausgabe = new JTextField();
-		  textFieldNotiz_Ausgabe.setBounds(197, 252, 150, 25);
-		  Panel_Ausgaben.add(textFieldNotiz_Ausgabe);
-
-		  
-		  lblNotiz_Ausgaben = new JLabel("Beschreibung:");
-		  lblNotiz_Ausgaben.setFont(new Font("Tahoma", Font.BOLD, 11));
-		  lblNotiz_Ausgaben.setBounds(21, 250, 142, 29);
-		  Panel_Ausgaben.add(lblNotiz_Ausgaben);
-		  
-		  lblEuroZb = new JLabel(" Euro ( z.B. 5.55)");
-		  lblEuroZb.setForeground(new Color(128, 128, 128));
-		  lblEuroZb.setFont(new Font("Tahoma", Font.BOLD, 11));
-		  lblEuroZb.setBounds(357, 18, 99, 14);
-		  Panel_Ausgaben.add(lblEuroZb);
-		  
-		  label_Datum = new JLabel("TT.MM.JJJJ");
-		  label_Datum.setForeground(new Color(128, 128, 128));
-		  label_Datum.setFont(new Font("Tahoma", Font.BOLD, 11));
-		  label_Datum.setBounds(357, 196, 67, 14);
-		  Panel_Ausgaben.add(label_Datum);
-		  
-		  btnReset_Ausgaben = new JButton("Eingaben reseten");
-		  btnReset_Ausgaben.setBounds(21, 311, 135, 29);
-		  Panel_Ausgaben.add(btnReset_Ausgaben);
-		  
-		  btnHelpButton_Ausgaben = new JButton("Hilfe");
-		  btnHelpButton_Ausgaben.setBounds(585, 0, 67, 20);
-		  Panel_Ausgaben.add(btnHelpButton_Ausgaben);
-		  btnHelpButton_Ausgaben.addActionListener(new ActionListener() {
-		  	public void actionPerformed(ActionEvent arg0) {
-
-		  		
-				JOptionPane.showMessageDialog(null, hilfe_a
-						, "Hilfe", JOptionPane.INFORMATION_MESSAGE); 
-			
-	  	
-		  	}
-		  });
 	        
 	        //Panel 3 Ende
 	        
@@ -1167,8 +1204,9 @@ public class BudgetPlanGUI extends JFrame {
 		        txtTtmmjjjj_Einnahmen.setFont(new Font("Tahoma", Font.BOLD, 11));
 		        Panel_Einnahmen.add(txtTtmmjjjj_Einnahmen);
 		        
-		        btnEinnahmenBuchen = new JButton("Einnahme Buchen!");
-		        btnEinnahmenBuchen.setBounds(421, 311, 142, 29);
+		        btnEinnahmenBuchen = new JButton("Buchen");
+		        btnEinnahmenBuchen.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/account.png")));
+		        btnEinnahmenBuchen.setBounds(421, 311, 150, 29);
 		        Panel_Einnahmen.add(btnEinnahmenBuchen);
 		        
 		        lblNotiz_Einnahmen = new JLabel("Beschreibung:");
@@ -1193,10 +1231,12 @@ public class BudgetPlanGUI extends JFrame {
 		        lblTtmmyyyy.setBounds(357, 196, 67, 14);
 		        Panel_Einnahmen.add(lblTtmmyyyy);
 		        
-		        btnReset_Einnahmen = new JButton("Eingaben reseten");
-				  btnReset_Einnahmen.setBounds(21, 311, 135, 29);
+		        btnReset_Einnahmen = new JButton("Reset");
+		        btnReset_Einnahmen.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/reset.png")));
+				  btnReset_Einnahmen.setBounds(21, 311, 150, 29);
 				  Panel_Einnahmen.add(btnReset_Einnahmen);
-				  btnHelpButton_Einnahmen = new JButton("Hilfe");
+				  btnHelpButton_Einnahmen = new JButton("");
+				  btnHelpButton_Einnahmen.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/help.png")));
 				  btnHelpButton_Einnahmen.addActionListener(new ActionListener() {
 				  	public void actionPerformed(ActionEvent e) {
 				  		
@@ -1205,7 +1245,7 @@ public class BudgetPlanGUI extends JFrame {
 						
 				  	}
 				  });
-				  btnHelpButton_Einnahmen.setBounds(585, 0, 67, 20);
+				  btnHelpButton_Einnahmen.setBounds(559, 11, 81, 58);
 				  Panel_Einnahmen.add(btnHelpButton_Einnahmen);
 				
 			//ANFANG PANEL 5 Daueraufträge 
@@ -1244,7 +1284,8 @@ public class BudgetPlanGUI extends JFrame {
 		Panel_Statistiken.add(lblEnddatum);
 
 		btnStatistikanzeigen = new JButton("Statistik anzeigen");
-		btnStatistikanzeigen.setBounds(249, 247, 159, 45);
+		btnStatistikanzeigen.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/statistik.png")));
+		btnStatistikanzeigen.setBounds(222, 247, 186, 45);
 		Panel_Statistiken.add(btnStatistikanzeigen);
 
 		comboBoxStatistikModelle = new JComboBox();
@@ -1264,7 +1305,7 @@ public class BudgetPlanGUI extends JFrame {
 		Panel_Statistiken.add(comboBoxStatistikModelle);
 
 		lblStatistikWarnung = new JLabel("");
-		lblStatistikWarnung.setBounds(473, 261, 155, 87);
+		lblStatistikWarnung.setBounds(468, 247, 155, 87);
 		Panel_Statistiken.add(lblStatistikWarnung);
   
 	        //ENDE PANEL 6 Statistiken
