@@ -904,18 +904,17 @@ public class BudgetPlanGUI extends JFrame {
 		
 		
 		
-		btnInfo = new JButton("Info");
-		btnInfo.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/Info.png")));
+		btnInfo = new JButton("Info", new ImageIcon("src/img/info.png"));
+		
 				
-		btnTaschenrechner = new JButton("Taschenrechner");
-		btnTaschenrechner.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/calculator.png")));
+		btnTaschenrechner = new JButton("Taschenrechner", new ImageIcon("src/img/calculator.png"));
 		
-		btnSchließen = new JButton("Schlie\u00DFen");
-		btnSchließen.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/close.png")));
 		
-		btnKontoLöschen = new JButton("");
+		btnSchließen = new JButton("Schlie\u00DFen", new ImageIcon("src/img/close.png"));
+		
+		
+		btnKontoLöschen = new JButton("", new ImageIcon("src/img/trash.png"));
 		btnKontoLöschen.setFont(btnKontoLöschen.getFont().deriveFont(btnKontoLöschen.getFont().getStyle() & ~Font.BOLD & ~Font.ITALIC));
-		btnKontoLöschen.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/trash.png")));
 		btnKontoLöschen.setBackground(Color.WHITE);
 		
 		
@@ -1025,8 +1024,7 @@ public class BudgetPlanGUI extends JFrame {
 	      
 	      
 	      
-	      btnAusgabenBuchen = new JButton("Buchen");
-	      btnAusgabenBuchen.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/account.png")));
+	      btnAusgabenBuchen = new JButton("Buchen", new ImageIcon("src/img/account.png"));
 	      btnAusgabenBuchen.setBounds(421, 311, 150, 29);
 	      Panel_Ausgaben.add(btnAusgabenBuchen);		
 	      
@@ -1052,13 +1050,13 @@ public class BudgetPlanGUI extends JFrame {
 	      		  label_Datum.setBounds(357, 196, 67, 14);
 	      		  Panel_Ausgaben.add(label_Datum);
 	      		  
-	      		  btnReset_Ausgaben = new JButton("Reset");
-	      		  btnReset_Ausgaben.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/reset.png")));
+	      		  btnReset_Ausgaben = new JButton("Reset", new ImageIcon("src/img/reset.png"));
+	      		  
 	      		  btnReset_Ausgaben.setBounds(21, 311, 150, 29);
 	      		  Panel_Ausgaben.add(btnReset_Ausgaben);
 	      		  
-	      		  btnHelpButton_Ausgaben = new JButton("");
-	      		  btnHelpButton_Ausgaben.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/help.png")));
+	      		  btnHelpButton_Ausgaben = new JButton("", new ImageIcon("src/img/help.png"));
+	      		 
 	      		  btnHelpButton_Ausgaben.setBounds(559, 11, 81, 58);
 	      		  Panel_Ausgaben.add(btnHelpButton_Ausgaben);
 	      		  btnHelpButton_Ausgaben.addActionListener(new ActionListener() {
@@ -1076,8 +1074,7 @@ public class BudgetPlanGUI extends JFrame {
 		tabbedPane.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Daueraufträge</body></html>", null, panel_Dauerauftraege, null);
 		panel_Dauerauftraege.setLayout(null);
 		
-		JLabel label = new JLabel("");
-		label.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/work.png")));
+		JLabel label = new JLabel(new ImageIcon("src/img/work.png"));
 		label.setBounds(232, 123, 207, 138);
 		panel_Dauerauftraege.add(label);
 		
@@ -1117,8 +1114,8 @@ public class BudgetPlanGUI extends JFrame {
 		panel_Kontouebersicht.add(lblKontouebersicht);
 		lblKontouebersicht.setFont(new Font("Tahoma", Font.BOLD, 18));
 		
-	    btnKontoDrucken = new JButton("Drucken");
-	    btnKontoDrucken.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/printer.png")));
+	    btnKontoDrucken = new JButton("Drucken", new ImageIcon("src/img/printer.png"));
+	   
 		panel_Kontouebersicht.add(btnKontoDrucken);
 	
 		scrollPane = new JScrollPane();
@@ -1204,8 +1201,8 @@ public class BudgetPlanGUI extends JFrame {
 		        txtTtmmjjjj_Einnahmen.setFont(new Font("Tahoma", Font.BOLD, 11));
 		        Panel_Einnahmen.add(txtTtmmjjjj_Einnahmen);
 		        
-		        btnEinnahmenBuchen = new JButton("Buchen");
-		        btnEinnahmenBuchen.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/account.png")));
+		        btnEinnahmenBuchen = new JButton("Buchen", new ImageIcon("src/img/account.png"));
+		       
 		        btnEinnahmenBuchen.setBounds(421, 311, 150, 29);
 		        Panel_Einnahmen.add(btnEinnahmenBuchen);
 		        
@@ -1231,12 +1228,11 @@ public class BudgetPlanGUI extends JFrame {
 		        lblTtmmyyyy.setBounds(357, 196, 67, 14);
 		        Panel_Einnahmen.add(lblTtmmyyyy);
 		        
-		        btnReset_Einnahmen = new JButton("Reset");
-		        btnReset_Einnahmen.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/reset.png")));
+		        btnReset_Einnahmen = new JButton("Reset", new ImageIcon("src/img/reset.png"));
+		       ;
 				  btnReset_Einnahmen.setBounds(21, 311, 150, 29);
 				  Panel_Einnahmen.add(btnReset_Einnahmen);
-				  btnHelpButton_Einnahmen = new JButton("");
-				  btnHelpButton_Einnahmen.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/help.png")));
+				  btnHelpButton_Einnahmen = new JButton("", new ImageIcon("src/img/help.png"));
 				  btnHelpButton_Einnahmen.addActionListener(new ActionListener() {
 				  	public void actionPerformed(ActionEvent e) {
 				  		
@@ -1283,8 +1279,7 @@ public class BudgetPlanGUI extends JFrame {
 		lblEnddatum.setBounds(499, 104, 86, 14);
 		Panel_Statistiken.add(lblEnddatum);
 
-		btnStatistikanzeigen = new JButton("Statistik anzeigen");
-		btnStatistikanzeigen.setIcon(new ImageIcon(BudgetPlanGUI.class.getResource("/img/statistik.png")));
+		btnStatistikanzeigen = new JButton("Statistik anzeigen", new ImageIcon("src/img/statistik.png"));
 		btnStatistikanzeigen.setBounds(222, 247, 186, 45);
 		Panel_Statistiken.add(btnStatistikanzeigen);
 
