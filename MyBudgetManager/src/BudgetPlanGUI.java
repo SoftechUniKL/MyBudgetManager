@@ -239,7 +239,7 @@ public class BudgetPlanGUI extends JFrame {
 	/**
 	 * Nachricht beim Klicken des Infobuttons
 	 */
-	String info = "MyBudgetManager (Version 1.0.2 beta) 2015 \n \n"
+	String info = "MyBudgetManager (Version 1.1.0 beta) 2015 \n \n"
 			+ "Programmierprojekt SS2015 \n Leitung: Dr. Annette Bieniusa \n "
 			+ "Fachbereich Informatik \n Lehrstuhl AG Softwaretechnik \n \n "
 			+ "Programmierer: \n Philipp Heintz \n Lukas Breit \n Markus Dittmann \n \n"

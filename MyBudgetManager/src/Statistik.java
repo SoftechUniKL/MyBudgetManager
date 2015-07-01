@@ -24,6 +24,7 @@ import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -125,11 +126,13 @@ public class Statistik {
 
 		panel_4 = new JPanel();
 		panel.add(panel_4, BorderLayout.NORTH);
+		panel_4.setBackground(Color.WHITE);
 		panel_4.setLayout(new GridLayout(2, 2));
 
 		lblZeitraum = new JLabel("Zeitraum");
 		lblZeitraum.setFont(new Font("Tahoma", Font.BOLD, 13));
-		lblZeitraum.setForeground(new Color(35,35,130));
+		lblZeitraum.setForeground(new Color(5, 50, 180));
+		lblZeitraum.setHorizontalAlignment(JTextField.RIGHT);
 		panel_4.add(lblZeitraum);
 
 		lblLückenfüller = new JLabel("");
@@ -143,9 +146,10 @@ public class Statistik {
 		panel_4.add(lblKontoübersicht_Ausgaben);
 
 		panel_1 = new JPanel();
-		panel.add(panel_1, BorderLayout.EAST);
 		panel_1.setPreferredSize(new Dimension(270, 185));
+		panel_1.setBackground(Color.WHITE);
 		panel_1.setLayout(null);
+		panel.add(panel_1, BorderLayout.EAST);
 
 		lblKurzübersicht = new JLabel(
 				"<html><body><u>Kurz\u00FCbersicht:</u></body></html>");
@@ -166,7 +170,7 @@ public class Statistik {
 		panel_1.add(lblAusgaben);
 
 		lblSaldo = new JLabel("Saldo:");
-		lblSaldo.setBounds(10, 125, 46, 14);
+		lblSaldo.setBounds(10, 130, 46, 14);
 		panel_1.add(lblSaldo);
 
 		lblBuchungswert_gesamt = new JLabel("");
@@ -191,7 +195,7 @@ public class Statistik {
 
 		lblSaldowert = new JLabel("");
 		lblSaldowert.setFont(new Font("Tahoma", Font.BOLD, 14));
-		lblSaldowert.setBounds(94, 124, 160, 14);
+		lblSaldowert.setBounds(94, 129, 160, 14);
 		panel_1.add(lblSaldowert);
 
 		panel_2 = new JPanel();
