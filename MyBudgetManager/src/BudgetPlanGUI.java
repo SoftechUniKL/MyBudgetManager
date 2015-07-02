@@ -207,7 +207,11 @@ public class BudgetPlanGUI extends JFrame {
 			+ "  Bei 'individueller Zeitraum' geben Sie bitte noch zusätzlich sowohl das \n  Anfangs- als auch das Enddatum an (Format: TT.MM.JJJJ). \n \n"
 			+ "Schritt 2: \n  Wählen Sie das gewünschte Statistik-Modell aus der Auswahl-Liste aus. \n \n"
 			+ "Schritt 3: \n  Klicken Sie nun auf den Button 'Statistik anzeigen' und \n  es öffnet sich ein neues Fenster mit Ihrer Statistik.\n\n"
-			+ "Tipp: Sie können sich auch mehrere Statistiken anzeigen lassen und vergleichen.";
+			+ "Tipp: \n - Sie können sich auch mehrere Statistiken anzeigen lassen und vergleichen. \n"
+			+ " - Bei den Kreisdiagramm-Grafiken lassen sich die Scheiben mittels Scrollrad der Maus individuell drehen. \n"
+			+ " - Bei den restlichen Diagrammen können Sie individuell in die Grafik hineinzoomen, \n"
+			+ "   indem Sie den gewünschten Bereich mit dem Mauszeiger auswählen. \n"
+			+ " - Mit einem Klick der rechten Maustaste auf eine Grafik, können sie \n   Eigenschaften der Grafik verändern, drucken, abspechern, uvm.";
 
 	// Willkommensmeldung als vorgeschriebene Strings
 	/**

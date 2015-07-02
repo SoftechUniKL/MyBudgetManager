@@ -114,9 +114,24 @@ public class Statistik {
 		panel.setPreferredSize(new Dimension(0, 185));
 		panel.setLayout(new BorderLayout(0, 0));
 
+		panel_1 = new JPanel();
+		panel_1.setPreferredSize(new Dimension(270, 185));
+		panel_1.setBackground(Color.WHITE);
+		panel_1.setLayout(null);
+		panel.add(panel_1, BorderLayout.EAST);
+
+		panel_2 = new JPanel();
+		Statistic.getContentPane().add(panel_2, BorderLayout.CENTER);
+		panel_2.setLayout(new GridLayout(1, 2));
+
 		panel_3 = new JPanel();
 		panel.add(panel_3, BorderLayout.CENTER);
 		panel_3.setLayout(new GridLayout(1, 2));
+
+		panel_4 = new JPanel();
+		panel.add(panel_4, BorderLayout.NORTH);
+		panel_4.setBackground(Color.WHITE);
+		panel_4.setLayout(new GridLayout(2, 2));
 
 		scrollPane_Einnahmen = new JScrollPane();
 		panel_3.add(scrollPane_Einnahmen);
@@ -124,13 +139,8 @@ public class Statistik {
 		scrollPane_Ausgaben = new JScrollPane();
 		panel_3.add(scrollPane_Ausgaben);
 
-		panel_4 = new JPanel();
-		panel.add(panel_4, BorderLayout.NORTH);
-		panel_4.setBackground(Color.WHITE);
-		panel_4.setLayout(new GridLayout(2, 2));
-
 		lblZeitraum = new JLabel("Zeitraum");
-		lblZeitraum.setFont(new Font("Tahoma", Font.BOLD, 13));
+		lblZeitraum.setFont(new Font("Tahoma", Font.BOLD, 14));
 		lblZeitraum.setForeground(new Color(5, 50, 180));
 		lblZeitraum.setHorizontalAlignment(JTextField.RIGHT);
 		panel_4.add(lblZeitraum);
@@ -144,12 +154,6 @@ public class Statistik {
 
 		lblKontoübersicht_Ausgaben = new JLabel("Ausgaben:");
 		panel_4.add(lblKontoübersicht_Ausgaben);
-
-		panel_1 = new JPanel();
-		panel_1.setPreferredSize(new Dimension(270, 185));
-		panel_1.setBackground(Color.WHITE);
-		panel_1.setLayout(null);
-		panel.add(panel_1, BorderLayout.EAST);
 
 		lblKurzübersicht = new JLabel(
 				"<html><body><u>Kurz\u00FCbersicht:</u></body></html>");
@@ -197,10 +201,6 @@ public class Statistik {
 		lblSaldowert.setFont(new Font("Tahoma", Font.BOLD, 14));
 		lblSaldowert.setBounds(94, 129, 160, 14);
 		panel_1.add(lblSaldowert);
-
-		panel_2 = new JPanel();
-		Statistic.getContentPane().add(panel_2, BorderLayout.CENTER);
-		panel_2.setLayout(new GridLayout(1, 2));
 
 		this.budget = budget;
 
@@ -724,7 +724,7 @@ public class Statistik {
 		combineddomaincategoryplot.add(categoryplot, 2);
 		combineddomaincategoryplot.add(categoryplot1, 1);
 		JFreeChart jfreechart = new JFreeChart(einnahme_ausgabe_text
-				+ " nach Zeit - Kombidiagramm", new Font("SansSerif", 1, 12),
+				+ " nach Zeit (chronologisch) - Kombidiagramm", new Font("SansSerif", 1, 12),
 				combineddomaincategoryplot, true);
 		return jfreechart;
 	}
