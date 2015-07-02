@@ -14,6 +14,7 @@
  * @author der Statistik Markus Dittmann
  * @author der Sparfunktion Philipp Heintz
  * 
+ * @version 1.1.0
  * 
  */
 

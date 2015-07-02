@@ -234,7 +234,9 @@ public class BudgetPlanGUI extends JFrame {
 	 */
 	String konto_l = "Möchten Sie wirklich ihr Konto löschen? \n"
 			+ "Sämtliche Daten gehen dabei verloren!";
-
+	/**
+	 * Nachricht, ob das Programm wirklich geschlossen werden soll
+	 */
 	String prog_close = "Möchten Sie das Programm wirklich schließen?";
 	/**
 	 * Nachricht beim Klicken des Infobuttons
@@ -324,7 +326,10 @@ public class BudgetPlanGUI extends JFrame {
 
 	}
 
-	// Auflösen der Deaktivierung
+	
+	/**
+	 * Auflösen der Deativierung, wenn das Programm zum ersten Mal gestartet wird.
+	 */
 	public void Aktivierung() {
 		tabbedPane.setEnabledAt(0, true);
 		tabbedPane.setEnabledAt(3, true);
@@ -342,18 +347,35 @@ public class BudgetPlanGUI extends JFrame {
 
 	}
 
+	
+	//
+	// Start der Methoden für die Ausgaben
+	//
+	
+	
 	/**
 	 * 
+	 *  Checkdata_Ausgaben prüft die Benutzereingaben für die Gui Maske der "Ausgaben". 
+	 *  Wenn alle Eingaben korrekt sind wird die Csv-Datei mit diesen Daten beschrieben. 
 	 * 
-	 * Start der Methoden für die Ausgaben
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
+	 *  @exception <FileNotFoundException ex> 
+	 *  @throws <Ausgabe, dassdie csv Datei nicht da ist>
+	 *       
+	 *  @exception <IOException e> 
+	 *  @throws <Ausgabe, dass die csv Datei probleme hat>
+	 *  
+	 *  @exception <ParseException e> 
+	 *  @throws <Falsche Datumseingabe>
+	 *  
+	 *  @exception <NumberFormatException e> 
+	 *  @throws <Ausgabe, dass es eine fasche Betragseingabe gab>
+	 *  
+	 *   @exception <IndexOutofBoundsException e> 
+	 *   @throws <Ausgabe, dass eine Kategorie gewählt werden soll>
+	 *   
+	 *   
 	 */
-
+	
 	public void Checkdata_Ausgaben() {
 		try {
 			// Check date validation
@@ -378,14 +400,15 @@ public class BudgetPlanGUI extends JFrame {
 			DecimalFormat df = new DecimalFormat("#0.00", dfs);
 			String j;
 			j = df.format(k);
-			if (!textField_Ausgaben.getText().equals(j))
+			if (!textField_Ausgaben.getText().equals(j)) //Falsche Betragseingabe
 				throw new NumberFormatException();
 
-			if (comboBox_Ausgaben.getSelectedIndex() == 0)
+			if (comboBox_Ausgaben.getSelectedIndex() == 0) //ComboBox auf den Feld "Bitte Wählen"
 				throw new IndexOutOfBoundsException();
 
 			CSVWriter writer = null;
 
+			// Wenn alle Vorgaben korrekt sind wird hier die Csv Datei beschrieben
 			try {
 				writer = new CSVWriter(new FileWriter("data/budget.csv", true));
 				String[] entries = new String[5];
@@ -402,45 +425,34 @@ public class BudgetPlanGUI extends JFrame {
 						"Ausgabenbuchung", JOptionPane.INFORMATION_MESSAGE);
 				Init_Kontostand(1);
 
-				/**
-				 * @exception <FileNotFoundException ex> @throws <Ausgabe, dass
-				 *            die csv Datei nicht da ist>
-				 */
+				
 			} catch (FileNotFoundException ex) {
 				System.err.println(csv_nichtgefunden);
 				System.exit(1);
-				/**
-				 * @exception <IOException e> @throws <Ausgabe, dass die csv
-				 *            Datei probleme hat>
-				 */
+				
 			} catch (IOException ex) {
 				System.err.println(csv_problemöffnen);
 				System.exit(1);
 			}
 
 		}
-		/**
-		 * @exception <ParseException e> @throws <Falsche Datumseingabe>
-		 */
+		
+		
 		catch (ParseException e) {
 			JOptionPane.showMessageDialog(null, falsches_datum, "Fehler",
 					JOptionPane.ERROR_MESSAGE);
 			txtTtmmjjjj_Ausgaben.setText(null);
 		}
 
-		/**
-		 * @exception <NumberFormatException e> @throws <Ausgabe, dass es eine
-		 *            fasche Betragseingabe gab>
-		 */
+		
+		
 		catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(null, falsche_betragseingabe,
 					"Fehler", JOptionPane.ERROR_MESSAGE);
 			textField_Ausgaben.setText(null);
 		}
-		/**
-		 * @exception <IndexOutofBoundsException e> @throws <Ausgabe, dass eine
-		 *            Kategorie gewählt werden soll>
-		 */
+		
+		
 		catch (IndexOutOfBoundsException e) {
 			JOptionPane.showMessageDialog(null, kategorie, "Fehler",
 					JOptionPane.ERROR_MESSAGE);
@@ -449,7 +461,11 @@ public class BudgetPlanGUI extends JFrame {
 
 	}
 
-	// Methode, die die Daten der Ausgabe löscht
+	
+	
+	/**
+	 * 
+	 */
 	public void Clear_Ausgaben() {
 		textField_Ausgaben.setText(null);
 		txtTtmmjjjj_Ausgaben.setText(new SimpleDateFormat("dd.MM.yyyy")
@@ -549,38 +565,42 @@ public class BudgetPlanGUI extends JFrame {
 		} else {
 			lblKontostand.setForeground(Color.RED);
 		}
-		// Warnung, wenn der Kontostand sehr niedrig ist
+		
 
-		if (budget.Geldvermögen.size() >= 2) {
-			if (i < 20 && i >= 0) {
-				lblKontostandWarnung.setText("");
-				lblKontostandWarnung.setBackground(new Color(240, 240, 240));
+	
 
-			} else {
-				lblKontostandWarnung
-						.setText("<html><body><center><u>ACHTUNG!</u></center></body></html>");
-				lblKontostandWarnung.setBackground(new Color(250, 250, 120));
-				lblKontostandWarnung.setOpaque(true);
-			}
-		}
-
-		// Warnungen, wenn der Kontostand sehr niedrig ist. Der Startwert ist
-		// davon ausgeschlossen
+		// Warnungen, wenn der Kontostand sehr niedrig ist. 
+		// Eine Warnung im oberen recht Feld als permanente Warnung
+		// Eine Warunung als Popupbenachrichtigung 
+		// Der Startwert ist davon ausgeschlossen.
 
 		if (k == 1) {
 
 			if (budget.Geldvermögen.size() >= 2) {
-				if (i < 20 && i >= 0 && budget.Geldvermögen.size() != 0)
+				if (i < 20 && i >= 0 && budget.Geldvermögen.size() != 0){
 					JOptionPane.showMessageDialog(null,
 							"Ihr Kontostand ist sehr gering.\n"
 									+ "Bitte achten Sie auf Ihre Ausgaben.",
 							"Kontostandswarnung", JOptionPane.WARNING_MESSAGE);
-				if (i < 0)
+					
+					lblKontostandWarnung.setText("<html><body><center><u>  ACHTUNG!</u><u><br>Ihr Kontostand ist sehr niedrig!</br></u></center></body></html>");
+					lblKontostandWarnung.setBackground(new Color(250, 250, 120));
+					lblKontostandWarnung.setOpaque(true);
+				}
+				else if (i < 0){
 					JOptionPane.showMessageDialog(null,
 							"Ihr Kontostand befindet sich im negativen Bereich.\n"
 									+ "Bitte achten Sie auf Ihre Ausgaben.",
 							"Kontostandswarnung", JOptionPane.WARNING_MESSAGE);
-
+					
+					lblKontostandWarnung.setText("<html><body><center><u>ACHTUNG!</u><u><br>Ihr Kontostand ist im negativen Bereich!</br></u></center></body></html>");
+					lblKontostandWarnung.setBackground(new Color (250, 96, 65));
+					lblKontostandWarnung.setOpaque(true);
+				}
+				else {
+					lblKontostandWarnung.setText("");
+					lblKontostandWarnung.setBackground(Color.WHITE);
+				}
 			}
 		}
 		Init_Kontoübersicht();
@@ -888,9 +908,9 @@ public class BudgetPlanGUI extends JFrame {
 		panel.repaint();
 		panel.add(lblDatum);
 
-		// In Init Kontostnd wird der Button befüllt
+		// In Init Kontostnd wird das JLabel befüllt befüllt
 		lblKontostandWarnung = new JLabel("");
-		lblKontostandWarnung.setBounds(588, 10, 142, 46);
+		lblKontostandWarnung.setBounds(588, 11, 156, 59);
 		panel.add(lblKontostandWarnung);
 
 		/**
