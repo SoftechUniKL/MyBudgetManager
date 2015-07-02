@@ -589,6 +589,7 @@ public class BudgetPlanGUI extends JFrame {
 					
 					lblKontostandWarnung.setText("<html><body><center><u>  ACHTUNG!</u><u><br>Ihr Kontostand ist sehr niedrig!</br></u></center></body></html>");
 					lblKontostandWarnung.setBackground(new Color(250, 250, 120));
+					lblKontostandWarnung.setForeground(Color.black);
 					lblKontostandWarnung.setOpaque(true);
 				}
 				else if (i < 0){
@@ -598,7 +599,8 @@ public class BudgetPlanGUI extends JFrame {
 							"Kontostandswarnung", JOptionPane.WARNING_MESSAGE);
 					
 					lblKontostandWarnung.setText("<html><body><center><u>ACHTUNG!</u><u><br>Ihr Kontostand ist im negativen Bereich!</br></u></center></body></html>");
-					lblKontostandWarnung.setBackground(new Color (250, 96, 65));
+					lblKontostandWarnung.setBackground(new Color (250, 70, 70));
+					lblKontostandWarnung.setForeground(Color.white);
 					lblKontostandWarnung.setOpaque(true);
 				}
 				else {
@@ -1297,8 +1299,16 @@ public class BudgetPlanGUI extends JFrame {
 		Panel_Einnahmen.add(btnHelpButton_Einnahmen);
 
 		// ANFANG PANEL 5 Daueraufträge
-		//
-		//
+		
+		JLabel labelDA = new JLabel(new ImageIcon("src/img/work.png"));
+		labelDA.setBounds(232, 123, 207, 138);
+		panel_Dauerauftraege.add(labelDA);
+		
+		JLabel labelDA2 = new JLabel("<html><body>We're sorry!<br>This feature is temporarily unavailable.<br>Please wait for next Update.</body></html>");
+		labelDA2.setFont(new Font("Tahoma", Font.BOLD, 18));
+		labelDA2.setBounds(150, 30, 550, 100);
+		panel_Dauerauftraege.add(labelDA2);
+		
 		// ENDE PANEL 5 Daueraufträge
 
 		// ANFANG PANEL 6 Statistiken
@@ -1368,10 +1378,7 @@ public class BudgetPlanGUI extends JFrame {
 		// Anfang Panel 7 Sparfunktion
 		//
 		//
-		JLabel label = new JLabel(new ImageIcon("src/img/work.png"));
-		label.setBounds(232, 123, 207, 138);
-		panel_Dauerauftraege.add(label);
-
+		
 		// ENDE PANEL 7 Sparfunktion
 
 	}
@@ -1566,6 +1573,9 @@ public class BudgetPlanGUI extends JFrame {
 				if (loeschen == 0) {
 					comboBox_Ausgaben.removeItem("Kontoeröffnung");
 					comboBox_Einnahmen.removeItem("Kontoeröffnung");
+					lblKontostandWarnung.setText("");
+					lblKontostandWarnung.setBackground(Color.WHITE);
+					
 					CSVWriter writer = null;
 					try {
 						writer = new CSVWriter(
