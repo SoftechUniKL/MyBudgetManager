@@ -197,7 +197,9 @@ public class BudgetPlanGUI extends JFrame {
 			+ "- Durch die Wahl eines Dauerauftrags werden die Aufträge nicht nur einmal sondern monatlich gebucht.\n "
 			+ " Dadurch müssen sie regelmäßig anfallende Einnahmen nicht jeden Monat manuel eingeben. \n\n"
 			+ "- In der Beschreibung können Angaben zur eigenen Buchung gemacht werden. \n  Dabei steht Ihnen frei, wie die Eingabe aussieht oder ob sie überhaupt gemacht wird.";
-	
+	/**
+	 * Nachrichtentext für den Hilfebutton im Panel Statistik
+	 */
 	String hilfe_stat = "Hier können Sie sich die entsprechende Statistik zu Ihren Ausgaben und Einnahmen \n"
 			+ "für einen bestimmten Zeitraum anzeigen lassen. \n"
 			+ "Dabei können Sie zwischen den verschiedenen Statistik-Modellen wählen. \n \n"
@@ -209,7 +211,7 @@ public class BudgetPlanGUI extends JFrame {
 			+ "Schritt 3: \n  Klicken Sie nun auf den Button 'Statistik anzeigen' und \n  es öffnet sich ein neues Fenster mit Ihrer Statistik.\n\n"
 			+ "Tipp: Sie können sich auch mehrere Statistiken anzeigen lassen und vergleichen.";
 
-	// Willkommensmeldung als vorgeschriebene Strings
+	
 	/**
 	 * Willkommensnachricht, die sich öffnet, wenn ein neues Konto geöffnet wird
 	 */
@@ -254,8 +256,6 @@ public class BudgetPlanGUI extends JFrame {
 	 * 
 	 * Hier wird das Hauptfenster initialisiert und aktiviert.
 	 * 
-	 * @param <budget>
-	 *            <Modell der Daten>
 	 */
 
 	public BudgetPlanGUI(BudgetPlanModel budget) {
@@ -285,15 +285,8 @@ public class BudgetPlanGUI extends JFrame {
 	}
 
 	/**
-	 * 
-	 * Die Methoden des Budgetplan werden hier festgelegt
-	 * 
-	 * @param <budget>
-	 *            <Modell der Daten>
-	 * @param <Geldvermögen>
-	 *            <Arraylist mit benötigten Daten>
-	 * 
-	 * 
+	 * Anfangsabfrage, die überprüft, ob die Csv Datei leer ist. 
+	 * Wenn das der Fall ist wird man dazu aufgefordert ein neues Konto anzulegen
 	 * 
 	 */
 
@@ -370,8 +363,8 @@ public class BudgetPlanGUI extends JFrame {
 	 *  @exception <NumberFormatException e> 
 	 *  @throws <Ausgabe, dass es eine fasche Betragseingabe gab>
 	 *  
-	 *   @exception <IndexOutofBoundsException e> 
-	 *   @throws <Ausgabe, dass eine Kategorie gewählt werden soll>
+	 *  @exception <IndexOutofBoundsException e> 
+	 *  @throws <Ausgabe, dass eine Kategorie gewählt werden soll>
 	 *   
 	 *   
 	 */
@@ -464,7 +457,7 @@ public class BudgetPlanGUI extends JFrame {
 	
 	
 	/**
-	 * 
+	 * Methode, die die Eingaben in die Felder der Ausgaben auf den ursprünglichen Zustand zurück setzt
 	 */
 	public void Clear_Ausgaben() {
 		textField_Ausgaben.setText(null);
@@ -474,8 +467,13 @@ public class BudgetPlanGUI extends JFrame {
 		textFieldNotiz_Ausgabe.setText(null);
 	}
 
-	// Methode, die die Kontoübersicht initiiert
+	
+	/**
+	 * Hier wird die Kontoübersicht initiiert, die die Tabelle in der Kontoübersicht anzeigt
+	 */
 	public void Init_Kontoübersicht() {
+		// Hier wird ein mehrdimensionales Array erzeugt, dass 5 Spalten hat und die Zeilenanzahl von budget.Geldvermögen bekommt. 
+		// Diese Spaltenanzahl bezieht sich auf die Zeilenanzahl der Csv Datei
 		Object[][] data = new Object[budget.Geldvermögen.size()][5];
 		int i = 0;
 		String m;
@@ -502,7 +500,23 @@ public class BudgetPlanGUI extends JFrame {
 		scrollPane.setViewportView(table);
 	}
 
-	// Methode, die den Kontostand initiiert
+	/**
+	 * 
+	 * Hier wird der Aktuelle Kontostand aktualisiert. 
+	 * 
+	 *  @param k
+	 * 
+	 *  @exception <FileNotFoundException e> 
+	 *  @throws <Ausgabe, dass die csv Datei nicht da ist>
+	 * 
+	 *  @exception <IOException e> 
+	 *  @throws <Ausgabe, dass es mit der Csv Datein ein Problem gibt>
+	 *  
+	 *  @exception <ParseException e> 
+	 *  @throws <Ausgabe, dass die Datein nicht eingelesen werden kann>
+	 *  
+	 *  
+	 */
 	public void Init_Kontostand(int k) {
 		NumberFormat nf = NumberFormat.getInstance(new Locale("de", "DE"));
 		double i = 0;
@@ -525,24 +539,15 @@ public class BudgetPlanGUI extends JFrame {
 
 			}
 			reader.close();
-			/**
-			 * @exception <FileNotFoundException e> @throws <Ausgabe, dass die
-			 *            csv Datei nicht da ist>
-			 */
+			
 		} catch (FileNotFoundException e) {
 			System.err.println(csv_nichtgefunden);
 			System.exit(1);
-			/**
-			 * @exception <IOException e> @throws <Ausgabe, dass es mit der Csv
-			 *            Datein ein Problem gibt>
-			 */
+			
 		} catch (IOException e) {
 			System.err.println(csv_problemöffnen);
 			System.exit(1);
-			/**
-			 * @exception <ParseException e> @throws <Ausgabe, dass die Datein
-			 *            nicht eingelesen werden kann>
-			 */
+			
 		} catch (ParseException e) {
 			System.err
 					.println("Formatfehler: Die Datei konnte nicht eingelesen werden!");
@@ -566,8 +571,6 @@ public class BudgetPlanGUI extends JFrame {
 			lblKontostand.setForeground(Color.RED);
 		}
 		
-
-	
 
 		// Warnungen, wenn der Kontostand sehr niedrig ist. 
 		// Eine Warnung im oberen recht Feld als permanente Warnung
@@ -608,18 +611,29 @@ public class BudgetPlanGUI extends JFrame {
 
 	}
 
+	
 	/**
 	 * 
+	 * Einlesen der Einnahmen in die Csv Datei aus der Gui. 
+	 * Fehlerabfragen, ob der Nutzer auch alle daten richtig eingegeben hat. 
 	 * 
-	 * Start der Methoden für die Einnahmen
+	 *  @exception <FileNotFoundException ex> 
+	 *  @throws <Ausgabe, dass die csv Datei nicht da ist>
 	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
+	 *  @exception <IOException ex> 
+	 *  @throws <Ausgabe, dass die csv Datei Probleme hat>
+	 *  
+	 *  @exception <ParseException e> 
+	 *  @throws <Ausgabe, dass das Datum falsch eingegeben wurde>
+	 *  
+	 *  @exception <NumberFormatException e> 
+	 *  @throws <Ausgabe, dass es einen Fehler bei der Betrageingabe gab>
+	 *  
+	 *  @exception <IndexOutOfBoundsException e> 
+	 *  @throws <Ausgabe, dass ein Fehler bei der Kategorie gab>
+	 *  
+	 *  
 	 */
-
 	public void CheckData_Einnahmen() {
 		try {
 			// Check date validation
@@ -668,45 +682,30 @@ public class BudgetPlanGUI extends JFrame {
 						"Einnahmenbuchung", JOptionPane.INFORMATION_MESSAGE);
 				Init_Kontostand(1);
 
-				/**
-				 * @exception <FileNotFoundException ex> @throws <Ausgabe, dass
-				 *            die csv Datei nicht da ist>
-				 */
+				
 			} catch (FileNotFoundException ex) {
 				System.err.println(csv_nichtgefunden);
 				System.exit(1);
-				/**
-				 * @exception <IOException ex> @throws <Ausgabe, dass die csv
-				 *            Datei Probleme hat>
-				 */
+				
 			} catch (IOException ex) {
 				System.err.println(csv_problemöffnen);
 				System.exit(1);
 			}
 
 		}
-		/**
-		 * @exception <ParseException e> @throws <Ausgabe, dass das Datum falsch
-		 *            eingegeben wurde>
-		 */
+		
 		catch (ParseException e) {
 			JOptionPane.showMessageDialog(null, falsches_datum, "Fehler",
 					JOptionPane.ERROR_MESSAGE);
 			txtTtmmjjjj_Einnahmen.setText(null);
 		}
-		/**
-		 * @exception <NumberFormatException e> @throws <Ausgabe, dass es einen
-		 *            Fehler bei der Betrageingabe gab>
-		 */
+		
 		catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(null, falsche_betragseingabe,
 					"Fehler", JOptionPane.ERROR_MESSAGE);
 			textField_Einnahmen.setText(null);
 		}
-		/**
-		 * @exception <IndexOutOfBoundsException e> @throws <Ausgabe, dass ein
-		 *            Fehler bei der Kategorie gab>
-		 */
+		
 		catch (IndexOutOfBoundsException e) {
 			JOptionPane.showMessageDialog(null, kategorie, "Fehler",
 					JOptionPane.ERROR_MESSAGE);
@@ -714,7 +713,12 @@ public class BudgetPlanGUI extends JFrame {
 		}
 	}
 
-	// Die Felder der Einnahmen werden hier gelöscht
+	
+	/**
+	 * 
+	 * Die Fehler der Einnahmen in der GUI werden auf den Urzustand gebracht.
+	 * 
+	 */
 	public void Clear_Einnahmen() {
 		textField_Einnahmen.setText(null);
 		txtTtmmjjjj_Einnahmen.setText(new SimpleDateFormat("dd.MM.yyyy")
@@ -722,7 +726,11 @@ public class BudgetPlanGUI extends JFrame {
 		comboBox_Einnahmen.setSelectedIndex(0);
 		textFieldNotiz_Einnahmen.setText(null);
 	}
-
+	
+	//
+	//Methoden für die Statistik
+	//
+	
 	/**
 	 * 
 	 * Methoden für die Statistik
@@ -853,17 +861,13 @@ public class BudgetPlanGUI extends JFrame {
 		}
 	}
 
+	//
+	//Initalisierung des Fensters
+	//
+	
 	/**
-	 * 
-	 * Initalisierung des Fensters
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
+	 * Das Ausgangs Fenster wird hier initalisiert
 	 */
-
 	protected void initWindow() {
 
 		panel = new JPanel();
@@ -875,32 +879,34 @@ public class BudgetPlanGUI extends JFrame {
 		// ///////////////////////////
 		// Panel 1 Anfang
 
-		/**
-		 * 
-		 * 
-		 * Panel in dem der Kontostand angezeigt und aktualisiert wird
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 */
+
+		//
+		//
+		//
+		//
+		// Panel in dem der Kontostand angezeigt und aktualisiert wird
+		// Ebenfalls wird hier das Datum und die Fehlermeldung bei gefährlichen Kontoständen gezeigt
+		//
+		//
+		//
+		//
+		//
+		//
+		//
+		//
 
 		lblKontostandsanzeige = new JLabel("Kontostand in [\u20ac]:");
 		lblKontostandsanzeige.setForeground(Color.BLUE);
 		lblKontostandsanzeige.setFont(new Font("Tahoma", Font.BOLD, 15));
 		lblKontostandsanzeige.setBounds(340, 0, 156, 34);
 		panel.add(lblKontostandsanzeige);
-
+		//Kontostand
 		lblKontostand = new JLabel("0");
 		lblKontostand.setFont(new Font("Tahoma", Font.BOLD, 20));
 		lblKontostand.setBounds(170, 35, 470, 35);
 		lblKontostand.setHorizontalAlignment(SwingConstants.CENTER);
 		panel.add(lblKontostand);
-
+		// Datum wird hier angezeigt
 		lblDatum = new JLabel("Datum: "
 				+ new SimpleDateFormat("E, dd.MM.yyyy").format(new Date()));
 		lblDatum.setBounds(10, 49, 142, 14);
@@ -908,37 +914,39 @@ public class BudgetPlanGUI extends JFrame {
 		panel.repaint();
 		panel.add(lblDatum);
 
-		// In Init Kontostnd wird das JLabel befüllt befüllt
+		// Kontostandswarnung
 		lblKontostandWarnung = new JLabel("");
 		lblKontostandWarnung.setBounds(588, 11, 156, 59);
 		panel.add(lblKontostandWarnung);
 
-		/**
-		 * 
-		 * 
-		 * Panel für externe Buttons
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 */
+		//
+		//
+		//
+		//Panel für externe Button
+		//
+		//
+		// Konto Löschen / Taschenrechner / Schließen / Info
+		//
+		//
+		//
+		//
+		//
+		
 		panel_1 = new JPanel();
 		panel_1.setBackground(new Color(255, 255, 255));
 		getContentPane().add(panel_1, BorderLayout.SOUTH);
 		panel_1.setPreferredSize(new Dimension(0, 50));
 
+		// Info Button über dem man Informationen zum Programm bekommt
 		btnInfo = new JButton("Info", new ImageIcon("src/img/info.png"));
-
+		
+		// Taschenrechner mit dem man schnell selbst kleinigkeiten ausrechnen kann
 		btnTaschenrechner = new JButton("Taschenrechner", new ImageIcon(
 				"src/img/calculator.png"));
-
+		// Button über den das Programm geschlossen werden kann
 		btnSchließen = new JButton("Schlie\u00DFen", new ImageIcon(
 				"src/img/close.png"));
-
+		// Button über den das aktuelle Konto des Programm gelöscht werden kann
 		btnKontoLöschen = new JButton(
 				"<html><body>Konto<br>löschen</body></html>", new ImageIcon(
 						"src/img/trash.png"));
@@ -992,54 +1000,59 @@ public class BudgetPlanGUI extends JFrame {
 												Short.MAX_VALUE)));
 		panel_1.setLayout(gl_panel_1);
 
-		/**
-		 * 
-		 * 
-		 * Panel für das Hauptmenü
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 */
+		//
+		//
+		//
+		//
+		// Panel über den das Hauptmenü gezeigt wird 
+		// Dieses Panel besteht aus einem JTabbedPane. So kann zwischen einzelnen Panels gewählt werden. 
+		//
+		//
+		//
+		//
+		//
+		//
+		//
 
 		tabbedPane = new JTabbedPane(JTabbedPane.LEFT);
 		tabbedPane.setBackground(new Color(135, 206, 235));
 		getContentPane().add(tabbedPane, BorderLayout.CENTER);
 
+		// Panel Konto
 		panel_Konto = new JPanel();
 		tabbedPane
 				.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Konto</body></html>",
 						null, panel_Konto, null);
 		panel_Konto.setLayout(new BorderLayout(0, 0));
-
+		// Panel Einnahmen
 		Panel_Einnahmen = new JPanel();
 		tabbedPane
 				.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Einnahmen</body></html>",
 						null, Panel_Einnahmen, null);
 		Panel_Einnahmen.setLayout(null);
-
+		
+		// Panel Ausgaben
 		Panel_Ausgaben = new JPanel();
 		tabbedPane
 				.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Ausgaben</body></html>",
 						null, Panel_Ausgaben, null);
 		Panel_Ausgaben.setLayout(null);
-
+		
+		//Panel Daueraufträge
 		panel_Dauerauftraege = new JPanel();
 		tabbedPane
 				.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Daueraufträge</body></html>",
 						null, panel_Dauerauftraege, null);
 		panel_Dauerauftraege.setLayout(null);
-
+		
+		//Panel Statistik
 		Panel_Statistiken = new JPanel();
 		tabbedPane
 				.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Statistik</body></html>",
 						null, Panel_Statistiken, null);
 		Panel_Statistiken.setLayout(null);
-
+		
+		//Panel Sparfunktion
 		panel_Sparfunktion = new JPanel();
 		tabbedPane
 				.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Sparfunktion</body></html>",
@@ -1047,21 +1060,15 @@ public class BudgetPlanGUI extends JFrame {
 		panel_Sparfunktion.setLayout(null);
 
 		// Panel 1 Ende
-
+		//
 		// Panel 2 Kontoübersicht Anfang
-		/**
-		 * 
-		 * 
-		 * Panel in dem alle Ausgaben und Einnahmen aufgeführt werden
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 */
+		//
+		//
+		//
+		//
+		//
+		//
+		//
 
 		// Tabelle mit Uebersicht der Ausgaben und Einnahmen
 		panel_Kontouebersicht = new JPanel();
@@ -1073,7 +1080,7 @@ public class BudgetPlanGUI extends JFrame {
 				"Konto\u00FCbersicht:                                                                    ");
 		panel_Kontouebersicht.add(lblKontouebersicht);
 		lblKontouebersicht.setFont(new Font("Tahoma", Font.BOLD, 18));
-
+		//Button über den das Konto gedruckt werden kann
 		btnKontoDrucken = new JButton("Drucken", new ImageIcon(
 				"src/img/printer.png"));
 
@@ -1084,36 +1091,34 @@ public class BudgetPlanGUI extends JFrame {
 
 		// Panel 2 Kontoübersicht Ende
 
-		// Panel3 Anfang
-
-		/**
-		 * 
-		 * 
-		 * Panel in dem alle Ausgaben erfasst werden
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 */
+		// Panel 3 Anfang
+		//
+		// Panel 3 in dem die Ausgaben erfasst werden 
+		//
+		//
+		//
+		//
+		//
+		//
+		//
+		
 		textField_Ausgaben = new JTextField();
 		textField_Ausgaben.setBounds(197, 13, 150, 25);
 		Panel_Ausgaben.add(textField_Ausgaben);
 		textField_Ausgaben.setHorizontalAlignment(JTextField.RIGHT);
-
+		//Label
 		lblAusgabenBuchungsbetrag = new JLabel("Buchungsbetrag:");
 		lblAusgabenBuchungsbetrag.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblAusgabenBuchungsbetrag.setBounds(21, 11, 142, 29);
 		Panel_Ausgaben.add(lblAusgabenBuchungsbetrag);
-
+		
+		//Label
 		lblAusgabenKategorie = new JLabel("Kategorie:");
 		lblAusgabenKategorie.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblAusgabenKategorie.setBounds(21, 67, 142, 29);
 		Panel_Ausgaben.add(lblAusgabenKategorie);
-
+		
+		//comboBox in der die Kategorien gewählt werden können
 		comboBox_Ausgaben = new JComboBox();
 		comboBox_Ausgaben.setModel(new DefaultComboBoxModel(new String[] {
 				"(Bitte Wählen)", "Krankenversicherung", "Hausversicherung",
@@ -1128,64 +1133,75 @@ public class BudgetPlanGUI extends JFrame {
 				"Miete", "Kredit", "Sonstiges" }));
 		comboBox_Ausgaben.setBounds(197, 69, 155, 25);
 		Panel_Ausgaben.add(comboBox_Ausgaben);
-
+		//Label
 		lblAusgabenWiederholung = new JLabel("Wiederholung:");
 		lblAusgabenWiederholung.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblAusgabenWiederholung.setBounds(21, 130, 142, 29);
 		Panel_Ausgaben.add(lblAusgabenWiederholung);
-
+		
+		//RadioButton zu Wiederholungswahl
 		rdbtnEinmaligAusgaben = new JRadioButton("einmalig");
 		rdbtnEinmaligAusgaben.setBounds(197, 133, 109, 23);
 		Panel_Ausgaben.add(rdbtnEinmaligAusgaben);
-
+		
+		//RadioButton zu Wiederholungswahl
 		rdbtnMonatlichAusgaben = new JRadioButton("monatlich\r\n");
 		rdbtnMonatlichAusgaben.setBounds(308, 133, 109, 23);
 		Panel_Ausgaben.add(rdbtnMonatlichAusgaben);
-
+		
+		//Label 
 		lblAusgabenFaelligkeitsdatum = new JLabel("F\u00E4lligkeitsdatum:");
 		lblAusgabenFaelligkeitsdatum.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblAusgabenFaelligkeitsdatum.setBounds(21, 189, 142, 29);
 		Panel_Ausgaben.add(lblAusgabenFaelligkeitsdatum);
-
+		
+		//TextField in dem das Datum angegeben werden kann
 		txtTtmmjjjj_Ausgaben = new JTextField();
 		txtTtmmjjjj_Ausgaben.setBounds(197, 190, 150, 26);
 		txtTtmmjjjj_Ausgaben.setText(new SimpleDateFormat("dd.MM.yyyy")
 				.format(new Date()));
 		txtTtmmjjjj_Ausgaben.setFont(new Font("Tahoma", Font.BOLD, 11));
 		Panel_Ausgaben.add(txtTtmmjjjj_Ausgaben);
-
+		
+		//Button über den die Buchung ausgeführt werden kann
 		btnAusgabenBuchen = new JButton("Buchen", new ImageIcon(
 				"src/img/account.png"));
 		btnAusgabenBuchen.setBounds(421, 311, 150, 29);
 		Panel_Ausgaben.add(btnAusgabenBuchen);
-
+		
+		//TextField über das eine Notiz zur Ausgabe hinzugeführt werden kann
 		textFieldNotiz_Ausgabe = new JTextField();
 		textFieldNotiz_Ausgabe.setBounds(197, 252, 150, 25);
 		Panel_Ausgaben.add(textFieldNotiz_Ausgabe);
-
+		
+		//Label
 		lblNotiz_Ausgaben = new JLabel("Beschreibung:");
 		lblNotiz_Ausgaben.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblNotiz_Ausgaben.setBounds(21, 250, 142, 29);
 		Panel_Ausgaben.add(lblNotiz_Ausgaben);
 
+		//Label
 		lblEuroZb = new JLabel(" Euro ( z.B. 5.55)");
 		lblEuroZb.setForeground(new Color(128, 128, 128));
 		lblEuroZb.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblEuroZb.setBounds(357, 18, 99, 14);
 		Panel_Ausgaben.add(lblEuroZb);
-
+		
+		//Label
 		label_Datum = new JLabel("TT.MM.JJJJ");
 		label_Datum.setForeground(new Color(128, 128, 128));
 		label_Datum.setFont(new Font("Tahoma", Font.BOLD, 11));
 		label_Datum.setBounds(357, 196, 67, 14);
 		Panel_Ausgaben.add(label_Datum);
-
+		
+		//Reset Button über den die Eingabe alle zurückgesetzt werden können
 		btnReset_Ausgaben = new JButton("Reset", new ImageIcon(
 				"src/img/reset.png"));
-
+		
 		btnReset_Ausgaben.setBounds(21, 311, 150, 29);
 		Panel_Ausgaben.add(btnReset_Ausgaben);
-
+		
+		//HilfeButton über den der Nutzer Hilfe für die richtige Eingabe bekommt
 		btnHelpButton_Ausgaben = new JButton("", new ImageIcon(
 				"src/img/help.png"));
 		btnHelpButton_Ausgaben.setBounds(570, 10, 60, 50);
@@ -1193,34 +1209,34 @@ public class BudgetPlanGUI extends JFrame {
 		// Panel 3 Ende
 
 		// Panel 4 Einnahmen Anfang
-		/**
-		 * 
-		 * 
-		 * Panel in dem alle Einnahmen erfasst werden
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 * 
-		 */
+		//
+		// Panel in dem die Einnahmen erfasst werden
+		//
+		//
+		//
+		//
+		//
+		//
+		//
+		
 		textField_Einnahmen = new JTextField();
 		textField_Einnahmen.setBounds(197, 13, 150, 25);
 		Panel_Einnahmen.add(textField_Einnahmen);
 		textField_Einnahmen.setHorizontalAlignment(JTextField.RIGHT);
 
+		//Label
 		lblEinnahmenBuchungsbetrag = new JLabel("Buchungsbetrag:");
 		lblEinnahmenBuchungsbetrag.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblEinnahmenBuchungsbetrag.setBounds(21, 11, 142, 29);
 		Panel_Einnahmen.add(lblEinnahmenBuchungsbetrag);
 
+		//Label
 		lblEinnahmenKategorie = new JLabel("Kategorie:");
 		lblEinnahmenKategorie.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblEinnahmenKategorie.setBounds(21, 67, 142, 29);
 		Panel_Einnahmen.add(lblEinnahmenKategorie);
 
+		//comboBox in der die Kategorien gewählt werden können
 		comboBox_Einnahmen = new JComboBox();
 		comboBox_Einnahmen.setModel(new DefaultComboBoxModel(new String[] {
 				"(Bitte Wählen)", "Lohn/Gehalt", "Taschengeld", "Erbe",
@@ -1229,25 +1245,30 @@ public class BudgetPlanGUI extends JFrame {
 		comboBox_Einnahmen.setBounds(197, 69, 155, 25);
 		Panel_Einnahmen.add(comboBox_Einnahmen);
 
+		//Label
 		lblEinnahmenWiederholung = new JLabel("Wiederholung:");
 		lblEinnahmenWiederholung.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblEinnahmenWiederholung.setBounds(21, 130, 142, 29);
 		Panel_Einnahmen.add(lblEinnahmenWiederholung);
 
+		//RadioButton zu Wiederholungswahl
 		rdbtnEinnahmenEinmalig = new JRadioButton("einmalig");
 		rdbtnEinnahmenEinmalig.setBounds(197, 133, 109, 23);
 		Panel_Einnahmen.add(rdbtnEinnahmenEinmalig);
 
+		//RadioButton zu Wiederholungswahl
 		rdbtnEinnahmenMonatlich = new JRadioButton("monatlich\r\n");
 		rdbtnEinnahmenMonatlich.setBounds(308, 133, 109, 23);
 		Panel_Einnahmen.add(rdbtnEinnahmenMonatlich);
 
+		//Label
 		lblEinnahmenFaelligkeitsdatum = new JLabel("F\u00E4lligkeitsdatum:");
 		lblEinnahmenFaelligkeitsdatum
 				.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblEinnahmenFaelligkeitsdatum.setBounds(21, 189, 142, 29);
 		Panel_Einnahmen.add(lblEinnahmenFaelligkeitsdatum);
 
+		//TextField in dem das Datum angegeben werden kann
 		txtTtmmjjjj_Einnahmen = new JTextField();
 		txtTtmmjjjj_Einnahmen.setBounds(197, 190, 150, 26);
 		txtTtmmjjjj_Einnahmen.setText(new SimpleDateFormat("dd.MM.yyyy")
@@ -1255,38 +1276,45 @@ public class BudgetPlanGUI extends JFrame {
 		txtTtmmjjjj_Einnahmen.setFont(new Font("Tahoma", Font.BOLD, 11));
 		Panel_Einnahmen.add(txtTtmmjjjj_Einnahmen);
 
+		//Button über den die Buchung ausgeführt werden kann
 		btnEinnahmenBuchen = new JButton("Buchen", new ImageIcon(
 				"src/img/account.png"));
 		btnEinnahmenBuchen.setBounds(421, 311, 150, 29);
 		Panel_Einnahmen.add(btnEinnahmenBuchen);
 
+		//Label
 		lblNotiz_Einnahmen = new JLabel("Beschreibung:");
 		lblNotiz_Einnahmen.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblNotiz_Einnahmen.setBounds(21, 250, 142, 29);
 		Panel_Einnahmen.add(lblNotiz_Einnahmen);
 
+		//TextField über das eine Notiz zur Ausgabe hinzugeführt werden kann
 		textFieldNotiz_Einnahmen = new JTextField();
 		textFieldNotiz_Einnahmen.setColumns(10);
 		textFieldNotiz_Einnahmen.setBounds(197, 252, 150, 25);
 		Panel_Einnahmen.add(textFieldNotiz_Einnahmen);
 
+		//Label
 		lblEuro = new JLabel(" Euro ( z.B. 5.55)");
 		lblEuro.setForeground(new Color(128, 128, 128));
 		lblEuro.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblEuro.setBounds(357, 18, 99, 14);
 		Panel_Einnahmen.add(lblEuro);
 
+		//Label
 		lblTtmmyyyy = new JLabel("TT.MM.JJJJ");
 		lblTtmmyyyy.setForeground(new Color(128, 128, 128));
 		lblTtmmyyyy.setFont(new Font("Tahoma", Font.BOLD, 11));
 		lblTtmmyyyy.setBounds(357, 196, 67, 14);
 		Panel_Einnahmen.add(lblTtmmyyyy);
 
+		//Reset Button über den die Eingabe alle zurückgesetzt werden können
 		btnReset_Einnahmen = new JButton("Reset", new ImageIcon(
 				"src/img/reset.png"));
 		btnReset_Einnahmen.setBounds(21, 311, 150, 29);
 		Panel_Einnahmen.add(btnReset_Einnahmen);
 
+		//HilfeButton über den der Nutzer Hilfe für die richtige Eingabe bekommt
 		btnHelpButton_Einnahmen = new JButton("", new ImageIcon(
 				"src/img/help.png"));
 		btnHelpButton_Einnahmen.setBounds(570, 10, 60, 50);
@@ -1378,7 +1406,7 @@ public class BudgetPlanGUI extends JFrame {
 	 * 
 	 * 
 	 * 
-	 * Im Verhalten werden die obigen Methoden angewand
+	 * Im Verhalten werden die Methoden angewand
 	 * 
 	 * 
 	 * 
@@ -1387,7 +1415,9 @@ public class BudgetPlanGUI extends JFrame {
 	 * 
 	 */
 	public void addBehavior() {
+		//Abfrage, ob die Csv Datei leer ist und ein neues Konto erstellt werden muss
 		Anfangsabfrage();
+		//Kontostandsinitiierung 
 		Init_Kontostand(1);
 
 		// Button der die Kontoübersicht druckt.
@@ -1425,7 +1455,8 @@ public class BudgetPlanGUI extends JFrame {
 			}
 
 		});
-
+		
+		//Button über den man Hilfe bekommt (Ausgaben)
 		btnHelpButton_Ausgaben.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
@@ -1457,7 +1488,8 @@ public class BudgetPlanGUI extends JFrame {
 			}
 
 		});
-
+		
+		//Button über den man Hilfe bekommt (Einnahmen)
 		btnHelpButton_Einnahmen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
@@ -1532,6 +1564,7 @@ public class BudgetPlanGUI extends JFrame {
 			}
 		});
 
+		//Button über den man Hilfe bekommt (Statistik)
 		btnStatistikHilfe.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JOptionPane.showMessageDialog(null, hilfe_stat, "Hilfe - Statistik",

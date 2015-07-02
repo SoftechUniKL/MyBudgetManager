@@ -33,7 +33,6 @@ public class Posten {
 
 	/**
 	 * Konstruktor
-	 
 	 *    
 	 */
 	public Posten(Date datum,String notiz, String bezeichnung, double betrag, int intern_Einnahme_Ausgabe) {
@@ -44,37 +43,56 @@ public class Posten {
 		this.intern_Einnahme_Ausgabe = intern_Einnahme_Ausgabe;
 	}
 
+	
+	/**
+	 * 
+	 * @return datum Gibt das Datum zurück 
+	 */
 	public Date getDatum() {
-		/**
-		 *@return <Gibt das Datum der Buchung zurück>
-		 */
+		
 		return datum; 
 	}
+	
+	
+	/**
+	 * 
+	 * @return notiz 
+	 */
 	public String getnotiz() {
-		/**
-		 *@return <Gibt die eingegebene Notzi zurück>
-		 */
+		
 		return notiz;
 	}
-
+	
+	
+	/**
+	 * 
+	 * @return bezeichnung 
+	 */
 	public String getBezeichnung() {
-		/**
-		 *@return <Gibt die ausgewählte Kategorie zurück>
-		 */
+		
 		return bezeichnung;
 	}
 
+	
+	/**
+	 * 
+	 * @return betrag (Bekommt den zu buchenden Betrag
+	 */
 	public double getBetrag() {
-		/**
-		 *@return <Gibt den eingegebenen Geldbetrag zurück>
-		 */
+		
 		return betrag;
 	}
 	
+	
+	/**
+	 * 
+	 * @return intern_Einnahme_Ausgabe 
+	 * Gibt eine 0 oder 1 zurück
+	 * 0 = Einnahme
+	 * 1 = Ausgabe
+	 */
 	public int getintern_Einnahme_Ausgabe() {
-		/**
-		 *@return <Gibt intern eine 0 oder eine 1 zurück>
-		 */
+		
 		return intern_Einnahme_Ausgabe;
 	}
 }

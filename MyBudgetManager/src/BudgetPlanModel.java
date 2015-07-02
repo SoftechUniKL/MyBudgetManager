@@ -13,14 +13,20 @@ import java.util.Locale;
 import com.opencsv.CSVReader;
 
 /**
- * Datenmodell des Budgetplaners
+ * Datenmodell des Budgetplaners.
  * 
  * Die Daten werden in der Datei data/budget.csv abgespeichert als CSV-Datei.
- * Hierbei handelt es sich um die 4 @param <datum,notiz,bezeichnung,betrag,intern_Einnahme_Ausgabe> (nähere Beschreibung unter Posten), 
- * die durch den Benutzer in der Gui @class <BudgetPlanGUI> eingelesen werden.
  * 
+ * @exception <FileNotFoundException e>  
+ * @throws <Ausgabe, dass die csv Datei nicht da ist>
  * 
+ * @exception <IOException e>  
+ * @throws <Ausgabe, dass es Probleme beim öffnen gab>
+ * 
+ * @exception <ParseException e>  
+ * @throws <Ausgabe, dass des einen Formatfehler gibt>
  */
+
 public class BudgetPlanModel {
 	List<Posten> Geldvermögen;
 		
@@ -41,32 +47,25 @@ public class BudgetPlanModel {
 			}
 			reader.close();
 		
-		/**
-		 * Für das Auslesen der Daten aus der CSV Datei wurden drei Fehlermeldungen festgelegt. 
-		 * 
-		 * 
-		 */
+		
 			
 			
-		/**
-		 *@exception <FileNotFoundException e>  @throws <Ausgabe, dass die csv Datei nicht da ist>
-		 */
+		 // Für das Auslesen der Daten aus der CSV Datei wurden drei Fehlermeldungen festgelegt. 
+		 
+			
+		// Fehlermeldung, wenn die Csv Datei nicht gefunden wird. 
 		} catch (FileNotFoundException e) {
 			System.err
 					.println("Die Datei data/budget.csv wurde nicht gefunden!");
 			System.exit(1);
 			
-			/**
-			 *@exception <IOException e>  @throws <Ausgabe, dass es Probleme beim öffnen gab>
-			 */
+		// Fehlermeldung, wenn die Csv Datein probleme beim Öffnen hat.
 		} catch (IOException e) {
 			System.err
 					.println("Probleme beim Oeffnen der Datei data/budget.csv!");
 			System.exit(1);
-			
-			/**
-			 *@exception <ParseException e>  @throws <Ausgabe, dass des einen Formatfehler gibt>
-			 */
+		
+		// Fehlermeldung, wenn es ein Problem beim lesen der Daten gibt.
 		} catch (ParseException e) {
 			System.err
 					.println("Formatfehler: Die Datei konnte nicht eingelesen werden!");
