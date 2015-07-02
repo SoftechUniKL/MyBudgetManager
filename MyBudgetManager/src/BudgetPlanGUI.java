@@ -129,14 +129,7 @@ public class BudgetPlanGUI extends JFrame {
 	private JLabel lblStatistikmodell;
 
 	// panel_Sparfunktion
-	
-		private JPanel panel_Sparfunktion;
-		private JLabel lblsparrate, lblnachSparmaßnahme,lbl_prozent,lblStartwert ;
-		private JTextField textFieldsparrate, textFieldZeitraum,textFieldStartwert,textFieldZinsen;
-		private JRadioButton rdbtnMonatlichSparfkt, rdbtnJaehrlichSparfkt,
-				rdbtnEinmaligSparfkt,rdbtnZinsenAnAus;
-		private JButton btnBerechne;
-		private JComboBox comboBoxZinsperiode;
+	private JPanel panel_Sparfunktion;
 
 	/**
 	 * 
@@ -614,18 +607,6 @@ public class BudgetPlanGUI extends JFrame {
 				}
 			}
 		}
-		
-		// Startwert Sparfunktion, basierend auf dem aktuellen Kontostand
-		DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance();
-		dfs.setDecimalSeparator('.');
-		DecimalFormat df = new DecimalFormat("#0.00", dfs);
-		String s=String.valueOf(df.format(i));// zur Sparfunktion -> Startwert durch Punkt statt durch Komma trennen 
-		//um exception zu verhindern 
-
-		textFieldStartwert.setText(s);
-		textFieldZeitraum.setText("0");
-		
-		// Weitere Methodenausführung
 		Init_Kontoübersicht();
 		Statistik_Warnung();
 
@@ -882,195 +863,6 @@ public class BudgetPlanGUI extends JFrame {
 	}
 
 	//
-	//Methoden für die Sparfunktion
-	//
-	
-	// Sparfunktion Methode
-	/**
-	 * Methode für die Sparfunktion / Richtige Eingabe etc  
-	 */
-	private void Checkdata_Sparfkt() {
-		try {// Abfrage oberes Textfeld sparrate
-			double sparrate = Double.parseDouble(textFieldsparrate.getText());
-			if (sparrate < 0)
-				throw new NumberFormatException();
-			DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance();
-			dfs.setDecimalSeparator('.');
-			DecimalFormat df = new DecimalFormat("#0.00", dfs);
-			String j;
-			j = df.format(sparrate);
-			if (!textFieldsparrate.getText().equals(j)) {
-				throw new NumberFormatException();
-			}
-		} catch (NumberFormatException e) {
-			JOptionPane
-					.showMessageDialog(
-							null,
-							"Falsche Betragseingabe. \n"
-									+ "Formathinweis: \n"
-									+ "- Bitte verwenden Sie nur Zahlen \n"
-									+ "- Benutzen Sie bitte Punkt statt Komma \n"
-									+ "- Achten Sie bitte auf die evtl. fehlenden zwei Nachkommastellen \n"
-									+ "- Benutzen Sie bitte kein Negativzeichen",
-							"Fehler", JOptionPane.ERROR_MESSAGE);
-			textFieldsparrate.setText(null);
-
-		}
-		
-		try {// Abfrage unteres Textfeld Zeitraum   //möglicherweise dieses try mit oberem try verknüpfen 
-			int zeitraum = Integer.parseInt(textFieldZeitraum.getText());
-			if(rdbtnEinmaligSparfkt.isSelected()==true){
-				zeitraum=1;
-			}
-			if (zeitraum <= 0)
-				throw new NumberFormatException();
-		} catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(null, "Falsche Zeitangabe! \n" + "\n"
-					+ "Formathinweis: \n"
-					+ "- Bitte verwenden Sie nur positive ganze Zahlen, die größer als 0 sind \n",
-					"Fehler", JOptionPane.ERROR_MESSAGE);
-			textFieldZeitraum.setText("0");
-		}
-			
-		
-		
-		if(rdbtnZinsenAnAus.isSelected()==true){
-			try{
-			double zinssatz = Double.parseDouble(textFieldZinsen.getText());
-			if (zinssatz < 0)// wenn kleiner 0 exception 
-				throw new NumberFormatException();
-			DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance();
-			dfs.setDecimalSeparator('.');
-			DecimalFormat df = new DecimalFormat("#0.00", dfs);
-			String j;
-			j = df.format(zinssatz);
-			if (!textFieldZinsen.getText().equals(j)) {
-				throw new NumberFormatException();//wenn nicht format exception 
-			}
-			}catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(
-							null,
-							"Falsche Betragseingabe. \n"
-									+"\n"
-									+ "Formathinweis: \n"
-									+ "- Bitte verwenden Sie nur Zahlen \n"
-									+ "- Benutzen Sie bitte Punkt statt Komma \n"
-									+ "- Achten Sie bitte auf die evtl. fehlenden zwei Nachkommastellen \n"
-									+ "- Benutzen Sie bitte kein Negativzeichen"
-									+ "- Keine Eingabe > 100.00%",
-							"Fehler", JOptionPane.ERROR_MESSAGE);
-			textFieldZinsen.setText(null);
-			
-		}
-		}
-		berechne_Sparfkt();
-
-	}
-
-	/**
-	 * Methode für die Sparfunktion / Werte aus den Textfeldern auslesen und berechnen 
-	 */
-	
-	private void berechne_Sparfkt() {
-		DecimalFormat df = new DecimalFormat("#0.00");
-		double sparwert=0.00;
-		double zwischenwert=0.00;
-		double zinsertrag=0.00;
-		double startwert=Double.parseDouble(textFieldStartwert.getText());
-		double sparrate = Double.parseDouble(textFieldsparrate.getText());
-		int zeitraum = Integer.parseInt(textFieldZeitraum.getText());
-		
-		if(rdbtnZinsenAnAus.isSelected()==false){//Wenn zinsen inaktiv beginn
-			
-		if (rdbtnEinmaligSparfkt.isSelected()==true) {
-			zeitraum=1;	
-		}
-		if (rdbtnJaehrlichSparfkt.isSelected()==true) {
-			zeitraum=zeitraum*12;// auf Monatsanzahl bringen -> Frage ? soll jährlich heißen über Jahre !?	
-		}
-		sparwert=sparrate*zeitraum;
-		lblnachSparmaßnahme.setText(String.valueOf(df.format(startwert+sparwert)));
-		//Wenn zinsen inaktiv ende
-		
-		}else{//wenn zinsen aktiv
-			String zinsperiode=(String) comboBoxZinsperiode.getSelectedItem();// hierzu fehlt catch !!! + benutzung
-			double zinssatz=Double.parseDouble(textFieldZinsen.getText());
-			
-			if (rdbtnEinmaligSparfkt.isSelected()==true) {//--------------------passt
-				zeitraum=1;	
-				zinsertrag=(startwert+sparrate)*zinssatz/100;
-				lblnachSparmaßnahme.setText(String.valueOf(df.format(startwert+sparrate+zinsertrag)));		
-		}		
-			if (rdbtnMonatlichSparfkt.isSelected()==true) {// --------------------------------------passt
-				for(int i=1;i<=zeitraum;i++){ 
-					zinsertrag=(startwert+sparrate)*zinssatz/100;//11*0.1=1.1
-					zwischenwert=startwert+sparrate+zinsertrag;   //12.1
-					startwert=zwischenwert;//12.1
-				}
-				lblnachSparmaßnahme.setText(String.valueOf(df.format(startwert)));
-			}
-				
-			if (rdbtnJaehrlichSparfkt.isSelected()==true) {
-					
-					if (zinsperiode=="(Bitte Wählen)"){// wenn zinsen aktiv und zinsperiode jaehrlich also nach 12 monaten erst zinsen
-					//Fehlermeldung bitte zinsperiode auswählen
-		
-					}
-					if (zinsperiode=="monatlich"){
-						for(int i=1;i<=zeitraum*12;i++){
-							zwischenwert=startwert+sparrate;
-							zinsertrag=zwischenwert*zinssatz/100;
-							zwischenwert=zwischenwert+zinsertrag;
-							startwert=zwischenwert;
-						}
-						lblnachSparmaßnahme.setText(String.valueOf(df.format(startwert)));
-					}
-					
-					if (zinsperiode=="jährlich"){
-						for(int i=1;i<=zeitraum;i++){
-							zwischenwert=startwert+(sparrate*12);
-							zinsertrag=zwischenwert*zinssatz/100;
-							zwischenwert=zwischenwert+zinsertrag;
-							startwert=zwischenwert;
-						}
-						lblnachSparmaßnahme.setText(String.valueOf(df.format(startwert)));
-					}
-					if (zinsperiode=="halbjährig"){
-						for(int i=1;i<=zeitraum*12;i++){
-							zwischenwert=startwert+sparrate;
-							startwert=zwischenwert;
-							if(i%6==0){
-								zinsertrag=zwischenwert*zinssatz/100;
-								zwischenwert=zwischenwert+zinsertrag;
-								startwert=zwischenwert;
-							}
-						}
-						
-						if (zinsperiode=="quartalsweise"){// funktioniert noch nicht !!!!
-							for(int i=1;i<=zeitraum*12;i++){
-								zwischenwert=startwert+sparrate;
-								startwert=zwischenwert;
-								if(i%3==0){
-									zinsertrag=zwischenwert*zinssatz/100;
-									zwischenwert=zwischenwert+zinsertrag;
-									startwert=zwischenwert;
-								}
-							}
-						lblnachSparmaßnahme.setText(String.valueOf(df.format(startwert)));
-					}
-					
-					}
-		
-
-			}
-			
-			}
-		}//wenn zinsen aktiv ende-----
-		 //Berechnung läuft falsch !!!
-		 //anpassen noch auf Intervall des Zinssatzes
-		//Excepution radio button fehlt
-		
-	//
 	//Initalisierung des Fensters
 	//
 	
@@ -1262,7 +1054,11 @@ public class BudgetPlanGUI extends JFrame {
 		Panel_Statistiken.setLayout(null);
 		
 		//Panel Sparfunktion
-	
+		panel_Sparfunktion = new JPanel();
+		tabbedPane
+				.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Sparfunktion</body></html>",
+						null, panel_Sparfunktion, null);
+		panel_Sparfunktion.setLayout(null);
 
 		// Panel 1 Ende
 		//
@@ -1528,11 +1324,6 @@ public class BudgetPlanGUI extends JFrame {
 		// ANFANG PANEL 5 Daueraufträge
 		//
 		//
-		JLabel label = new JLabel(new ImageIcon("src/img/work.png"));
-		label.setBounds(232, 123, 207, 138);
-		panel_Dauerauftraege.add(label);
-		
-		
 		// ENDE PANEL 5 Daueraufträge
 
 		// ANFANG PANEL 6 Statistiken
@@ -1599,125 +1390,12 @@ public class BudgetPlanGUI extends JFrame {
 
 		// ENDE PANEL 6 Statistiken
 
-		
 		// Anfang Panel 7 Sparfunktion
 		//
 		//
-		
-		
-		
-
-				panel_Sparfunktion = new JPanel();
-				tabbedPane
-						.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Sparfunktion</body></html>",
-								null, panel_Sparfunktion, null);
-				panel_Sparfunktion.setLayout(null);
-
-				lblStartwert = new JLabel(
-						"Startwert:");
-				lblStartwert.setFont(new Font("Tahoma", Font.BOLD, 11));
-				lblStartwert.setBackground(Color.WHITE);
-				lblStartwert.setBounds(22, 11, 171, 29);
-				panel_Sparfunktion.add(lblStartwert);
-
-				lblsparrate = new JLabel("Sparrate:");
-				lblsparrate.setFont(new Font("Tahoma", Font.BOLD, 11));
-				lblsparrate.setBounds(21, 70, 142, 29);
-				panel_Sparfunktion.add(lblsparrate);
-
-				textFieldsparrate = new JTextField();
-				textFieldsparrate.setBounds(147, 74, 97, 20);
-				panel_Sparfunktion.add(textFieldsparrate);
-				textFieldsparrate.setColumns(10);
-
-				JLabel lblIn = new JLabel(" Euro ( z.B. 5.55)");
-				lblIn.setBounds(254, 77, 109, 14);
-				panel_Sparfunktion.add(lblIn);
-
-				JLabel lblWiederholung = new JLabel("Sparintervall:");
-				lblWiederholung.setFont(new Font("Tahoma", Font.BOLD, 11));
-				lblWiederholung.setBounds(21, 133, 142, 29);
-				panel_Sparfunktion.add(lblWiederholung);
-
-				rdbtnEinmaligSparfkt = new JRadioButton("einmalig");
-				rdbtnEinmaligSparfkt.setBounds(147, 136, 97, 23);
-				panel_Sparfunktion.add(rdbtnEinmaligSparfkt);
-
-				rdbtnMonatlichSparfkt = new JRadioButton("monatlich");
-				rdbtnMonatlichSparfkt.setBounds(242, 136, 109, 23);
-				panel_Sparfunktion.add(rdbtnMonatlichSparfkt);
-
-				rdbtnJaehrlichSparfkt = new JRadioButton("j\u00E4hrlich");
-				rdbtnJaehrlichSparfkt.setBounds(353, 136, 109, 23);
-				panel_Sparfunktion.add(rdbtnJaehrlichSparfkt);
-
-				JLabel lblZeitraum = new JLabel("Zeitraum:");
-				lblZeitraum.setFont(new Font("Tahoma", Font.BOLD, 11));
-				lblZeitraum.setBounds(21, 186, 142, 29);
-				panel_Sparfunktion.add(lblZeitraum);
-
-				textFieldZeitraum = new JTextField();
-				textFieldZeitraum.setBounds(147, 190, 97, 20);
-				panel_Sparfunktion.add(textFieldZeitraum);
-				textFieldZeitraum.setColumns(10);
-
-				JLabel lblMonatejahre = new JLabel("Monate/Jahre");
-				lblMonatejahre.setBounds(254, 193, 96, 14);
-				panel_Sparfunktion.add(lblMonatejahre);
-
-				JLabel lblKontostandNachSparmanahme = new JLabel(
-						"Kontostand nach Sparma\u00DFnahme:");
-				lblKontostandNachSparmanahme.setFont(new Font("Tahoma", Font.BOLD, 11));
-				lblKontostandNachSparmanahme.setBounds(22, 332, 200, 34);
-				panel_Sparfunktion.add(lblKontostandNachSparmanahme);
-
-				lblnachSparmaßnahme = new JLabel("-");
-				lblnachSparmaßnahme.setBounds(242, 338, 184, 22);
-				panel_Sparfunktion.add(lblnachSparmaßnahme);
-
-				btnBerechne = new JButton("Berechne");
-				btnBerechne.setBounds(22, 297, 89, 23);
-				panel_Sparfunktion.add(btnBerechne);
-				
-				textFieldStartwert = new JTextField();
-				textFieldStartwert.setBounds(147, 15, 97, 20);
-				panel_Sparfunktion.add(textFieldStartwert);
-				textFieldStartwert.setColumns(10);
-				
-				JLabel lblZinsen = new JLabel("Zinssatz:");
-				lblZinsen.setFont(new Font("Tahoma", Font.BOLD, 11));
-				lblZinsen.setBounds(22, 247, 55, 20);
-				panel_Sparfunktion.add(lblZinsen);
-				
-				JLabel lblZinsperiode = new JLabel("Zinsperiode");
-				lblZinsperiode.setFont(new Font("Tahoma", Font.BOLD, 11));
-				lblZinsperiode.setBounds(362, 250, 80, 14);
-				panel_Sparfunktion.add(lblZinsperiode);
-				
-				textFieldZinsen = new JTextField();
-				textFieldZinsen.setBounds(147, 247, 97, 20);
-				panel_Sparfunktion.add(textFieldZinsen);
-				textFieldZinsen.setColumns(10);
-				
-				lbl_prozent = new JLabel("% (z.B. 3.02)");
-				lbl_prozent.setText("% z.B. 3.02");
-				lbl_prozent .setBounds(254, 250, 71, 14);
-				panel_Sparfunktion.add(lbl_prozent );
-				
-				comboBoxZinsperiode = new JComboBox();
-				comboBoxZinsperiode.setBounds(470, 247, 109, 20);
-				comboBoxZinsperiode.setModel(new DefaultComboBoxModel(new String[] {
-						"(Bitte Wählen)", "jährlich", "halbjährig","quartalsweise",
-						"monatlich" }));
-				panel_Sparfunktion.add(comboBoxZinsperiode);
-				
-				rdbtnZinsenAnAus = new JRadioButton("an\r\n");
-				rdbtnZinsenAnAus.setBounds(75, 246, 55, 23);
-				panel_Sparfunktion.add(rdbtnZinsenAnAus);
-				rdbtnZinsenAnAus.setSelected(true);
-				// ENDE PANEL 7 Sparfunktion
-
-		
+		JLabel label = new JLabel(new ImageIcon("src/img/work.png"));
+		label.setBounds(232, 123, 207, 138);
+		panel_Dauerauftraege.add(label);
 
 		// ENDE PANEL 7 Sparfunktion
 
@@ -1883,78 +1561,6 @@ public class BudgetPlanGUI extends JFrame {
 				case 8:
 					Grafikmodellauswahl("Kategorie_Wasserfalldiagramm");
 					break;
-				}
-			}
-		});
-		
-		//Button für die Ausführung der Sparfunktion
-		rdbtnEinmaligSparfkt.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (rdbtnEinmaligSparfkt.isSelected()) {
-					textFieldZeitraum.setEnabled(false);
-					rdbtnMonatlichSparfkt.setEnabled(false);
-					rdbtnJaehrlichSparfkt.setEnabled(false);
-					comboBoxZinsperiode.setEnabled(false);
-
-				} else {
-					textFieldZeitraum.setEnabled(true);
-					rdbtnMonatlichSparfkt.setEnabled(true);
-					rdbtnJaehrlichSparfkt.setEnabled(true);
-					comboBoxZinsperiode.setEnabled(true);
-				}
-			}
-		});
-		rdbtnMonatlichSparfkt.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (rdbtnMonatlichSparfkt.isSelected()) {
-					rdbtnEinmaligSparfkt.setEnabled(false);
-					rdbtnJaehrlichSparfkt.setEnabled(false);
-					comboBoxZinsperiode.setEnabled(false);
-					comboBoxZinsperiode.setSelectedItem("monatlich");
-
-				} else {
-					rdbtnEinmaligSparfkt.setEnabled(true);
-					rdbtnJaehrlichSparfkt.setEnabled(true);
-					comboBoxZinsperiode.setEnabled(true);
-					comboBoxZinsperiode.setSelectedItem("(Bitte Wählen)");
-
-				}
-			}
-		});
-		rdbtnJaehrlichSparfkt.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (rdbtnJaehrlichSparfkt.isSelected()) {
-					rdbtnEinmaligSparfkt.setEnabled(false);
-					rdbtnMonatlichSparfkt.setEnabled(false);
-					
-
-				} else {
-					rdbtnEinmaligSparfkt.setEnabled(true);
-					rdbtnMonatlichSparfkt.setEnabled(true);
-					
-
-				}
-			}
-		});
-
-		btnBerechne.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				Checkdata_Sparfkt();
-				
-			}
-
-		});
-		
-		rdbtnZinsenAnAus.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (rdbtnZinsenAnAus.isSelected()) {
-					rdbtnZinsenAnAus.setText("an");
-					textFieldZinsen.setEnabled(true);
-					comboBoxZinsperiode.setEnabled(true);
-				} else {
-					rdbtnZinsenAnAus.setText("aus");
-					textFieldZinsen.setEnabled(false);
-					comboBoxZinsperiode.setEnabled(false);
 				}
 			}
 		});
