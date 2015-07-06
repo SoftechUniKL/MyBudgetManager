@@ -1163,11 +1163,13 @@ public class BudgetPlanGUI extends JFrame {
 		//RadioButton zu Wiederholungswahl
 		rdbtnEinmaligAusgaben = new JRadioButton("einmalig");
 		rdbtnEinmaligAusgaben.setBounds(197, 133, 109, 23);
+		rdbtnEinmaligAusgaben.setSelected(true);
 		Panel_Ausgaben.add(rdbtnEinmaligAusgaben);
 		
 		//RadioButton zu Wiederholungswahl
 		rdbtnMonatlichAusgaben = new JRadioButton("monatlich\r\n");
 		rdbtnMonatlichAusgaben.setBounds(308, 133, 109, 23);
+		rdbtnMonatlichAusgaben.setEnabled(false);
 		Panel_Ausgaben.add(rdbtnMonatlichAusgaben);
 		
 		//Label 
@@ -1275,11 +1277,13 @@ public class BudgetPlanGUI extends JFrame {
 		//RadioButton zu Wiederholungswahl
 		rdbtnEinnahmenEinmalig = new JRadioButton("einmalig");
 		rdbtnEinnahmenEinmalig.setBounds(197, 133, 109, 23);
+		rdbtnEinnahmenEinmalig.setSelected(true);
 		Panel_Einnahmen.add(rdbtnEinnahmenEinmalig);
 
 		//RadioButton zu Wiederholungswahl
 		rdbtnEinnahmenMonatlich = new JRadioButton("monatlich\r\n");
 		rdbtnEinnahmenMonatlich.setBounds(308, 133, 109, 23);
+		rdbtnEinnahmenMonatlich.setEnabled(false);
 		Panel_Einnahmen.add(rdbtnEinnahmenMonatlich);
 
 		//Label
