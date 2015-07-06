@@ -129,7 +129,14 @@ public class BudgetPlanGUI extends JFrame {
 	private JLabel lblStatistikmodell;
 
 	// panel_Sparfunktion
-	private JPanel panel_Sparfunktion;
+	
+		private JPanel panel_Sparfunktion;
+		private JLabel lblsparrate, lblnachSparmaßnahme,lbl_prozent,lblStartwert ;
+		private JTextField textFieldsparrate, textFieldZeitraum,textFieldStartwert,textFieldZinsen;
+		private JRadioButton rdbtnMonatlichSparfkt, rdbtnJaehrlichSparfkt,
+				rdbtnEinmaligSparfkt,rdbtnZinsenAnAus;
+		private JButton btnBerechne;
+		private JComboBox comboBoxZinsperiode;
 
 	/**
 	 * 
@@ -589,6 +596,7 @@ public class BudgetPlanGUI extends JFrame {
 					
 					lblKontostandWarnung.setText("<html><body><center><u>  ACHTUNG!</u><u><br>Ihr Kontostand ist sehr niedrig!</br></u></center></body></html>");
 					lblKontostandWarnung.setBackground(new Color(250, 250, 120));
+					lblKontostandWarnung.setForeground(Color.black);
 					lblKontostandWarnung.setOpaque(true);
 				}
 				else if (i < 0){
@@ -598,7 +606,8 @@ public class BudgetPlanGUI extends JFrame {
 							"Kontostandswarnung", JOptionPane.WARNING_MESSAGE);
 					
 					lblKontostandWarnung.setText("<html><body><center><u>ACHTUNG!</u><u><br>Ihr Kontostand ist im negativen Bereich!</br></u></center></body></html>");
-					lblKontostandWarnung.setBackground(new Color (250, 96, 65));
+					lblKontostandWarnung.setBackground(new Color (250, 70, 70));
+					lblKontostandWarnung.setForeground(Color.white);
 					lblKontostandWarnung.setOpaque(true);
 				}
 				else {
@@ -607,6 +616,18 @@ public class BudgetPlanGUI extends JFrame {
 				}
 			}
 		}
+		
+		// Startwert Sparfunktion, basierend auf dem aktuellen Kontostand
+		DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance();
+		dfs.setDecimalSeparator('.');
+		DecimalFormat df = new DecimalFormat("#0.00", dfs);
+		String s=String.valueOf(df.format(i));// zur Sparfunktion -> Startwert durch Punkt statt durch Komma trennen 
+		//um exception zu verhindern 
+
+		textFieldStartwert.setText(s);
+		textFieldZeitraum.setText("0");
+		
+		// Weitere Methodenausführung
 		Init_Kontoübersicht();
 		Statistik_Warnung();
 
@@ -732,16 +753,6 @@ public class BudgetPlanGUI extends JFrame {
 	//Methoden für die Statistik
 	//
 	
-	/**
-	 * 
-	 * Methoden für die Statistik
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 */
 
 	public void Grafikmodellauswahl(String selection) {
 		Init_Kontostand(0);
@@ -863,6 +874,14 @@ public class BudgetPlanGUI extends JFrame {
 	}
 
 	//
+	//Methoden für die Sparfunktion
+	//
+	
+	// Sparfunktion Methode
+	/**
+	 * Methode für die Sparfunktion / Richtige Eingabe etc  
+	 */
+	
 	//Initalisierung des Fensters
 	//
 	
@@ -1054,11 +1073,7 @@ public class BudgetPlanGUI extends JFrame {
 		Panel_Statistiken.setLayout(null);
 		
 		//Panel Sparfunktion
-		panel_Sparfunktion = new JPanel();
-		tabbedPane
-				.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Sparfunktion</body></html>",
-						null, panel_Sparfunktion, null);
-		panel_Sparfunktion.setLayout(null);
+	
 
 		// Panel 1 Ende
 		//
@@ -1324,6 +1339,16 @@ public class BudgetPlanGUI extends JFrame {
 		// ANFANG PANEL 5 Daueraufträge
 		//
 		//
+		JLabel labelDA = new JLabel(new ImageIcon("src/img/work.png"));		
+		labelDA.setBounds(232, 123, 207, 138);		
+		panel_Dauerauftraege.add(labelDA);		
+				
+		JLabel labelDA2 = new JLabel("<html><body>We're sorry!<br>This feature is temporarily unavailable.<br>Please wait for next Update.</body></html>");		
+		labelDA2.setFont(new Font("Tahoma", Font.BOLD, 18));		
+		labelDA2.setBounds(150, 30, 550, 100);		
+		panel_Dauerauftraege.add(labelDA2);
+		
+		
 		// ENDE PANEL 5 Daueraufträge
 
 		// ANFANG PANEL 6 Statistiken
@@ -1390,12 +1415,125 @@ public class BudgetPlanGUI extends JFrame {
 
 		// ENDE PANEL 6 Statistiken
 
+		
 		// Anfang Panel 7 Sparfunktion
 		//
 		//
-		JLabel label = new JLabel(new ImageIcon("src/img/work.png"));
-		label.setBounds(232, 123, 207, 138);
-		panel_Dauerauftraege.add(label);
+		
+		
+		
+
+				panel_Sparfunktion = new JPanel();
+				tabbedPane
+						.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Sparfunktion</body></html>",
+								null, panel_Sparfunktion, null);
+				panel_Sparfunktion.setLayout(null);
+
+				lblStartwert = new JLabel(
+						"Startwert:");
+				lblStartwert.setFont(new Font("Tahoma", Font.BOLD, 11));
+				lblStartwert.setBackground(Color.WHITE);
+				lblStartwert.setBounds(22, 11, 171, 29);
+				panel_Sparfunktion.add(lblStartwert);
+
+				lblsparrate = new JLabel("Sparrate:");
+				lblsparrate.setFont(new Font("Tahoma", Font.BOLD, 11));
+				lblsparrate.setBounds(21, 70, 142, 29);
+				panel_Sparfunktion.add(lblsparrate);
+
+				textFieldsparrate = new JTextField();
+				textFieldsparrate.setBounds(147, 74, 97, 20);
+				panel_Sparfunktion.add(textFieldsparrate);
+				textFieldsparrate.setColumns(10);
+
+				JLabel lblIn = new JLabel(" Euro ( z.B. 5.55)");
+				lblIn.setBounds(254, 77, 109, 14);
+				panel_Sparfunktion.add(lblIn);
+
+				JLabel lblWiederholung = new JLabel("Sparintervall:");
+				lblWiederholung.setFont(new Font("Tahoma", Font.BOLD, 11));
+				lblWiederholung.setBounds(21, 133, 142, 29);
+				panel_Sparfunktion.add(lblWiederholung);
+
+				rdbtnEinmaligSparfkt = new JRadioButton("einmalig");
+				rdbtnEinmaligSparfkt.setBounds(147, 136, 97, 23);
+				panel_Sparfunktion.add(rdbtnEinmaligSparfkt);
+
+				rdbtnMonatlichSparfkt = new JRadioButton("monatlich");
+				rdbtnMonatlichSparfkt.setBounds(242, 136, 109, 23);
+				panel_Sparfunktion.add(rdbtnMonatlichSparfkt);
+
+				rdbtnJaehrlichSparfkt = new JRadioButton("j\u00E4hrlich");
+				rdbtnJaehrlichSparfkt.setBounds(353, 136, 109, 23);
+				panel_Sparfunktion.add(rdbtnJaehrlichSparfkt);
+
+				JLabel lblZeitraum = new JLabel("Zeitraum:");
+				lblZeitraum.setFont(new Font("Tahoma", Font.BOLD, 11));
+				lblZeitraum.setBounds(21, 186, 142, 29);
+				panel_Sparfunktion.add(lblZeitraum);
+
+				textFieldZeitraum = new JTextField();
+				textFieldZeitraum.setBounds(147, 190, 97, 20);
+				panel_Sparfunktion.add(textFieldZeitraum);
+				textFieldZeitraum.setColumns(10);
+
+				JLabel lblMonatejahre = new JLabel("Monate/Jahre");
+				lblMonatejahre.setBounds(254, 193, 96, 14);
+				panel_Sparfunktion.add(lblMonatejahre);
+
+				JLabel lblKontostandNachSparmanahme = new JLabel(
+						"Kontostand nach Sparma\u00DFnahme:");
+				lblKontostandNachSparmanahme.setFont(new Font("Tahoma", Font.BOLD, 11));
+				lblKontostandNachSparmanahme.setBounds(22, 332, 200, 34);
+				panel_Sparfunktion.add(lblKontostandNachSparmanahme);
+
+				lblnachSparmaßnahme = new JLabel("-");
+				lblnachSparmaßnahme.setBounds(242, 338, 184, 22);
+				panel_Sparfunktion.add(lblnachSparmaßnahme);
+
+				btnBerechne = new JButton("Berechne");
+				btnBerechne.setBounds(22, 297, 89, 23);
+				panel_Sparfunktion.add(btnBerechne);
+				
+				textFieldStartwert = new JTextField();
+				textFieldStartwert.setBounds(147, 15, 97, 20);
+				panel_Sparfunktion.add(textFieldStartwert);
+				textFieldStartwert.setColumns(10);
+				
+				JLabel lblZinsen = new JLabel("Zinssatz:");
+				lblZinsen.setFont(new Font("Tahoma", Font.BOLD, 11));
+				lblZinsen.setBounds(22, 247, 55, 20);
+				panel_Sparfunktion.add(lblZinsen);
+				
+				JLabel lblZinsperiode = new JLabel("Zinsperiode");
+				lblZinsperiode.setFont(new Font("Tahoma", Font.BOLD, 11));
+				lblZinsperiode.setBounds(362, 250, 80, 14);
+				panel_Sparfunktion.add(lblZinsperiode);
+				
+				textFieldZinsen = new JTextField();
+				textFieldZinsen.setBounds(147, 247, 97, 20);
+				panel_Sparfunktion.add(textFieldZinsen);
+				textFieldZinsen.setColumns(10);
+				
+				lbl_prozent = new JLabel("% (z.B. 3.02)");
+				lbl_prozent.setText("% z.B. 3.02");
+				lbl_prozent .setBounds(254, 250, 71, 14);
+				panel_Sparfunktion.add(lbl_prozent );
+				
+				comboBoxZinsperiode = new JComboBox();
+				comboBoxZinsperiode.setBounds(470, 247, 109, 20);
+				comboBoxZinsperiode.setModel(new DefaultComboBoxModel(new String[] {
+						"(Bitte Wählen)", "jährlich", "halbjährig","quartalsweise",
+						"monatlich" }));
+				panel_Sparfunktion.add(comboBoxZinsperiode);
+				
+				rdbtnZinsenAnAus = new JRadioButton("an\r\n");
+				rdbtnZinsenAnAus.setBounds(75, 246, 55, 23);
+				panel_Sparfunktion.add(rdbtnZinsenAnAus);
+				rdbtnZinsenAnAus.setSelected(true);
+				// ENDE PANEL 7 Sparfunktion
+
+		
 
 		// ENDE PANEL 7 Sparfunktion
 
@@ -1564,6 +1702,9 @@ public class BudgetPlanGUI extends JFrame {
 				}
 			}
 		});
+		
+		//Button für die Ausführung der Sparfunktion
+
 
 		//Button über den man Hilfe bekommt (Statistik)
 		btnStatistikHilfe.addActionListener(new ActionListener() {
@@ -1587,7 +1728,16 @@ public class BudgetPlanGUI extends JFrame {
 			}
 		});
 
-		// Button der das Konto löscht
+		/**
+		 * Button, der das Konto löscht
+		 * 
+		 * @exception <FileNotFoundException ex>
+		 * @throws <Ausgabe, dass die csv Datei nicht da ist>
+		 * 
+		 * @exception <IOException ex>
+		 * @throws <Ausgabe, dass es ein Probleme beim Öffnen der csv Datei gab>
+		 * 
+		 */
 		btnKontoLöschen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
@@ -1596,6 +1746,9 @@ public class BudgetPlanGUI extends JFrame {
 				if (loeschen == 0) {
 					comboBox_Ausgaben.removeItem("Kontoeröffnung");
 					comboBox_Einnahmen.removeItem("Kontoeröffnung");
+					lblKontostandWarnung.setText("");
+					lblKontostandWarnung.setBackground(Color.WHITE);
+										
 					CSVWriter writer = null;
 					try {
 						writer = new CSVWriter(
@@ -1604,17 +1757,11 @@ public class BudgetPlanGUI extends JFrame {
 						;
 						writer.close();
 
-						/**
-						 * @exception <FileNotFoundException ex> @throws
-						 *            <Ausgabe, dass die csv Datei nicht da ist>
-						 */
+					
 					} catch (FileNotFoundException ex) {
 						System.err.println("csv_nichtgefunden");
 						System.exit(1);
-						/**
-						 * @exception <IOException ex> @throws <Ausgabe, dass es
-						 *            Probleme beim Öffnen der csv Datei gab>
-						 */
+						
 					} catch (IOException ex) {
 						System.err.println("csv_problemöffnen");
 						System.exit(1);
