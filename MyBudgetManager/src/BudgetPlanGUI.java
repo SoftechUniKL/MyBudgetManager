@@ -53,7 +53,7 @@ public class BudgetPlanGUI extends JFrame {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * /* Modell der Daten
+	 *  Modell der Daten
 	 */
 	private BudgetPlanModel budget;
 	// panel Headline:
@@ -286,7 +286,7 @@ public class BudgetPlanGUI extends JFrame {
 		setBounds(100, 100, 450, 300); // Groesse des Frames
 		setVisible(true); // Frame wird sichtbar
 		getContentPane().setLayout(new BorderLayout(0, 0));
-		getContentPane().setBackground(Color.WHITE);
+		getContentPane().setBackground(Color.WHITE);// Gesamter Hintergrund auf Weiﬂ
 		setMinimumSize(new Dimension(800, 550));
 		setLocationRelativeTo(null);
 
@@ -401,11 +401,11 @@ public class BudgetPlanGUI extends JFrame {
 			if (k < 0)
 				throw new NumberFormatException();
 			DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance();
-			dfs.setDecimalSeparator('.');
-			DecimalFormat df = new DecimalFormat("#0.00", dfs);
+			dfs.setDecimalSeparator('.'); // Punkttrennung
+			DecimalFormat df = new DecimalFormat("#0.00", dfs); //Gibt das Format f¸r die Betragseingabe an
 			String j;
-			j = df.format(k);
-			if (!textField_Ausgaben.getText().equals(j)) //Falsche Betragseingabe
+			j = df.format(k); 
+			if (!textField_Ausgaben.getText().equals(j)) //Falsche Betragseingabe (Muss der Formatvorgabe entsprechen)
 				throw new NumberFormatException();
 
 			if (comboBox_Ausgaben.getSelectedIndex() == 0) //ComboBox auf den Feld "Bitte W‰hlen"
@@ -417,7 +417,7 @@ public class BudgetPlanGUI extends JFrame {
 			try {
 				writer = new CSVWriter(new FileWriter("data/budget.csv", true));
 				String[] entries = new String[5];
-
+				//Auslese der einzelnen Felder
 				entries[0] = txtTtmmjjjj_Ausgaben.getText();
 				entries[1] = textFieldNotiz_Ausgabe.getText();
 				entries[2] = (String) comboBox_Ausgaben.getSelectedItem();
@@ -430,7 +430,7 @@ public class BudgetPlanGUI extends JFrame {
 						"Ausgabenbuchung", JOptionPane.INFORMATION_MESSAGE);
 				Init_Kontostand(1);
 
-				
+			//Exceptions 	
 			} catch (FileNotFoundException ex) {
 				System.err.println(csv_nichtgefunden);
 				System.exit(1);
@@ -684,18 +684,19 @@ public class BudgetPlanGUI extends JFrame {
 			DecimalFormat df = new DecimalFormat("#0.00", dfs);
 			String j;
 			j = df.format(k);
-			if (!textField_Einnahmen.getText().equals(j))
+			if (!textField_Einnahmen.getText().equals(j))//Falsche Betragseingabe (Muss der Formatvorgabe entsprechen)
 				throw new NumberFormatException();
 
-			if (comboBox_Einnahmen.getSelectedIndex() == 0)
+			if (comboBox_Einnahmen.getSelectedIndex() == 0)//ComboBox muss auf das Feld "Bitte W‰hlen"
 				throw new IndexOutOfBoundsException();
-
+			
+			// Wenn alle Vorgaben korrekt sind wird hier die Csv Datei beschrieben
 			CSVWriter writer = null;
-
+			
 			try {
 				writer = new CSVWriter(new FileWriter("data/budget.csv", true));
 				String[] entries = new String[5];
-
+				//Auslese der einzelnen Felder
 				entries[0] = txtTtmmjjjj_Einnahmen.getText();
 				entries[1] = textFieldNotiz_Einnahmen.getText();
 				entries[2] = (String) comboBox_Einnahmen.getSelectedItem();
@@ -708,7 +709,7 @@ public class BudgetPlanGUI extends JFrame {
 						"Einnahmenbuchung", JOptionPane.INFORMATION_MESSAGE);
 				Init_Kontostand(1);
 
-				
+			//Exceptions 
 			} catch (FileNotFoundException ex) {
 				System.err.println(csv_nichtgefunden);
 				System.exit(1);
