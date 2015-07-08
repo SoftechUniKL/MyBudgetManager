@@ -355,20 +355,15 @@ public class BudgetPlanGUI extends JFrame {
 	 *  Checkdata_Ausgaben prüft die Benutzereingaben für die Gui Maske der "Ausgaben". 
 	 *  Wenn alle Eingaben korrekt sind wird die Csv-Datei mit diesen Daten beschrieben. 
 	 * 
-	 *  @exception <FileNotFoundException ex> 
-	 *  @throws <Ausgabe, dassdie csv Datei nicht da ist>
+	 *  @exception FileNotFoundException @throws Ausgabe, dassdie csv Datei nicht da ist
 	 *       
-	 *  @exception <IOException e> 
-	 *  @throws <Ausgabe, dass die csv Datei probleme hat>
+	 *  @exception IOException @throws Ausgabe, dass die csv Datei probleme hat
 	 *  
-	 *  @exception <ParseException e> 
-	 *  @throws <Falsche Datumseingabe>
+	 *  @exception ParseException @throws Falsche Datumseingabe
 	 *  
-	 *  @exception <NumberFormatException e> 
-	 *  @throws <Ausgabe, dass es eine fasche Betragseingabe gab>
+	 *  @exception NumberFormatException @throws Ausgabe, dass es eine fasche Betragseingabe gab
 	 *  
-	 *  @exception <IndexOutofBoundsException e> 
-	 *  @throws <Ausgabe, dass eine Kategorie gewählt werden soll>
+	 *  @exception IndexOutofBoundsException @throws Ausgabe, dass eine Kategorie gewählt werden soll
 	 *   
 	 *   
 	 */
