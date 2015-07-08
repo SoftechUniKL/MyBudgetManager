@@ -10,9 +10,9 @@
  * 
  * @author Markus Dittmann, Philipp Heintz, Lukas Breit
  * 
- * @author der Einnahmen/Ausgaben erfassung Lukas Breit
- * @author der Statistik Markus Dittmann
- * @author der Sparfunktion Philipp Heintz
+ * @author  Einnahmen/Ausgaben Erfassung Lukas Breit
+ * @author  Statistik Markus Dittmann
+ * @author  Sparfunktion Philipp Heintz
  * 
  * @version 1.1.0
  * 

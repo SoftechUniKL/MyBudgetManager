@@ -130,22 +130,15 @@ public class BudgetPlanGUI extends JFrame {
 
 	// panel_Sparfunktion
 	
-		private JPanel panel_Sparfunktion;
-		private JLabel lblsparrate, lblnachSparmaßnahme,lbl_prozent,lblStartwert ;
-		private JTextField textFieldsparrate, textFieldZeitraum,textFieldStartwert,textFieldZinsen;
-		private JRadioButton rdbtnMonatlichSparfkt, rdbtnJaehrlichSparfkt,
+	private JPanel panel_Sparfunktion;
+	private JLabel lblsparrate, lblnachSparmaßnahme,lbl_prozent,lblStartwert ;
+	private JTextField textFieldsparrate, textFieldZeitraum,textFieldStartwert,textFieldZinsen;
+	private JRadioButton rdbtnMonatlichSparfkt, rdbtnJaehrlichSparfkt,
 				rdbtnEinmaligSparfkt,rdbtnZinsenAnAus;
-		private JButton btnBerechne;
-		private JComboBox comboBoxZinsperiode;
+	private JButton btnBerechne;
+	private JComboBox comboBoxZinsperiode;
 
-	/**
-	 * 
-	 * 
-	 * Abschnitt in dem vorgefertige Strings abgespeichert werden
-	 * 
-	 * 
-	 * 
-	 */
+	
 
 	// Fehlermeldungen als vorgeschriebene Strings
 	/**
@@ -267,7 +260,6 @@ public class BudgetPlanGUI extends JFrame {
 	 * Konstruktor fuer die GUI.
 	 * 
 	 * Hier wird das Hauptfenster initialisiert und aktiviert.
-	 * 
 	 */
 
 	public BudgetPlanGUI(BudgetPlanModel budget) {
@@ -336,17 +328,21 @@ public class BudgetPlanGUI extends JFrame {
 	 * Auflösen der Deativierung, wenn das Programm zum ersten Mal gestartet wird.
 	 */
 	public void Aktivierung() {
+		//Freigabe der tabbedPane Blätter
 		tabbedPane.setEnabledAt(0, true);
 		tabbedPane.setEnabledAt(3, true);
 		tabbedPane.setEnabledAt(4, true);
 		tabbedPane.setEnabledAt(5, true);
-
+		
+		//Freigabe der ComboBox_Ausgaben und Umschlag auf das erste Item
 		comboBox_Ausgaben.removeItemAt(1);
 		comboBox_Ausgaben.setEnabled(true);
 
+		//Freigabe der ComboBox_Einnahmen und Umschlag auf das erste Item
 		comboBox_Einnahmen.removeItemAt(1);
 		comboBox_Einnahmen.setEnabled(true);
 
+		//Freigabe der Resetbutton in Einnahmen und Ausgaben 
 		btnReset_Einnahmen.setEnabled(true);
 		btnReset_Ausgaben.setEnabled(true);
 
@@ -394,21 +390,26 @@ public class BudgetPlanGUI extends JFrame {
 				throw new ParseException("Fehler", 0);
 
 			SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-			dateFormat.setLenient(false); // strenge Datumsprüfung einschalten
+			// strenge Datumsprüfung einschalten
+			dateFormat.setLenient(false); 
 			dateFormat.parse(txtTtmmjjjj_Ausgaben.getText());
 
 			double k = Double.parseDouble(textField_Ausgaben.getText());
 			if (k < 0)
 				throw new NumberFormatException();
 			DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance();
-			dfs.setDecimalSeparator('.'); // Punkttrennung
-			DecimalFormat df = new DecimalFormat("#0.00", dfs); //Gibt das Format für die Betragseingabe an
+			// Punkttrennung
+			dfs.setDecimalSeparator('.'); 
+			//Gibt das Format für die Betragseingabe an
+			DecimalFormat df = new DecimalFormat("#0.00", dfs); 
 			String j;
 			j = df.format(k); 
-			if (!textField_Ausgaben.getText().equals(j)) //Falsche Betragseingabe (Muss der Formatvorgabe entsprechen)
+			//Falsche Betragseingabe (Muss der Formatvorgabe entsprechen)
+			if (!textField_Ausgaben.getText().equals(j)) 
 				throw new NumberFormatException();
 
-			if (comboBox_Ausgaben.getSelectedIndex() == 0) //ComboBox auf den Feld "Bitte Wählen"
+			 //ComboBox auf den Feld "Bitte Wählen"
+			if (comboBox_Ausgaben.getSelectedIndex() == 0)
 				throw new IndexOutOfBoundsException();
 
 			CSVWriter writer = null;
@@ -513,21 +514,16 @@ public class BudgetPlanGUI extends JFrame {
 	}
 
 	/**
-	 * 
 	 * Hier wird der Aktuelle Kontostand aktualisiert. 
 	 * 
 	 *  @param k
 	 * 
-	 *  @exception <FileNotFoundException e> 
-	 *  @throws <Ausgabe, dass die csv Datei nicht da ist>
+	 *  @exception FileNotFoundException  @throws Ausgabe, dass die csv Datei nicht da ist
 	 * 
-	 *  @exception <IOException e> 
-	 *  @throws <Ausgabe, dass es mit der Csv Datein ein Problem gibt>
+	 *  @exception IOException @throws Ausgabe, dass es mit der Csv Datein ein Problem gibt
 	 *  
-	 *  @exception <ParseException e> 
-	 *  @throws <Ausgabe, dass die Datein nicht eingelesen werden kann>
-	 *  
-	 *  
+	 *  @exception ParseException  @throws Ausgabe, dass die Datein nicht eingelesen werden kann
+	 *   
 	 */
 	public void Init_Kontostand(int k) {
 		NumberFormat nf = NumberFormat.getInstance(new Locale("de", "DE"));
@@ -541,6 +537,7 @@ public class BudgetPlanGUI extends JFrame {
 			while ((nextLine = reader.readNext()) != null) {
 				DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,
 						Locale.GERMAN);
+				//Einlesen von Datum/Notizen/Kategorie/Buchungsbetrag/Angabe, ob es sich um eine Einnahme oder Ausgabe handelt
 				Date datum = df.parse(nextLine[0]);
 				String notiz = nextLine[1];
 				String bezeichnung = nextLine[2];
@@ -552,6 +549,7 @@ public class BudgetPlanGUI extends JFrame {
 			}
 			reader.close();
 			
+		//Exceptions
 		} catch (FileNotFoundException e) {
 			System.err.println(csv_nichtgefunden);
 			System.exit(1);
@@ -588,7 +586,8 @@ public class BudgetPlanGUI extends JFrame {
 		// Eine Warnung im oberen recht Feld als permanente Warnung
 		// Eine Warunung als Popupbenachrichtigung 
 		// Der Startwert ist davon ausgeschlossen.
-
+		
+		//Wenn der übergebene Parameter 1 ist werden die Fehlermeldungen ausgegeben, wenn die Initalisierung stattfindet
 		if (k == 1) {
 
 			if (budget.Geldvermögen.size() >= 2) {
@@ -643,21 +642,15 @@ public class BudgetPlanGUI extends JFrame {
 	 * Einlesen der Einnahmen in die Csv Datei aus der Gui. 
 	 * Fehlerabfragen, ob der Nutzer auch alle daten richtig eingegeben hat. 
 	 * 
-	 *  @exception <FileNotFoundException ex> 
-	 *  @throws <Ausgabe, dass die csv Datei nicht da ist>
+	 *  @exception FileNotFoundException  @throws Ausgabe, dass die csv Datei nicht da ist
 	 * 
-	 *  @exception <IOException ex> 
-	 *  @throws <Ausgabe, dass die csv Datei Probleme hat>
+	 *  @exception IOException  @throws Ausgabe, dass die csv Datei Probleme hat
 	 *  
-	 *  @exception <ParseException e> 
-	 *  @throws <Ausgabe, dass das Datum falsch eingegeben wurde>
+	 *  @exception ParseException  @throws Ausgabe, dass das Datum falsch eingegeben wurde
 	 *  
-	 *  @exception <NumberFormatException e> 
-	 *  @throws <Ausgabe, dass es einen Fehler bei der Betrageingabe gab>
+	 *  @exception NumberFormatException  @throws Ausgabe, dass es einen Fehler bei der Betrageingabe gab
 	 *  
-	 *  @exception <IndexOutOfBoundsException e> 
-	 *  @throws <Ausgabe, dass ein Fehler bei der Kategorie gab>
-	 *  
+	 *  @exception IndexOutOfBoundsException  @throws Ausgabe, dass ein Fehler bei der Kategorie gab
 	 *  
 	 */
 	public void CheckData_Einnahmen() {
@@ -673,21 +666,26 @@ public class BudgetPlanGUI extends JFrame {
 				throw new ParseException("Fehler", 0);
 
 			SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-			dateFormat.setLenient(false); // strenge Datumsprüfung einschalten
+			// strenge Datumsprüfung einschalten
+			dateFormat.setLenient(false);
 			dateFormat.parse(txtTtmmjjjj_Einnahmen.getText());
 
 			double k = Double.parseDouble(textField_Einnahmen.getText());
 			if (k < 0)
 				throw new NumberFormatException();
 			DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance();
+			// Punkttrennung
 			dfs.setDecimalSeparator('.');
+			//Gibt das Format für die Betragseingabe an
 			DecimalFormat df = new DecimalFormat("#0.00", dfs);
 			String j;
 			j = df.format(k);
-			if (!textField_Einnahmen.getText().equals(j))//Falsche Betragseingabe (Muss der Formatvorgabe entsprechen)
+			//Falsche Betragseingabe (Muss der Formatvorgabe entsprechen)
+			if (!textField_Einnahmen.getText().equals(j))
 				throw new NumberFormatException();
 
-			if (comboBox_Einnahmen.getSelectedIndex() == 0)//ComboBox muss auf das Feld "Bitte Wählen"
+			//ComboBox muss auf das Feld "Bitte Wählen"
+			if (comboBox_Einnahmen.getSelectedIndex() == 0)
 				throw new IndexOutOfBoundsException();
 			
 			// Wenn alle Vorgaben korrekt sind wird hier die Csv Datei beschrieben
@@ -742,9 +740,7 @@ public class BudgetPlanGUI extends JFrame {
 
 	
 	/**
-	 * 
 	 * Die Fehler der Einnahmen in der GUI werden auf den Urzustand gebracht.
-	 * 
 	 */
 	public void Clear_Einnahmen() {
 		textField_Einnahmen.setText(null);
@@ -887,8 +883,7 @@ public class BudgetPlanGUI extends JFrame {
 	 * Methode für die Sparfunktion / Richtige Eingabe etc  
 	 */
 	
-	//Initalisierung des Fensters
-	//
+	
 	
 	/**
 	 * Das Ausgangs Fenster wird hier initalisiert
@@ -905,20 +900,12 @@ public class BudgetPlanGUI extends JFrame {
 		// Panel 1 Anfang
 
 
-		//
-		//
-		//
+		
 		//
 		// Panel in dem der Kontostand angezeigt und aktualisiert wird
 		// Ebenfalls wird hier das Datum und die Fehlermeldung bei gefährlichen Kontoständen gezeigt
 		//
-		//
-		//
-		//
-		//
-		//
-		//
-		//
+		
 
 		lblKontostandsanzeige = new JLabel("Kontostand in [\u20ac]:");
 		lblKontostandsanzeige.setForeground(Color.BLUE);
@@ -944,19 +931,16 @@ public class BudgetPlanGUI extends JFrame {
 		lblKontostandWarnung.setBounds(588, 11, 156, 59);
 		panel.add(lblKontostandWarnung);
 
-		//
-		//
+		
 		//
 		//Panel für externe Button
 		//
 		//
 		// Konto Löschen / Taschenrechner / Schließen / Info
 		//
-		//
-		//
-		//
-		//
 		
+		
+		// Unterster Panel, indem einige Zusatzfunktionen und Informationen zu finden sind
 		panel_1 = new JPanel();
 		panel_1.setBackground(new Color(255, 255, 255));
 		getContentPane().add(panel_1, BorderLayout.SOUTH);
@@ -1025,20 +1009,14 @@ public class BudgetPlanGUI extends JFrame {
 												Short.MAX_VALUE)));
 		panel_1.setLayout(gl_panel_1);
 
-		//
-		//
-		//
+		
 		//
 		// Panel über den das Hauptmenü gezeigt wird 
 		// Dieses Panel besteht aus einem JTabbedPane. So kann zwischen einzelnen Panels gewählt werden. 
 		//
-		//
-		//
-		//
-		//
-		//
-		//
+		
 
+		// Hier wird ein TabbedPane hinzugefügt. Über verschiede Blätter können die einzelnen Panel erreicht werden 
 		tabbedPane = new JTabbedPane(JTabbedPane.LEFT);
 		tabbedPane.setBackground(new Color(135, 206, 235));
 		getContentPane().add(tabbedPane, BorderLayout.CENTER);
@@ -1084,29 +1062,26 @@ public class BudgetPlanGUI extends JFrame {
 		//
 		// Panel 2 Kontoübersicht Anfang
 		//
-		//
-		//
-		//
-		//
-		//
-		//
+		
 
 		// Tabelle mit Uebersicht der Ausgaben und Einnahmen
 		panel_Kontouebersicht = new JPanel();
 		panel_Kontouebersicht.setBackground(new Color(135, 206, 235));
 		panel_Konto.add(panel_Kontouebersicht, BorderLayout.NORTH);
 		panel_Kontouebersicht.setPreferredSize(new Dimension(0, 40));
-
+		
+		//Label
 		lblKontouebersicht = new JLabel(
 				"Konto\u00FCbersicht:                                                                    ");
 		panel_Kontouebersicht.add(lblKontouebersicht);
 		lblKontouebersicht.setFont(new Font("Tahoma", Font.BOLD, 18));
+		
 		//Button über den das Konto gedruckt werden kann
 		btnKontoDrucken = new JButton("Drucken", new ImageIcon(
 				"src/img/printer.png"));
-
 		panel_Kontouebersicht.add(btnKontoDrucken);
-
+		
+		//ScrollPane über den in der Tabelle gescrolled werden kann
 		scrollPane = new JScrollPane();
 		panel_Konto.add(scrollPane, BorderLayout.CENTER);
 
@@ -1116,13 +1091,9 @@ public class BudgetPlanGUI extends JFrame {
 		//
 		// Panel 3 in dem die Ausgaben erfasst werden 
 		//
-		//
-		//
-		//
-		//
-		//
-		//
 		
+		
+		//Textfeld in das die Ausgaben vom Benutzer eingegeben werden können
 		textField_Ausgaben = new JTextField();
 		textField_Ausgaben.setBounds(197, 13, 150, 25);
 		Panel_Ausgaben.add(textField_Ausgaben);
@@ -1235,13 +1206,9 @@ public class BudgetPlanGUI extends JFrame {
 		//
 		// Panel in dem die Einnahmen erfasst werden
 		//
-		//
-		//
-		//
-		//
-		//
-		//
 		
+		
+		//Textfeld in das die Einnahmen vom Benutzer eingegeben werden können
 		textField_Einnahmen = new JTextField();
 		textField_Einnahmen.setBounds(197, 13, 150, 25);
 		Panel_Einnahmen.add(textField_Einnahmen);
@@ -1348,6 +1315,8 @@ public class BudgetPlanGUI extends JFrame {
 		// ANFANG PANEL 5 Daueraufträge
 		//
 		//
+		
+		//Label und Nachricht für die Daueraufträge
 		JLabel labelDA = new JLabel(new ImageIcon("src/img/work.png"));		
 		labelDA.setBounds(232, 123, 207, 138);		
 		panel_Dauerauftraege.add(labelDA);		
@@ -1429,9 +1398,6 @@ public class BudgetPlanGUI extends JFrame {
 		// Anfang Panel 7 Sparfunktion
 		//
 		//
-		
-
-		
 		
 
 				panel_Sparfunktion = new JPanel();
@@ -1551,17 +1517,7 @@ public class BudgetPlanGUI extends JFrame {
 
 	// Verhalten hinzufuegen
 	/**
-	 * 
-	 * 
-	 * 
-	 * 
 	 * Im Verhalten werden die Methoden angewand
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
 	 */
 	public void addBehavior() {
 		//Abfrage, ob die Csv Datei leer ist und ein neues Konto erstellt werden muss
@@ -1741,12 +1697,9 @@ public class BudgetPlanGUI extends JFrame {
 		/**
 		 * Button, der das Konto löscht
 		 * 
-		 * @exception <FileNotFoundException ex>
-		 * @throws <Ausgabe, dass die csv Datei nicht da ist>
+		 * @exception FileNotFoundException @throws Ausgabe, dass die csv Datei nicht da ist
 		 * 
-		 * @exception <IOException ex>
-		 * @throws <Ausgabe, dass es ein Probleme beim Öffnen der csv Datei gab>
-		 * 
+		 * @exception IOException @throws Ausgabe, dass es ein Probleme beim Öffnen der csv Datei gab
 		 */
 		btnKontoLöschen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {

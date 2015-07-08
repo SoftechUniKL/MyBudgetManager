@@ -17,14 +17,11 @@ import com.opencsv.CSVReader;
  * 
  * Die Daten werden in der Datei data/budget.csv abgespeichert als CSV-Datei.
  * 
- * @exception <FileNotFoundException e>  
- * @throws <Ausgabe, dass die csv Datei nicht da ist>
+ * @exception FileNotFoundException @throws Ausgabe, dass die csv Datei nicht da ist
  * 
- * @exception <IOException e>  
- * @throws <Ausgabe, dass es Probleme beim öffnen gab>
+ * @exception IOException @throws Ausgabe, dass es Probleme beim öffnen gab
  * 
- * @exception <ParseException e>  
- * @throws <Ausgabe, dass des einen Formatfehler gibt>
+ * @exception ParseException @throws Ausgabe, dass des einen Formatfehler gibt
  */
 
 public class BudgetPlanModel {
@@ -50,8 +47,7 @@ public class BudgetPlanModel {
 		
 			
 			
-		 // Für das Auslesen der Daten aus der CSV Datei wurden drei Fehlermeldungen festgelegt. 
-		 
+		// Für das Auslesen der Daten aus der CSV Datei wurden drei Fehlermeldungen festgelegt. 
 			
 		// Fehlermeldung, wenn die Csv Datei nicht gefunden wird. 
 		} catch (FileNotFoundException e) {
