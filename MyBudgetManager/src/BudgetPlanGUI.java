@@ -43,11 +43,7 @@ import javax.swing.*;
 
 /**
  * Graphische Benutzeroberflaeche des BudgetPlaners
- * 
- * 
- * 
- * 
- * 
+
  */
 public class BudgetPlanGUI extends JFrame {
 	private static final long serialVersionUID = 1L;
