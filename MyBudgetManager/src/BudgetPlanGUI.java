@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -84,7 +85,9 @@ public class BudgetPlanGUI extends JFrame {
 	private JRadioButton rdbtnEinmaligAusgaben, rdbtnMonatlichAusgaben;
 	private JComboBox<String> comboBox_Ausgaben;
 	private JButton btnHelpButton_Ausgaben;
-
+	private JTextArea textAreaAusgabenHilfe;
+	private JScrollPane scrollPaneAusgabenHilfe;
+	
 	// panel_Einnahmen:
 	private JPanel Panel_Einnahmen;
 	private JLabel lblEinnahmenBuchungsbetrag, lblEinnahmenKategorie,
@@ -96,7 +99,9 @@ public class BudgetPlanGUI extends JFrame {
 			textFieldNotiz_Einnahmen;
 	private JComboBox<String> comboBox_Einnahmen;
 	private JButton btnHelpButton_Einnahmen;
-
+	private JTextArea textAreaEinnahmenHilfe;
+	private JScrollPane scrollPaneEinnahmenHilfe;
+	
 	// panel_Daueraufträge:
 	private JPanel panel_Dauerauftraege;
 
@@ -123,6 +128,7 @@ public class BudgetPlanGUI extends JFrame {
 	private JLabel lblStatistikmodell;
 	private JTextArea textAreaStatHilfe;
 	private JScrollPane scrollPaneStatHilfe;
+	
 
 	// panel_Sparfunktion
 	private JPanel panel_Sparfunktion;
@@ -176,22 +182,39 @@ public class BudgetPlanGUI extends JFrame {
 	String hilfe_a = "Hilfe \n \n"
 			+ "- Bei den Ausgaben ist es Ganz wichtig den Betrag in folgender Form anzugeben: \n  \n"
 			+ "               X.XX Euro \n \n"
-			+ "  Beachten Sie hierbei, dass ein Punkt zwischen dem Euro- und Centbetrag setzen. Ansonsten kann es zu Fehlern kommen. \n \n"
+			+ " Beachten Sie hierbei, dass ein Punkt zwischen dem Euro- und Centbetrag gesetzt werden muss.\n"
+			+ " Ansonsten kann es zu Fehlern kommen. \n \n"
 			+ "- Wählen Sie immer eine Kategorie.  \n\n"
 			+ "- Durch die Wahl eines Dauerauftrags werden die Aufträge nicht nur einmal sondern monatlich gebucht.\n "
 			+ " Dadurch müssen sie regelmäßig anfallende Ausgaben nicht jeden Monat manuel eingeben. \n\n"
-			+ "- In der Beschreibung können Angaben zur eigenen Buchung gemacht werden. \n  Dabei steht Ihnen frei, wie die Eingabe aussieht oder ob sie überhaupt gemacht wird.";
+			+ "- In der Beschreibung können Angaben zur eigenen Buchung gemacht werden. \n  "
+			+ " Dabei steht Ihnen frei, wie die Eingabe aussieht oder ob sie überhaupt gemacht wird. \n"
+			+ "	 \n"
+			+ "ShortKeys: \n"
+			+ "- Buchen <alt + Enter\n"
+			+ "- Reset <alt + R>\n"
+			+ "- Taschenrechner <alt + T>\n"
+			+ "- Hilfebutton <alt + H> \n";
+	
 	/**
 	 * Nachrichtentext für den Hilfebutton im Panel Einnahmen
 	 */
 	String hilfe_e = "Hilfe \n \n"
 			+ "- Bei den Einnahmen ist es Ganz wichtig den Betrag in folgender Form anzugeben: \n  \n"
 			+ "               X.XX Euro \n \n"
-			+ "  Beachten Sie hierbei, dass ein Punkt zwischen dem Euro- und Centbetrag setzen. Ansonsten kann es zu Fehlern kommen. \n \n"
+			+ "  Beachten Sie hierbei, dass ein Punkt zwischen dem Euro- und Centbetrag gesetzt werden muss.\n"
+			+ "  Ansonsten kann es zu Fehlern kommen. \n \n"
 			+ "- Wählen Sie immer eine Kategorie.  \n\n"
 			+ "- Durch die Wahl eines Dauerauftrags werden die Aufträge nicht nur einmal sondern monatlich gebucht.\n "
 			+ " Dadurch müssen sie regelmäßig anfallende Einnahmen nicht jeden Monat manuel eingeben. \n\n"
-			+ "- In der Beschreibung können Angaben zur eigenen Buchung gemacht werden. \n  Dabei steht Ihnen frei, wie die Eingabe aussieht oder ob sie überhaupt gemacht wird.";
+			+ "- In der Beschreibung können Angaben zur eigenen Buchung gemacht werden. \n  "
+			+ " Dabei steht Ihnen frei, wie die Eingabe aussieht oder ob sie überhaupt gemacht wird. \n"
+			+ "  \n"
+			+ "ShortKeys: \n"
+			+ "- Buchen <alt + Enter>\n"
+			+ "- Reset <alt + R>\n"
+			+ "- Taschenrechner <alt + T>\n"
+			+ "- Hilfebutton <alt + H>\n";
 	/**
 	 * Nachrichtentext für den Hilfebutton im Panel Statistik
 	 */
@@ -213,8 +236,12 @@ public class BudgetPlanGUI extends JFrame {
 			+ "   (zur Ürsprungsübersicht gelangen: auf der Grafik linken Mauszeiger gedrückt nach oben ziehen) \n"
 			+ " - Mit einem Klick der rechten Maustaste auf eine Grafik, können sie \n   Eigenschaften der Grafik verändern, drucken, abspeichern, uvm. \n"
 			+ " - Auf der Titelleiste des 'Statistik-Fensters' wird das Datum samt Uhrzeit beim Öffnen angezeigt. \n"
-			+ "   Dies hilft beim Vergleich mehrer geöffneter 'Statistik-Fenster' (z.B. Ermittlung der Reihenfolge) \n ";
-
+			+ "   Dies hilft beim Vergleich mehrer geöffneter 'Statistik-Fenster' (z.B. Ermittlung der Reihenfolge) \n "
+			+ " \n"
+			+ "ShortKeys: \n"
+			+ "- Statistik anzeigen <alt + Enter>\n"
+			+ "- Taschenrechner <alt + T>\n"
+			+ "- Hilfebutton <alt + H>\n";
 	/**
 	 * Willkommensnachricht, die sich öffnet, wenn ein neues Konto geöffnet wird
 	 */
@@ -940,6 +967,8 @@ public class BudgetPlanGUI extends JFrame {
 		// kann
 		btnTaschenrechner = new JButton("Taschenrechner", new ImageIcon(
 				"src/img/calculator.png"));
+		btnTaschenrechner.setMnemonic(KeyEvent.VK_T);
+		
 		// Button über den das Programm geschlossen werden kann
 		btnSchließen = new JButton("Schlie\u00DFen", new ImageIcon(
 				"src/img/close.png"));
@@ -1147,6 +1176,7 @@ public class BudgetPlanGUI extends JFrame {
 		// Button über den die Buchung ausgeführt werden kann
 		btnAusgabenBuchen = new JButton("Buchen", new ImageIcon(
 				"src/img/account.png"));
+		btnAusgabenBuchen.setMnemonic(KeyEvent.VK_ENTER);
 		btnAusgabenBuchen.setBounds(421, 311, 150, 29);
 		Panel_Ausgaben.add(btnAusgabenBuchen);
 
@@ -1178,7 +1208,7 @@ public class BudgetPlanGUI extends JFrame {
 		// Reset Button über den die Eingabe alle zurückgesetzt werden können
 		btnReset_Ausgaben = new JButton("Reset", new ImageIcon(
 				"src/img/reset.png"));
-
+		btnReset_Ausgaben.setMnemonic(KeyEvent.VK_R);
 		btnReset_Ausgaben.setBounds(21, 311, 150, 29);
 		Panel_Ausgaben.add(btnReset_Ausgaben);
 
@@ -1186,6 +1216,7 @@ public class BudgetPlanGUI extends JFrame {
 		// bekommt
 		btnHelpButton_Ausgaben = new JButton("", new ImageIcon(
 				"src/img/help.png"));
+		btnHelpButton_Ausgaben.setMnemonic(KeyEvent.VK_H);
 		btnHelpButton_Ausgaben.setBounds(570, 10, 60, 50);
 		Panel_Ausgaben.add(btnHelpButton_Ausgaben);
 		// Panel 3 Ende
@@ -1258,6 +1289,7 @@ public class BudgetPlanGUI extends JFrame {
 		// Button über den die Buchung ausgeführt werden kann
 		btnEinnahmenBuchen = new JButton("Buchen", new ImageIcon(
 				"src/img/account.png"));
+		btnEinnahmenBuchen.setMnemonic(KeyEvent.VK_ENTER);
 		btnEinnahmenBuchen.setBounds(421, 311, 150, 29);
 		Panel_Einnahmen.add(btnEinnahmenBuchen);
 
@@ -1290,6 +1322,7 @@ public class BudgetPlanGUI extends JFrame {
 		// Reset Button über den die Eingabe alle zurückgesetzt werden können
 		btnReset_Einnahmen = new JButton("Reset", new ImageIcon(
 				"src/img/reset.png"));
+		btnReset_Einnahmen.setMnemonic(KeyEvent.VK_R);
 		btnReset_Einnahmen.setBounds(21, 311, 150, 29);
 		Panel_Einnahmen.add(btnReset_Einnahmen);
 
@@ -1297,6 +1330,7 @@ public class BudgetPlanGUI extends JFrame {
 		// bekommt
 		btnHelpButton_Einnahmen = new JButton("", new ImageIcon(
 				"src/img/help.png"));
+		btnHelpButton_Einnahmen.setMnemonic(KeyEvent.VK_H);
 		btnHelpButton_Einnahmen.setBounds(570, 10, 60, 50);
 		Panel_Einnahmen.add(btnHelpButton_Einnahmen);
 
@@ -1348,6 +1382,7 @@ public class BudgetPlanGUI extends JFrame {
 
 		btnStatistikanzeigen = new JButton("Statistik anzeigen", new ImageIcon(
 				"src/img/statistik.png"));
+		btnStatistikanzeigen.setMnemonic(KeyEvent.VK_ENTER);
 		btnStatistikanzeigen.setBounds(222, 247, 186, 45);
 		Panel_Statistiken.add(btnStatistikanzeigen);
 
@@ -1376,6 +1411,7 @@ public class BudgetPlanGUI extends JFrame {
 		Panel_Statistiken.add(lblStatistikmodell);
 
 		btnStatistikHilfe = new JButton("", new ImageIcon("src/img/help.png"));
+		btnStatistikHilfe.setMnemonic(KeyEvent.VK_H);
 		btnStatistikHilfe.setBounds(10, 10, 60, 50);
 		Panel_Statistiken.add(btnStatistikHilfe);
 
@@ -1453,6 +1489,7 @@ public class BudgetPlanGUI extends JFrame {
 		panel_Sparfunktion.add(lblnachSparmaßnahme);
 
 		btnBerechne = new JButton("Berechne");
+		btnBerechne.setMnemonic(KeyEvent.VK_ENTER);
 		btnBerechne.setBounds(22, 297, 89, 23);
 		panel_Sparfunktion.add(btnBerechne);
 
@@ -1534,8 +1571,9 @@ public class BudgetPlanGUI extends JFrame {
 		// Button der die Ausgaben bucht und dabei die Methode
 		// Checkdata_Ausgaben verwendet.
 		btnAusgabenBuchen.addActionListener(new ActionListener() {
+			
 			public void actionPerformed(ActionEvent arg0) {
-
+				
 				Checkdata_Ausgaben();
 				if ((comboBox_Ausgaben.isEnabled() == false)
 						&& (budget.Geldvermögen.size() != 0)) {
@@ -1548,12 +1586,16 @@ public class BudgetPlanGUI extends JFrame {
 		// Button über den man Hilfe bekommt (Ausgaben)
 		btnHelpButton_Ausgaben.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-
-				JOptionPane.showMessageDialog(null, hilfe_a, "Hilfe",
+				textAreaAusgabenHilfe = new JTextArea(hilfe_a);
+				scrollPaneAusgabenHilfe = new JScrollPane(textAreaAusgabenHilfe);
+				scrollPaneAusgabenHilfe.setPreferredSize(new Dimension(620,300));
+				textAreaAusgabenHilfe.setEditable(false);
+				JOptionPane.showMessageDialog(null, scrollPaneAusgabenHilfe, "Hilfe",
 						JOptionPane.INFORMATION_MESSAGE);
 
 			}
 		});
+
 
 		// Button der die Einnahmen resettet und dabei die Methoden
 		// Clear_Ausgaben verwendet.
@@ -1581,9 +1623,13 @@ public class BudgetPlanGUI extends JFrame {
 		// Button über den man Hilfe bekommt (Einnahmen)
 		btnHelpButton_Einnahmen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-				JOptionPane.showMessageDialog(null, hilfe_e, "Hilfe",
+				textAreaEinnahmenHilfe = new JTextArea(hilfe_e);
+				scrollPaneEinnahmenHilfe = new JScrollPane(textAreaEinnahmenHilfe);
+				scrollPaneEinnahmenHilfe.setPreferredSize(new Dimension(620,300));
+				textAreaEinnahmenHilfe.setEditable(false);
+				JOptionPane.showMessageDialog(null, scrollPaneEinnahmenHilfe, "Hilfe",
 						JOptionPane.INFORMATION_MESSAGE);
+
 
 			}
 		});
