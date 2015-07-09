@@ -357,20 +357,15 @@ public class BudgetPlanGUI extends JFrame {
 	 * "Ausgaben". Wenn alle Eingaben korrekt sind wird die Csv-Datei mit diesen
 	 * Daten beschrieben.
 	 * 
-	 * @exception FileNotFoundException
-	 *                @throws Ausgabe, dassdie csv Datei nicht da ist
+	 * @exception FileNotFoundException @throws Ausgabe, dassdie csv Datei nicht da ist
 	 * 
-	 * @exception IOException
-	 *                @throws Ausgabe, dass die csv Datei probleme hat
+	 * @exception IOException @throws Ausgabe, dass die csv Datei probleme hat
 	 * 
-	 * @exception ParseException
-	 *                @throws Falsche Datumseingabe
+	 * @exception ParseException @throws Falsche Datumseingabe
 	 * 
-	 * @exception NumberFormatException
-	 *                @throws Ausgabe, dass es eine fasche Betragseingabe gab
+	 * @exception NumberFormatException @throws Ausgabe, dass es eine fasche Betragseingabe gab
 	 * 
-	 * @exception IndexOutofBoundsException
-	 *                @throws Ausgabe, dass eine Kategorie gewählt werden soll
+	 * @exception IndexOutofBoundsException @throws Ausgabe, dass eine Kategorie gewählt werden soll
 	 * 
 	 * 
 	 */
@@ -513,16 +508,11 @@ public class BudgetPlanGUI extends JFrame {
 	 * 
 	 * @param k
 	 * 
-	 * @exception FileNotFoundException
-	 *                @throws Ausgabe, dass die csv Datei nicht da ist
+	 * @exception FileNotFoundException @throws Ausgabe, dass die csv Datei nicht da ist
 	 * 
-	 * @exception IOException
-	 *                @throws Ausgabe, dass es mit der Csv Datein ein Problem
-	 *                gibt
+	 * @exception IOException @throws Ausgabe, dass es mit der Csv Datein ein Problem gibt
 	 * 
-	 * @exception ParseException
-	 *                @throws Ausgabe, dass die Datein nicht eingelesen werden
-	 *                kann
+	 * @exception ParseException @throws Ausgabe, dass die Datein nicht eingelesen werden kann
 	 * 
 	 */
 	public void Init_Kontostand(int k) {
@@ -645,21 +635,15 @@ public class BudgetPlanGUI extends JFrame {
 	 * Einlesen der Einnahmen in die Csv Datei aus der Gui. Fehlerabfragen, ob
 	 * der Nutzer auch alle daten richtig eingegeben hat.
 	 * 
-	 * @exception FileNotFoundException
-	 *                @throws Ausgabe, dass die csv Datei nicht da ist
+	 * @exception FileNotFoundException @throws Ausgabe, dass die csv Datei nicht da ist
 	 * 
-	 * @exception IOException
-	 *                @throws Ausgabe, dass die csv Datei Probleme hat
+	 * @exception IOException @throws Ausgabe, dass die csv Datei Probleme hat
 	 * 
-	 * @exception ParseException
-	 *                @throws Ausgabe, dass das Datum falsch eingegeben wurde
+	 * @exception ParseException @throws Ausgabe, dass das Datum falsch eingegeben wurde
 	 * 
-	 * @exception NumberFormatException
-	 *                @throws Ausgabe, dass es einen Fehler bei der
-	 *                Betrageingabe gab
+	 * @exception NumberFormatException @throws Ausgabe, dass es einen Fehler bei der Betrageingabe gab
 	 * 
-	 * @exception IndexOutOfBoundsException
-	 *                @throws Ausgabe, dass ein Fehler bei der Kategorie gab
+	 * @exception IndexOutOfBoundsException @throws Ausgabe, dass ein Fehler bei der Kategorie gab
 	 * 
 	 */
 	public void CheckData_Einnahmen() {
@@ -1700,12 +1684,9 @@ public class BudgetPlanGUI extends JFrame {
 		/**
 		 * Button, der das Konto löscht
 		 * 
-		 * @exception FileNotFoundException
-		 *                @throws Ausgabe, dass die csv Datei nicht da ist
+		 * @exception FileNotFoundException @throws Ausgabe, dass die csv Datei nicht da ist
 		 * 
-		 * @exception IOException
-		 *                @throws Ausgabe, dass es ein Probleme beim Öffnen der
-		 *                csv Datei gab
+		 * @exception IOException @throws Ausgabe, dass es ein Probleme beim Öffnen der csv Datei gab
 		 */
 		btnKontoLöschen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
