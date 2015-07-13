@@ -1590,25 +1590,16 @@ public class BudgetPlanGUI extends JFrame {
 	//
 	// Methoden für die Sparfunktion
 	//
-	//
-	// Methoden für die Sparfunktion
-	//
-
-
+	
 
 	
 	// HIER Sparfunktion-Methoden!
 	
 	
 	
-	//
-	// Methoden für das Verhalten (Buttons-Funktionen)
-	//
-	
-
 	
 	//
-	// Verhalten hinzufuegen
+	// Verhalten hinzufuegen (Buttons-Funktionen)
 	//
 	
 	/**
