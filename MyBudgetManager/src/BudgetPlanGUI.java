@@ -5,12 +5,19 @@ import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -22,6 +29,7 @@ import java.util.regex.Pattern;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.GroupLayout;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -29,7 +37,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.GroupLayout.Alignment;
@@ -38,9 +49,6 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
-import java.io.*;
-
-import javax.swing.*;
 
 /**
  * Graphische Benutzeroberflaeche des BudgetPlaners
@@ -128,6 +136,7 @@ public class BudgetPlanGUI extends JFrame {
 	private JLabel lblStatistikmodell;
 	private JTextArea textAreaStatHilfe;
 	private JScrollPane scrollPaneStatHilfe;
+	private Statistik Statistikauswahl;
 	
 
 	// panel_Sparfunktion
@@ -286,7 +295,6 @@ public class BudgetPlanGUI extends JFrame {
 	 * 
 	 * Hier wird das Hauptfenster initialisiert und aktiviert.
 	 */
-
 	public BudgetPlanGUI(BudgetPlanModel budget) {
 		// Name im Fenster
 		super("MyBudgetManager");
@@ -313,595 +321,11 @@ public class BudgetPlanGUI extends JFrame {
 		addBehavior(); // Verhalten der GUI Elemente dieses Frames
 
 	}
-
-	/**
-	 * Anfangsabfrage, die überprüft, ob die Csv Datei leer ist. Wenn das der
-	 * Fall ist wird man dazu aufgefordert ein neues Konto anzulegen
-	 * 
-	 */
-
-	public void Anfangsabfrage() {
-
-		// Infomessage, die gezeigt wird, wenn die Csv Datei leer ist und von
-		// einem neuen Kontostart zu rechnen ist.
-		if (budget.Geldvermögen.size() == 0) {
-			JOptionPane.showMessageDialog(null, willkommen,
-					"Willkommen bei MyBudgetManager",
-					JOptionPane.INFORMATION_MESSAGE);
-			// Deaktivierung von Zugriffsmöglichkeiten
-			tabbedPane.setEnabledAt(0, false);
-			tabbedPane.setEnabledAt(3, false);
-			tabbedPane.setEnabledAt(4, false);
-			tabbedPane.setEnabledAt(5, false);
-			tabbedPane.setSelectedIndex(1);
-			// ComboBox nur mit dem Startwert
-			comboBox_Ausgaben.insertItemAt("Kontoeröffnung", 1);
-			comboBox_Ausgaben.setSelectedIndex(1);
-			comboBox_Ausgaben.setEnabled(false);
-			// ComboBox nur mit dem Startwert
-			comboBox_Einnahmen.insertItemAt("Kontoeröffnung", 1);
-			comboBox_Einnahmen.setSelectedIndex(1);
-			comboBox_Einnahmen.setEnabled(false);
-
-			btnReset_Einnahmen.setEnabled(false);
-			btnReset_Ausgaben.setEnabled(false);
-		}
-
-	}
-
-	/**
-	 * Auflösen der Deativierung, wenn das Programm zum ersten Mal gestartet
-	 * wird.
-	 */
-	public void Aktivierung() {
-		// Freigabe der tabbedPane Blätter
-		tabbedPane.setEnabledAt(0, true);
-		tabbedPane.setEnabledAt(3, true);
-		tabbedPane.setEnabledAt(4, true);
-		tabbedPane.setEnabledAt(5, true);
-
-		// Freigabe der ComboBox_Ausgaben und Umschlag auf das erste Item
-		comboBox_Ausgaben.removeItemAt(1);
-		comboBox_Ausgaben.setEnabled(true);
-
-		// Freigabe der ComboBox_Einnahmen und Umschlag auf das erste Item
-		comboBox_Einnahmen.removeItemAt(1);
-		comboBox_Einnahmen.setEnabled(true);
-
-		// Freigabe der Resetbutton in Einnahmen und Ausgaben
-		btnReset_Einnahmen.setEnabled(true);
-		btnReset_Ausgaben.setEnabled(true);
-
-	}
-
+	
 	//
-	// Start der Methoden für die Ausgaben
+	// Methode für die Haupt-GUI
 	//
-
-	/**
-	 * 
-	 * Checkdata_Ausgaben prüft die Benutzereingaben für die Gui Maske der
-	 * "Ausgaben". Wenn alle Eingaben korrekt sind wird die Csv-Datei mit diesen
-	 * Daten beschrieben.
-	 * 
-	 * @exception FileNotFoundException @throws Ausgabe, dassdie csv Datei nicht da ist
-	 * 
-	 * @exception IOException @throws Ausgabe, dass die csv Datei probleme hat
-	 * 
-	 * @exception ParseException @throws Falsche Datumseingabe
-	 * 
-	 * @exception NumberFormatException @throws Ausgabe, dass es eine fasche Betragseingabe gab
-	 * 
-	 * @exception IndexOutofBoundsException @throws Ausgabe, dass eine Kategorie gewählt werden soll
-	 * 
-	 * 
-	 */
-
-	public void Checkdata_Ausgaben() {
-		try {
-			// Check date validation
-			if (txtTtmmjjjj_Ausgaben.getText().length() != 10)
-				throw new ParseException("Fehler", 0);
-
-			Pattern p = Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}");
-			Matcher m = p.matcher(txtTtmmjjjj_Ausgaben.getText());
-			boolean b = m.matches();
-			if (b == false)
-				throw new ParseException("Fehler", 0);
-
-			SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-			// strenge Datumsprüfung einschalten
-			dateFormat.setLenient(false);
-			dateFormat.parse(txtTtmmjjjj_Ausgaben.getText());
-
-			double k = Double.parseDouble(textField_Ausgaben.getText());
-			if (k < 0)
-				throw new NumberFormatException();
-			DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance();
-			// Punkttrennung
-			dfs.setDecimalSeparator('.');
-			// Gibt das Format für die Betragseingabe an
-			DecimalFormat df = new DecimalFormat("#0.00", dfs);
-			String j;
-			j = df.format(k);
-			// Falsche Betragseingabe (Muss der Formatvorgabe entsprechen)
-			if (!textField_Ausgaben.getText().equals(j))
-				throw new NumberFormatException();
-
-			// ComboBox auf den Feld "Bitte Wählen"
-			if (comboBox_Ausgaben.getSelectedIndex() == 0)
-				throw new IndexOutOfBoundsException();
-
-			CSVWriter writer = null;
-
-			// Wenn alle Vorgaben korrekt sind wird hier die Csv Datei
-			// beschrieben
-			try {
-				writer = new CSVWriter(new FileWriter("data/budget.csv", true));
-				String[] entries = new String[5];
-				// Auslese der einzelnen Felder
-				entries[0] = txtTtmmjjjj_Ausgaben.getText();
-				entries[1] = textFieldNotiz_Ausgabe.getText();
-				entries[2] = (String) comboBox_Ausgaben.getSelectedItem();
-				entries[3] = "-" + textField_Ausgaben.getText();
-				entries[4] = "1"; // 1 gilt als Ausgabe. Nur intern sichtbar
-				writer.writeNext(entries);
-				writer.close();
-				Clear_Ausgaben();
-				JOptionPane.showMessageDialog(null, buchung_a,
-						"Ausgabenbuchung", JOptionPane.INFORMATION_MESSAGE);
-				Init_Kontostand(1);
-
-				// Exceptions
-			} catch (FileNotFoundException ex) {
-				System.err.println(csv_nichtgefunden);
-				System.exit(1);
-
-			} catch (IOException ex) {
-				System.err.println(csv_problemöffnen);
-				System.exit(1);
-			}
-
-		}
-
-		catch (ParseException e) {
-			JOptionPane.showMessageDialog(null, falsches_datum, "Fehler",
-					JOptionPane.ERROR_MESSAGE);
-			txtTtmmjjjj_Ausgaben.setText(null);
-		}
-
-		catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(null, falsche_betragseingabe,
-					"Fehler", JOptionPane.ERROR_MESSAGE);
-			textField_Ausgaben.setText(null);
-		}
-
-		catch (IndexOutOfBoundsException e) {
-			JOptionPane.showMessageDialog(null, kategorie, "Fehler",
-					JOptionPane.ERROR_MESSAGE);
-
-		}
-
-	}
-
-	/**
-	 * Methode, die die Eingaben in die Felder der Ausgaben auf den
-	 * ursprünglichen Zustand zurück setzt
-	 */
-	public void Clear_Ausgaben() {
-		textField_Ausgaben.setText(null);
-		txtTtmmjjjj_Ausgaben.setText(new SimpleDateFormat("dd.MM.yyyy")
-				.format(new Date()));
-		comboBox_Ausgaben.setSelectedIndex(0);
-		textFieldNotiz_Ausgabe.setText(null);
-	}
-
-	/**
-	 * Hier wird die Kontoübersicht initiiert, die die Tabelle in der
-	 * Kontoübersicht anzeigt
-	 */
-	@SuppressWarnings("deprecation")
-	public void Init_Kontoübersicht() {
-		// Hier wird ein mehrdimensionales Array erzeugt, dass 5 Spalten hat und
-		// die Zeilenanzahl von budget.Geldvermögen bekommt.
-		// Diese Spaltenanzahl bezieht sich auf die Zeilenanzahl der Csv Datei
-		Object[][] data = new Object[budget.Geldvermögen.size()][5];
-		int i = 0;
-		String m;
-		for (Posten p : budget.Geldvermögen) {
-			data[i][0] = new SimpleDateFormat("dd.MM.yyyy")
-					.format(p.getDatum());
-			data[i][1] = p.getBezeichnung();
-			data[i][2] = p.getnotiz();
-			data[i][3] = p.getBetrag();
-			if (p.getintern_Einnahme_Ausgabe() == 0)
-				m = "Einnahme";
-			else
-				m = "Ausgabe";
-
-			data[i][4] = m;
-			i++;
-		}
-
-		table = new JTable(data, new Object[] { "Datum", "Kategorie",
-				"Beschreibung", "Betrag", "Buchungsart" });
-		table.enable(false);
-		table.setAutoCreateRowSorter(true);
-		scrollPane.setViewportView(table);
-	}
-
-	/**
-	 * Hier wird der Aktuelle Kontostand aktualisiert.
-	 * 
-	 * @param k
-	 * 
-	 * @exception FileNotFoundException @throws Ausgabe, dass die csv Datei nicht da ist
-	 * 
-	 * @exception IOException @throws Ausgabe, dass es mit der Csv Datein ein Problem gibt
-	 * 
-	 * @exception ParseException @throws Ausgabe, dass die Datein nicht eingelesen werden kann
-	 * 
-	 */
-	public void Init_Kontostand(int k) {
-		NumberFormat nf = NumberFormat.getInstance(new Locale("de", "DE"));
-		double i = 0;
-		budget.Geldvermögen.clear();
-
-		try {
-			// Zeilenweises Einlesen der Daten
-			CSVReader reader = new CSVReader(new FileReader("data/budget.csv"));
-			String[] nextLine;
-			while ((nextLine = reader.readNext()) != null) {
-				DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,
-						Locale.GERMAN);
-				// Einlesen von Datum/Notizen/Kategorie/Buchungsbetrag/Angabe,
-				// ob es sich um eine Einnahme oder Ausgabe handelt
-				Date datum = df.parse(nextLine[0]);
-				String notiz = nextLine[1];
-				String bezeichnung = nextLine[2];
-				double betrag = Double.parseDouble(nextLine[3]);
-				int intern_Einnahme_Ausgabe = Integer.parseInt(nextLine[4]);
-				budget.Geldvermögen.add(new Posten(datum, notiz, bezeichnung,
-						betrag, intern_Einnahme_Ausgabe));
-
-			}
-			reader.close();
-
-			// Exceptions
-		} catch (FileNotFoundException e) {
-			System.err.println(csv_nichtgefunden);
-			System.exit(1);
-
-		} catch (IOException e) {
-			System.err.println(csv_problemöffnen);
-			System.exit(1);
-
-		} catch (ParseException e) {
-			System.err
-					.println("Formatfehler: Die Datei konnte nicht eingelesen werden!");
-			System.exit(1);
-		}
-		Collections.sort(budget.Geldvermögen, new Comparator<Posten>() {
-			@Override
-			public int compare(Posten o1, Posten o2) {
-				return o1.getDatum().compareTo(o2.getDatum());
-			}
-		});
-
-		for (Posten p : budget.Geldvermögen) {
-			i += p.getBetrag();
-		}
-
-		lblKontostand.setText(nf.format(i) + "");
-		if (i >= 0) {
-			lblKontostand.setForeground(new Color(20, 170, 20));
-		} else {
-			lblKontostand.setForeground(Color.RED);
-		}
-
-		// Warnungen, wenn der Kontostand sehr niedrig ist.
-		// Eine Warnung im oberen recht Feld als permanente Warnung
-		// Eine Warunung als Popupbenachrichtigung
-		// Der Startwert ist davon ausgeschlossen.
-
-		// Wenn der übergebene Parameter 1 ist werden die Fehlermeldungen
-		// ausgegeben, wenn die Initalisierung stattfindet
-		if (k == 1) {
-
-			if (budget.Geldvermögen.size() >= 2) {
-				if (i < 20 && i >= 0 && budget.Geldvermögen.size() != 0) {
-					JOptionPane.showMessageDialog(null,
-							"Ihr Kontostand ist sehr gering.\n"
-									+ "Bitte achten Sie auf Ihre Ausgaben.",
-							"Kontostandswarnung", JOptionPane.WARNING_MESSAGE);
-
-					lblKontostandWarnung
-							.setText("<html><body><center><u>  ACHTUNG!</u><u><br>Ihr Kontostand ist sehr niedrig!</br></u></center></body></html>");
-					lblKontostandWarnung
-							.setBackground(new Color(250, 250, 120));
-					lblKontostandWarnung.setForeground(Color.black);
-					lblKontostandWarnung.setOpaque(true);
-				} else if (i < 0) {
-					JOptionPane.showMessageDialog(null,
-							"Ihr Kontostand befindet sich im negativen Bereich.\n"
-									+ "Bitte achten Sie auf Ihre Ausgaben.",
-							"Kontostandswarnung", JOptionPane.WARNING_MESSAGE);
-
-					lblKontostandWarnung
-							.setText("<html><body><center><u>ACHTUNG!</u><u><br>Ihr Kontostand ist im negativen Bereich!</br></u></center></body></html>");
-					lblKontostandWarnung.setBackground(new Color(250, 70, 70));
-					lblKontostandWarnung.setForeground(Color.white);
-					lblKontostandWarnung.setOpaque(true);
-				} else {
-					lblKontostandWarnung.setText("");
-					lblKontostandWarnung.setBackground(Color.WHITE);
-				}
-			}
-		}
-
-		// Startwert Sparfunktion, basierend auf dem aktuellen Kontostand
-		DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance();
-		dfs.setDecimalSeparator('.');
-		DecimalFormat df = new DecimalFormat("#0.00", dfs);
-		String s = String.valueOf(df.format(i));// zur Sparfunktion -> Startwert
-												// durch Punkt statt durch Komma
-												// trennen
-		// um exception zu verhindern
-
-		textFieldStartwert.setText(s);
-		textFieldZeitraum.setText("0");
-
-		// Weitere Methodenausführung
-		Init_Kontoübersicht();
-		Statistik_Warnung();
-
-	}
-
-	/**
-	 * 
-	 * Einlesen der Einnahmen in die Csv Datei aus der Gui. Fehlerabfragen, ob
-	 * der Nutzer auch alle daten richtig eingegeben hat.
-	 * 
-	 * @exception FileNotFoundException @throws Ausgabe, dass die csv Datei nicht da ist
-	 * 
-	 * @exception IOException @throws Ausgabe, dass die csv Datei Probleme hat
-	 * 
-	 * @exception ParseException @throws Ausgabe, dass das Datum falsch eingegeben wurde
-	 * 
-	 * @exception NumberFormatException @throws Ausgabe, dass es einen Fehler bei der Betrageingabe gab
-	 * 
-	 * @exception IndexOutOfBoundsException @throws Ausgabe, dass ein Fehler bei der Kategorie gab
-	 * 
-	 */
-	public void CheckData_Einnahmen() {
-		try {
-			// Check date validation
-			if (txtTtmmjjjj_Einnahmen.getText().length() != 10)
-				throw new ParseException("Fehler", 0);
-
-			Pattern p = Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}");
-			Matcher m = p.matcher(txtTtmmjjjj_Einnahmen.getText());
-			boolean b = m.matches();
-			if (b == false)
-				throw new ParseException("Fehler", 0);
-
-			SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-			// strenge Datumsprüfung einschalten
-			dateFormat.setLenient(false);
-			dateFormat.parse(txtTtmmjjjj_Einnahmen.getText());
-
-			double k = Double.parseDouble(textField_Einnahmen.getText());
-			if (k < 0)
-				throw new NumberFormatException();
-			DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance();
-			// Punkttrennung
-			dfs.setDecimalSeparator('.');
-			// Gibt das Format für die Betragseingabe an
-			DecimalFormat df = new DecimalFormat("#0.00", dfs);
-			String j;
-			j = df.format(k);
-			// Falsche Betragseingabe (Muss der Formatvorgabe entsprechen)
-			if (!textField_Einnahmen.getText().equals(j))
-				throw new NumberFormatException();
-
-			// ComboBox muss auf das Feld "Bitte Wählen"
-			if (comboBox_Einnahmen.getSelectedIndex() == 0)
-				throw new IndexOutOfBoundsException();
-
-			// Wenn alle Vorgaben korrekt sind wird hier die Csv Datei
-			// beschrieben
-			CSVWriter writer = null;
-
-			try {
-				writer = new CSVWriter(new FileWriter("data/budget.csv", true));
-				String[] entries = new String[5];
-				// Auslese der einzelnen Felder
-				entries[0] = txtTtmmjjjj_Einnahmen.getText();
-				entries[1] = textFieldNotiz_Einnahmen.getText();
-				entries[2] = (String) comboBox_Einnahmen.getSelectedItem();
-				entries[3] = textField_Einnahmen.getText();
-				entries[4] = "0"; // 0 gilt als Einnahme. Nur intern sichtbar
-				writer.writeNext(entries);
-				writer.close();
-				Clear_Einnahmen();
-				JOptionPane.showMessageDialog(null, buchung_e,
-						"Einnahmenbuchung", JOptionPane.INFORMATION_MESSAGE);
-				Init_Kontostand(1);
-
-				// Exceptions
-			} catch (FileNotFoundException ex) {
-				System.err.println(csv_nichtgefunden);
-				System.exit(1);
-
-			} catch (IOException ex) {
-				System.err.println(csv_problemöffnen);
-				System.exit(1);
-			}
-
-		}
-
-		catch (ParseException e) {
-			JOptionPane.showMessageDialog(null, falsches_datum, "Fehler",
-					JOptionPane.ERROR_MESSAGE);
-			txtTtmmjjjj_Einnahmen.setText(null);
-		}
-
-		catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(null, falsche_betragseingabe,
-					"Fehler", JOptionPane.ERROR_MESSAGE);
-			textField_Einnahmen.setText(null);
-		}
-
-		catch (IndexOutOfBoundsException e) {
-			JOptionPane.showMessageDialog(null, kategorie, "Fehler",
-					JOptionPane.ERROR_MESSAGE);
-
-		}
-	}
-
-	/**
-	 * Die Fehler der Einnahmen in der GUI werden auf den Urzustand gebracht.
-	 */
-	public void Clear_Einnahmen() {
-		textField_Einnahmen.setText(null);
-		txtTtmmjjjj_Einnahmen.setText(new SimpleDateFormat("dd.MM.yyyy")
-				.format(new Date()));
-		comboBox_Einnahmen.setSelectedIndex(0);
-		textFieldNotiz_Einnahmen.setText(null);
-	}
-
-	//
-	// Methoden für die Statistik
-	//
-
-	public void Grafikmodellauswahl(String selection) {
-		Init_Kontostand(0);
-		if (rdbtnIndividualZeitraum.isSelected() == true) {
-			if ((Statistik_CheckAuswahlDatum() == true)
-					&& (Statistik_CheckDateDiff() == true)) {
-				Statistik testen = new Statistik(budget);
-				testen.Statistik_Manager(selection,
-						textField_Statistik_Startwert.getText(),
-						textField_Statistik_Endwert.getText());
-			}
-		} else {
-			Statistik testen = new Statistik(budget);
-			testen.Statistik_Manager(selection, "0", "0");
-		}
-	}
-
-	public boolean Statistik_CheckAuswahlDatum() {
-
-		try {
-			// Check date validation Datumsstartwert & Datumsendwert
-			if ((textField_Statistik_Startwert.getText().length() != 10)
-					|| (textField_Statistik_Endwert.getText().length() != 10))
-				throw new ParseException("Fehler", 0);
-
-			p = Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}");
-			m = p.matcher(textField_Statistik_Startwert.getText());
-			m2 = p.matcher(textField_Statistik_Endwert.getText());
-			boolean b = m.matches(), b2 = m2.matches();
-			if ((b == false) || (b2 == false))
-				throw new ParseException("Fehler", 0);
-
-			dateFormat = new SimpleDateFormat("dd.MM.yyyy");
-			dateFormat.setLenient(false); // strenge Datumsprüfung einschalten
-			dateFormat.parse(textField_Statistik_Startwert.getText());
-			dateFormat.parse(textField_Statistik_Endwert.getText());
-
-			return true;
-
-		} catch (ParseException e) {
-			JOptionPane.showMessageDialog(null, falsches_datum, "Fehler",
-					JOptionPane.ERROR_MESSAGE);
-			textField_Statistik_Endwert.setText(null);
-			textField_Statistik_Startwert.setText(null);
-			return false;
-		}
-	}
-
-	public boolean Statistik_CheckDateDiff() {
-		try {
-			sdf = new SimpleDateFormat("dd.MM.yyyy");
-			Start = sdf.parse(textField_Statistik_Startwert.getText());
-			End = sdf.parse(textField_Statistik_Endwert.getText());
-			if (End.compareTo(Start) < 0)
-				throw new Exception();
-			return true;
-
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, falsche_datumsgroesse,
-					"Fehler", JOptionPane.ERROR_MESSAGE);
-			textField_Statistik_Endwert.setText(null);
-			textField_Statistik_Startwert.setText(null);
-
-			return false;
-		}
-	}
-
-	public void Statistik_Warnung() {
-		int Zaehler_einnahmen = 0, Zaehler_ausgaben = 0, x = -1, y = -1;
-		String monat_einnahmen = null, monat_ausgaben = null;
-		boolean month_einnahmen = false, month_ausgaben = false;
-		monatformat = new SimpleDateFormat("MM.yyyy");
-
-		List<Posten> tmp = new ArrayList<Posten>();
-		for (Posten p : budget.Geldvermögen)
-			if (!p.getBezeichnung().equals("Kontoeröffnung"))
-				tmp.add(p);
-		for (Posten p : tmp) {
-			x++;
-			if (p.getintern_Einnahme_Ausgabe() == 0)
-				break;
-		}
-		if (!tmp.isEmpty())
-			monat_einnahmen = monatformat.format(tmp.get(x).getDatum());
-
-		for (Posten p : tmp) {
-			y++;
-			if (p.getintern_Einnahme_Ausgabe() == 1)
-				break;
-		}
-		if (!tmp.isEmpty())
-			monat_ausgaben = monatformat.format(tmp.get(y).getDatum());
-
-		for (Posten p : tmp) {
-			if (p.getintern_Einnahme_Ausgabe() == 0) {
-				Zaehler_einnahmen++;
-				if (monatformat.format(p.getDatum()).compareTo(monat_einnahmen) != 0)
-					month_einnahmen = true;
-				monat_einnahmen = monatformat.format(p.getDatum());
-			} else {
-				Zaehler_ausgaben++;
-
-				if (monatformat.format(p.getDatum()).compareTo(monat_ausgaben) != 0)
-					month_ausgaben = true;
-				monat_ausgaben = monatformat.format(p.getDatum());
-			}
-		}
-		if ((Zaehler_einnahmen > 20) && (Zaehler_ausgaben > 20)
-				&& (month_einnahmen == true) && (month_ausgaben == true)) {
-			lblStatistikWarnung.setText("");
-			lblStatistikWarnung.setBackground(new Color(240, 240, 240));
-
-		} else {
-			lblStatistikWarnung
-					.setText("<html><body><center><u>ACHTUNG!</u></center>Für eine sinnvolle Statistik<br>sind für einige Modelle<br>zu wenig Daten vorhanden!</body></html>");
-			lblStatistikWarnung.setBackground(new Color(250, 250, 120));
-			lblStatistikWarnung.setOpaque(true);
-		}
-	}
-
-	//
-	// Methoden für die Sparfunktion
-	//
-
-	// Sparfunktion Methode
-	/**
-	 * Methode für die Sparfunktion / Richtige Eingabe etc
-	 */
-
+	
 	/**
 	 * Das Ausgangs Fenster wird hier initalisiert
 	 */
@@ -1073,6 +497,11 @@ public class BudgetPlanGUI extends JFrame {
 		Panel_Statistiken.setLayout(null);
 
 		// Panel Sparfunktion
+		panel_Sparfunktion = new JPanel();
+		tabbedPane
+				.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Sparfunktion</body></html>",
+						null, panel_Sparfunktion, null);
+		panel_Sparfunktion.setLayout(null);
 
 		// Panel 1 Ende
 		//
@@ -1335,8 +764,6 @@ public class BudgetPlanGUI extends JFrame {
 		Panel_Einnahmen.add(btnHelpButton_Einnahmen);
 
 		// ANFANG PANEL 5 Daueraufträge
-		//
-		//
 
 		// Label und Nachricht für die Daueraufträge
 		JLabel labelDA = new JLabel(new ImageIcon("src/img/work.png"));
@@ -1420,12 +847,6 @@ public class BudgetPlanGUI extends JFrame {
 		// Anfang Panel 7 Sparfunktion
 		//
 		//
-
-		panel_Sparfunktion = new JPanel();
-		tabbedPane
-				.addTab("<html><body leftmargin=15 topmargin=8 marginwidth=15 marginheight=20>Sparfunktion</body></html>",
-						null, panel_Sparfunktion, null);
-		panel_Sparfunktion.setLayout(null);
 
 		lblStartwert = new JLabel("Startwert:");
 		lblStartwert.setFont(new Font("Tahoma", Font.BOLD, 11));
@@ -1534,8 +955,662 @@ public class BudgetPlanGUI extends JFrame {
 		// ENDE PANEL 7 Sparfunktion
 
 	}
+	
+	//
+	// allgemeine Methoden
+	//
 
+	/**
+	 * Anfangsabfrage, die überprüft, ob die Csv Datei leer ist. Wenn das der
+	 * Fall ist wird man dazu aufgefordert ein neues Konto anzulegen
+	 * 
+	 */	
+	public void Anfangsabfrage() {
+
+		// Infomessage, die gezeigt wird, wenn die Csv Datei leer ist und von
+		// einem neuen Kontostart zu rechnen ist.
+		if (budget.Geldvermögen.size() == 0) {
+			JOptionPane.showMessageDialog(null, willkommen,
+					"Willkommen bei MyBudgetManager",
+					JOptionPane.INFORMATION_MESSAGE);
+			// Deaktivierung von Zugriffsmöglichkeiten
+			tabbedPane.setEnabledAt(0, false);
+			tabbedPane.setEnabledAt(3, false);
+			tabbedPane.setEnabledAt(4, false);
+			tabbedPane.setEnabledAt(5, false);
+			tabbedPane.setSelectedIndex(1);
+			// ComboBox nur mit dem Startwert
+			comboBox_Ausgaben.insertItemAt("Kontoeröffnung", 1);
+			comboBox_Ausgaben.setSelectedIndex(1);
+			comboBox_Ausgaben.setEnabled(false);
+			// ComboBox nur mit dem Startwert
+			comboBox_Einnahmen.insertItemAt("Kontoeröffnung", 1);
+			comboBox_Einnahmen.setSelectedIndex(1);
+			comboBox_Einnahmen.setEnabled(false);
+
+			btnReset_Einnahmen.setEnabled(false);
+			btnReset_Ausgaben.setEnabled(false);
+		}
+
+	}
+
+	/**
+	 * Auflösen der Deativierung, wenn das Programm zum ersten Mal gestartet
+	 * wird.
+	 */
+	public void Aktivierung() {
+		// Freigabe der tabbedPane Blätter
+		tabbedPane.setEnabledAt(0, true);
+		tabbedPane.setEnabledAt(3, true);
+		tabbedPane.setEnabledAt(4, true);
+		tabbedPane.setEnabledAt(5, true);
+
+		// Freigabe der ComboBox_Ausgaben und Umschlag auf das erste Item
+		comboBox_Ausgaben.removeItemAt(1);
+		comboBox_Ausgaben.setEnabled(true);
+
+		// Freigabe der ComboBox_Einnahmen und Umschlag auf das erste Item
+		comboBox_Einnahmen.removeItemAt(1);
+		comboBox_Einnahmen.setEnabled(true);
+
+		// Freigabe der Resetbutton in Einnahmen und Ausgaben
+		btnReset_Einnahmen.setEnabled(true);
+		btnReset_Ausgaben.setEnabled(true);
+
+	}
+
+	/**
+	 * Hier wird die Kontoübersicht initiiert, die die Tabelle in der
+	 * Kontoübersicht anzeigt
+	 */
+	@SuppressWarnings("deprecation")
+	public void Init_Kontoübersicht() {
+		// Hier wird ein mehrdimensionales Array erzeugt, dass 5 Spalten hat und
+		// die Zeilenanzahl von budget.Geldvermögen bekommt.
+		// Diese Spaltenanzahl bezieht sich auf die Zeilenanzahl der Csv Datei
+		Object[][] data = new Object[budget.Geldvermögen.size()][5];
+		int i = 0;
+		String m;
+		for (Posten p : budget.Geldvermögen) {
+			data[i][0] = new SimpleDateFormat("dd.MM.yyyy")
+					.format(p.getDatum());
+			data[i][1] = p.getBezeichnung();
+			data[i][2] = p.getnotiz();
+			data[i][3] = p.getBetrag();
+			if (p.getintern_Einnahme_Ausgabe() == 0)
+				m = "Einnahme";
+			else
+				m = "Ausgabe";
+
+			data[i][4] = m;
+			i++;
+		}
+
+		table = new JTable(data, new Object[] { "Datum", "Kategorie",
+				"Beschreibung", "Betrag", "Buchungsart" });
+		table.enable(false);
+		table.setAutoCreateRowSorter(true);
+		scrollPane.setViewportView(table);
+	}
+
+	/**
+	 * Hier wird der Aktuelle Kontostand aktualisiert.
+	 * 
+	 * @param k "1" schaltet Warnmeldung ein, "0" aus
+	 * 
+	 * @exception FileNotFoundException @throws Ausgabe, dass die csv Datei nicht da ist
+	 * 
+	 * @exception IOException @throws Ausgabe, dass es mit der Csv Datein ein Problem gibt
+	 * 
+	 * @exception ParseException @throws Ausgabe, dass die Datein nicht eingelesen werden kann
+	 * 
+	 */
+	public void Init_Kontostand(int k) {
+		NumberFormat nf = NumberFormat.getInstance(new Locale("de", "DE"));
+		double i = 0;
+		budget.Geldvermögen.clear();
+
+		try {
+			// Zeilenweises Einlesen der Daten
+			CSVReader reader = new CSVReader(new FileReader("data/budget.csv"));
+			String[] nextLine;
+			while ((nextLine = reader.readNext()) != null) {
+				DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,
+						Locale.GERMAN);
+				// Einlesen von Datum/Notizen/Kategorie/Buchungsbetrag/Angabe,
+				// ob es sich um eine Einnahme oder Ausgabe handelt
+				Date datum = df.parse(nextLine[0]);
+				String notiz = nextLine[1];
+				String bezeichnung = nextLine[2];
+				double betrag = Double.parseDouble(nextLine[3]);
+				int intern_Einnahme_Ausgabe = Integer.parseInt(nextLine[4]);
+				budget.Geldvermögen.add(new Posten(datum, notiz, bezeichnung,
+						betrag, intern_Einnahme_Ausgabe));
+
+			}
+			reader.close();
+
+			// Exceptions
+		} catch (FileNotFoundException e) {
+			System.err.println(csv_nichtgefunden);
+			System.exit(1);
+
+		} catch (IOException e) {
+			System.err.println(csv_problemöffnen);
+			System.exit(1);
+
+		} catch (ParseException e) {
+			System.err
+					.println("Formatfehler: Die Datei konnte nicht eingelesen werden!");
+			System.exit(1);
+		}
+		Collections.sort(budget.Geldvermögen, new Comparator<Posten>() {
+			@Override
+			public int compare(Posten o1, Posten o2) {
+				return o1.getDatum().compareTo(o2.getDatum());
+			}
+		});
+
+		for (Posten p : budget.Geldvermögen) {
+			i += p.getBetrag();
+		}
+
+		lblKontostand.setText(nf.format(i) + "");
+		if (i >= 0) {
+			lblKontostand.setForeground(new Color(20, 170, 20));
+		} else {
+			lblKontostand.setForeground(Color.RED);
+		}
+
+		// Warnungen, wenn der Kontostand sehr niedrig ist.
+		// Eine Warnung im oberen recht Feld als permanente Warnung
+		// Eine Warunung als Popupbenachrichtigung
+		// Der Startwert ist davon ausgeschlossen.
+
+		// Wenn der übergebene Parameter 1 ist werden die Fehlermeldungen
+		// ausgegeben, wenn die Initalisierung stattfindet
+		if (k == 1) {
+
+			if (budget.Geldvermögen.size() >= 2) {
+				if (i < 20 && i >= 0 && budget.Geldvermögen.size() != 0) {
+					JOptionPane.showMessageDialog(null,
+							"Ihr Kontostand ist sehr gering.\n"
+									+ "Bitte achten Sie auf Ihre Ausgaben.",
+							"Kontostandswarnung", JOptionPane.WARNING_MESSAGE);
+
+					lblKontostandWarnung
+							.setText("<html><body><center><u>  ACHTUNG!</u><u><br>Ihr Kontostand ist sehr niedrig!</br></u></center></body></html>");
+					lblKontostandWarnung
+							.setBackground(new Color(250, 250, 120));
+					lblKontostandWarnung.setForeground(Color.black);
+					lblKontostandWarnung.setOpaque(true);
+				} else if (i < 0) {
+					JOptionPane.showMessageDialog(null,
+							"Ihr Kontostand befindet sich im negativen Bereich.\n"
+									+ "Bitte achten Sie auf Ihre Ausgaben.",
+							"Kontostandswarnung", JOptionPane.WARNING_MESSAGE);
+
+					lblKontostandWarnung
+							.setText("<html><body><center><u>ACHTUNG!</u><u><br>Ihr Kontostand ist im negativen Bereich!</br></u></center></body></html>");
+					lblKontostandWarnung.setBackground(new Color(250, 70, 70));
+					lblKontostandWarnung.setForeground(Color.white);
+					lblKontostandWarnung.setOpaque(true);
+				} else {
+					lblKontostandWarnung.setText("");
+					lblKontostandWarnung.setBackground(Color.WHITE);
+				}
+			}
+		}
+
+		// Startwert Sparfunktion, basierend auf dem aktuellen Kontostand
+		DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance();
+		dfs.setDecimalSeparator('.');
+		DecimalFormat df = new DecimalFormat("#0.00", dfs);
+		String s = String.valueOf(df.format(i));// zur Sparfunktion -> Startwert
+												// durch Punkt statt durch Komma
+												// trennen
+		// um exception zu verhindern
+
+		textFieldStartwert.setText(s);
+		textFieldZeitraum.setText("0");
+
+		// Weitere Methodenausführung
+		Init_Kontoübersicht();
+		Statistik_Warnung();
+
+	}
+	
+	//
+	// Methoden für die Ausgaben
+	//
+
+	/**
+	 * 
+	 * Checkdata_Ausgaben prüft die Benutzereingaben für die Gui Maske der
+	 * "Ausgaben". Wenn alle Eingaben korrekt sind wird die Csv-Datei mit diesen
+	 * Daten beschrieben.
+	 * 
+	 * @exception FileNotFoundException @throws Ausgabe, dassdie csv Datei nicht da ist
+	 * 
+	 * @exception IOException @throws Ausgabe, dass die csv Datei probleme hat
+	 * 
+	 * @exception ParseException @throws Falsche Datumseingabe
+	 * 
+	 * @exception NumberFormatException @throws Ausgabe, dass es eine fasche Betragseingabe gab
+	 * 
+	 * @exception IndexOutofBoundsException @throws Ausgabe, dass eine Kategorie gewählt werden soll
+	 * 
+	 * 
+	 */
+	public void Checkdata_Ausgaben() {
+		try {
+			// Check date validation
+			if (txtTtmmjjjj_Ausgaben.getText().length() != 10)
+				throw new ParseException("Fehler", 0);
+
+			Pattern p = Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}");
+			Matcher m = p.matcher(txtTtmmjjjj_Ausgaben.getText());
+			boolean b = m.matches();
+			if (b == false)
+				throw new ParseException("Fehler", 0);
+
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+			// strenge Datumsprüfung einschalten
+			dateFormat.setLenient(false);
+			dateFormat.parse(txtTtmmjjjj_Ausgaben.getText());
+
+			double k = Double.parseDouble(textField_Ausgaben.getText());
+			if (k < 0)
+				throw new NumberFormatException();
+			DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance();
+			// Punkttrennung
+			dfs.setDecimalSeparator('.');
+			// Gibt das Format für die Betragseingabe an
+			DecimalFormat df = new DecimalFormat("#0.00", dfs);
+			String j;
+			j = df.format(k);
+			// Falsche Betragseingabe (Muss der Formatvorgabe entsprechen)
+			if (!textField_Ausgaben.getText().equals(j))
+				throw new NumberFormatException();
+
+			// ComboBox auf den Feld "Bitte Wählen"
+			if (comboBox_Ausgaben.getSelectedIndex() == 0)
+				throw new IndexOutOfBoundsException();
+
+			CSVWriter writer = null;
+
+			// Wenn alle Vorgaben korrekt sind wird hier die Csv Datei
+			// beschrieben
+			try {
+				writer = new CSVWriter(new FileWriter("data/budget.csv", true));
+				String[] entries = new String[5];
+				// Auslese der einzelnen Felder
+				entries[0] = txtTtmmjjjj_Ausgaben.getText();
+				entries[1] = textFieldNotiz_Ausgabe.getText();
+				entries[2] = (String) comboBox_Ausgaben.getSelectedItem();
+				entries[3] = "-" + textField_Ausgaben.getText();
+				entries[4] = "1"; // 1 gilt als Ausgabe. Nur intern sichtbar
+				writer.writeNext(entries);
+				writer.close();
+				Clear_Ausgaben();
+				JOptionPane.showMessageDialog(null, buchung_a,
+						"Ausgabenbuchung", JOptionPane.INFORMATION_MESSAGE);
+				Init_Kontostand(1);
+
+				// Exceptions
+			} catch (FileNotFoundException ex) {
+				System.err.println(csv_nichtgefunden);
+				System.exit(1);
+
+			} catch (IOException ex) {
+				System.err.println(csv_problemöffnen);
+				System.exit(1);
+			}
+
+		}
+
+		catch (ParseException e) {
+			JOptionPane.showMessageDialog(null, falsches_datum, "Fehler",
+					JOptionPane.ERROR_MESSAGE);
+			txtTtmmjjjj_Ausgaben.setText(null);
+		}
+
+		catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(null, falsche_betragseingabe,
+					"Fehler", JOptionPane.ERROR_MESSAGE);
+			textField_Ausgaben.setText(null);
+		}
+
+		catch (IndexOutOfBoundsException e) {
+			JOptionPane.showMessageDialog(null, kategorie, "Fehler",
+					JOptionPane.ERROR_MESSAGE);
+
+		}
+
+	}
+
+	/**
+	 * Methode, die die Eingaben in die Felder der Ausgaben auf den
+	 * ursprünglichen Zustand zurück setzt
+	 */
+	public void Clear_Ausgaben() {
+		textField_Ausgaben.setText(null);
+		txtTtmmjjjj_Ausgaben.setText(new SimpleDateFormat("dd.MM.yyyy")
+				.format(new Date()));
+		comboBox_Ausgaben.setSelectedIndex(0);
+		textFieldNotiz_Ausgabe.setText(null);
+	}
+
+	//
+	// Methoden für die Einnahmen
+	//
+	
+	/**
+	 * 
+	 * Einlesen der Einnahmen in die Csv Datei aus der Gui. Fehlerabfragen, ob
+	 * der Nutzer auch alle daten richtig eingegeben hat.
+	 * 
+	 * @exception FileNotFoundException @throws Ausgabe, dass die csv Datei nicht da ist
+	 * 
+	 * @exception IOException @throws Ausgabe, dass die csv Datei Probleme hat
+	 * 
+	 * @exception ParseException @throws Ausgabe, dass das Datum falsch eingegeben wurde
+	 * 
+	 * @exception NumberFormatException @throws Ausgabe, dass es einen Fehler bei der Betrageingabe gab
+	 * 
+	 * @exception IndexOutOfBoundsException @throws Ausgabe, dass ein Fehler bei der Kategorie gab
+	 * 
+	 */
+	public void CheckData_Einnahmen() {
+		try {
+			// Check date validation
+			if (txtTtmmjjjj_Einnahmen.getText().length() != 10)
+				throw new ParseException("Fehler", 0);
+
+			Pattern p = Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}");
+			Matcher m = p.matcher(txtTtmmjjjj_Einnahmen.getText());
+			boolean b = m.matches();
+			if (b == false)
+				throw new ParseException("Fehler", 0);
+
+			SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+			// strenge Datumsprüfung einschalten
+			dateFormat.setLenient(false);
+			dateFormat.parse(txtTtmmjjjj_Einnahmen.getText());
+
+			double k = Double.parseDouble(textField_Einnahmen.getText());
+			if (k < 0)
+				throw new NumberFormatException();
+			DecimalFormatSymbols dfs = DecimalFormatSymbols.getInstance();
+			// Punkttrennung
+			dfs.setDecimalSeparator('.');
+			// Gibt das Format für die Betragseingabe an
+			DecimalFormat df = new DecimalFormat("#0.00", dfs);
+			String j;
+			j = df.format(k);
+			// Falsche Betragseingabe (Muss der Formatvorgabe entsprechen)
+			if (!textField_Einnahmen.getText().equals(j))
+				throw new NumberFormatException();
+
+			// ComboBox muss auf das Feld "Bitte Wählen"
+			if (comboBox_Einnahmen.getSelectedIndex() == 0)
+				throw new IndexOutOfBoundsException();
+
+			// Wenn alle Vorgaben korrekt sind wird hier die Csv Datei
+			// beschrieben
+			CSVWriter writer = null;
+
+			try {
+				writer = new CSVWriter(new FileWriter("data/budget.csv", true));
+				String[] entries = new String[5];
+				// Auslese der einzelnen Felder
+				entries[0] = txtTtmmjjjj_Einnahmen.getText();
+				entries[1] = textFieldNotiz_Einnahmen.getText();
+				entries[2] = (String) comboBox_Einnahmen.getSelectedItem();
+				entries[3] = textField_Einnahmen.getText();
+				entries[4] = "0"; // 0 gilt als Einnahme. Nur intern sichtbar
+				writer.writeNext(entries);
+				writer.close();
+				Clear_Einnahmen();
+				JOptionPane.showMessageDialog(null, buchung_e,
+						"Einnahmenbuchung", JOptionPane.INFORMATION_MESSAGE);
+				Init_Kontostand(1);
+
+				// Exceptions
+			} catch (FileNotFoundException ex) {
+				System.err.println(csv_nichtgefunden);
+				System.exit(1);
+
+			} catch (IOException ex) {
+				System.err.println(csv_problemöffnen);
+				System.exit(1);
+			}
+
+		}
+
+		catch (ParseException e) {
+			JOptionPane.showMessageDialog(null, falsches_datum, "Fehler",
+					JOptionPane.ERROR_MESSAGE);
+			txtTtmmjjjj_Einnahmen.setText(null);
+		}
+
+		catch (NumberFormatException e) {
+			JOptionPane.showMessageDialog(null, falsche_betragseingabe,
+					"Fehler", JOptionPane.ERROR_MESSAGE);
+			textField_Einnahmen.setText(null);
+		}
+
+		catch (IndexOutOfBoundsException e) {
+			JOptionPane.showMessageDialog(null, kategorie, "Fehler",
+					JOptionPane.ERROR_MESSAGE);
+
+		}
+	}
+
+	/**
+	 * Die Fehler der Einnahmen in der GUI werden auf den Urzustand gebracht.
+	 */
+	public void Clear_Einnahmen() {
+		textField_Einnahmen.setText(null);
+		txtTtmmjjjj_Einnahmen.setText(new SimpleDateFormat("dd.MM.yyyy")
+				.format(new Date()));
+		comboBox_Einnahmen.setSelectedIndex(0);
+		textFieldNotiz_Einnahmen.setText(null);
+	}
+
+	//
+	// Methoden für die Statistik
+	//
+
+	/**
+	 * Das vom Benutzer gewählte Statistik-Modell wird an die Statistik-Klasse
+	 * weitergeleitet. Dabei wird noch überprüft, ob ein individueller oder der
+	 * Gesamtzeitraum ausgewählt wurde, und ebenfalls an die Statistik-Klasse
+	 * weitergeleitet. Der Vorgang wird beim individuell gewähltem Zeitraum nur
+	 * bei korrekter Datumsangabe durchgeführt.
+	 * 
+	 * @param selection
+	 *            ausgewählte Statistik-Modell des Benutzers
+	 */
+	public void Grafikmodellauswahl(String selection) {
+		// Initialisierung der Daten auf Ursprungswerte, falls Änderungen
+		// vorgenommen wurden
+		Init_Kontostand(0);
+		// Referenz auf Statistik-Klasse
+		Statistikauswahl = new Statistik(budget);
+		// Radiobutton mit individuellem Zeitraum ausgewählt
+		if (rdbtnIndividualZeitraum.isSelected() == true) {
+			if ((Statistik_CheckAuswahlDatum() == true)
+					&& (Statistik_CheckDateDiff() == true)) {
+				Statistikauswahl.Statistik_Manager(selection,
+						textField_Statistik_Startwert.getText(),
+						textField_Statistik_Endwert.getText());
+			}
+		} // Radiobutton für Gesamtzeitraum ausgewählt
+		else {
+			Statistikauswahl.Statistik_Manager(selection, "0", "0");
+		}
+	}
+
+	/**
+	 * Im Statistik Panel wird das Datum beim individuellem Zeitraum auf
+	 * Korrektheit überprüft. Es gibt "wahr" bei richtiger und "falsch" bei
+	 * fehlerhafter Eingabe zurück.
+	 * 
+	 * @return true bei korrekter Datumseingabe, ansonsten <code>false</code>
+	 * 
+	 * @throws ParseException
+	 *             bei fehlerhafter Datumseingabe Error-Meldung
+	 */
+	public boolean Statistik_CheckAuswahlDatum() {
+
+		try {
+			// überprüft die Gültigkeit von Datumsstartwert & Datumsendwert
+			if ((textField_Statistik_Startwert.getText().length() != 10)
+					|| (textField_Statistik_Endwert.getText().length() != 10))
+				throw new ParseException("Fehler", 0);
+
+			p = Pattern.compile("\\d{2}\\.\\d{2}\\.\\d{4}");
+			m = p.matcher(textField_Statistik_Startwert.getText());
+			m2 = p.matcher(textField_Statistik_Endwert.getText());
+			boolean b = m.matches(), b2 = m2.matches();
+			if ((b == false) || (b2 == false))
+				throw new ParseException("Fehler", 0);
+
+			dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+			dateFormat.setLenient(false); // strenge Datumsprüfung einschalten
+			dateFormat.parse(textField_Statistik_Startwert.getText());
+			dateFormat.parse(textField_Statistik_Endwert.getText());
+			return true;
+
+		} catch (ParseException e) {
+			JOptionPane.showMessageDialog(null, falsches_datum, "Fehler",
+					JOptionPane.ERROR_MESSAGE);
+			textField_Statistik_Endwert.setText(null);
+			textField_Statistik_Startwert.setText(null);
+			return false;
+		}
+	}
+
+	/**
+	 * Im Statistik Panel wird das Datum beim individuellem Zeitraum auf die
+	 * korrekte Reihenfolge überprüft. Das Enddatum muss größer/gleich dem
+	 * Anfangsdatum sein.
+	 * 
+	 * @return true bei korrekter Datumsreihenfolge, ansonsten
+	 *         <code>false</code>
+	 * 
+	 * @throws Exception
+	 *             bei fehlerhafter Datumsreihenfolge Error-Meldung
+	 */
+	public boolean Statistik_CheckDateDiff() {
+		try {
+			sdf = new SimpleDateFormat("dd.MM.yyyy");
+			Start = sdf.parse(textField_Statistik_Startwert.getText());
+			End = sdf.parse(textField_Statistik_Endwert.getText());
+			// Datumsvergleich
+			if (End.compareTo(Start) < 0)
+				throw new Exception();
+			return true;
+
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, falsche_datumsgroesse,
+					"Fehler", JOptionPane.ERROR_MESSAGE);
+			textField_Statistik_Endwert.setText(null);
+			textField_Statistik_Startwert.setText(null);
+			return false;
+		}
+	}
+
+	/**
+	 * Die Warnung im Statistik Panel besteht bei zu geringer Anzahl an Daten.
+	 * Diese Warnung bleibt solange bestehen, bis mindestens 20 Datensätze von
+	 * jeweiligen Einnahmen und Ausgaben vorhanden sind. Außerdem müssen
+	 * mindesten 2 verschiedenartige Datumswerte vom Monat her, jeweils für
+	 * Einnahmen und Ausgaben existieren, damit die Warnung erlischt.
+	 */
+	public void Statistik_Warnung() {
+		int Zaehler_einnahmen = 0, Zaehler_ausgaben = 0, x = -1, y = -1;
+		String monat_einnahmen = null, monat_ausgaben = null;
+		boolean month_einnahmen = false, month_ausgaben = false;
+		monatformat = new SimpleDateFormat("MM.yyyy");
+		// temporäre ArrayList tmp wird erstellt ohne Eintrag "Kontoeröffnung"
+		List<Posten> tmp = new ArrayList<Posten>();
+		for (Posten p : budget.Geldvermögen)
+			if (!p.getBezeichnung().equals("Kontoeröffnung"))
+				tmp.add(p);
+		// Suche des ersten Eintragindex für Einnahme
+		for (Posten p : tmp) {
+			x++;
+			if (p.getintern_Einnahme_Ausgabe() == 0)
+				break;
+		}
+		// Erfassung des Datums vom ersten Eintragindex für Einnahme
+		if (!tmp.isEmpty())
+			monat_einnahmen = monatformat.format(tmp.get(x).getDatum());
+		// Suche des ersten Eintragindex für Ausgabe
+		for (Posten p : tmp) {
+			y++;
+			if (p.getintern_Einnahme_Ausgabe() == 1)
+				break;
+		}
+		// Erfassung des Datums vom ersten Eintragindex für Ausgabe
+		if (!tmp.isEmpty())
+			monat_ausgaben = monatformat.format(tmp.get(y).getDatum());
+		// Ermittlung der Anzahl von Einträgen für Einnahmen und Ausgaben, sowie
+		// Überprüfung der jeweiligen Datumswerte nach verschiedenen
+		// Monat/Jahres-Werten
+		for (Posten p : tmp) {
+			if (p.getintern_Einnahme_Ausgabe() == 0) {
+				Zaehler_einnahmen++;
+				if (monatformat.format(p.getDatum()).compareTo(monat_einnahmen) != 0)
+					month_einnahmen = true;
+				monat_einnahmen = monatformat.format(p.getDatum());
+			} else {
+				Zaehler_ausgaben++;
+
+				if (monatformat.format(p.getDatum()).compareTo(monat_ausgaben) != 0)
+					month_ausgaben = true;
+				monat_ausgaben = monatformat.format(p.getDatum());
+			}
+		}
+		// Bedingungsabfrage für Warnmeldung
+		if ((Zaehler_einnahmen > 20) && (Zaehler_ausgaben > 20)
+				&& (month_einnahmen == true) && (month_ausgaben == true)) {
+			lblStatistikWarnung.setText("");
+			lblStatistikWarnung.setBackground(new Color(240, 240, 240));
+		} else {
+			lblStatistikWarnung
+					.setText("<html><body><center><u>ACHTUNG!</u></center>Für eine sinnvolle Statistik<br>sind für einige Modelle<br>zu wenig Daten vorhanden!</body></html>");
+			lblStatistikWarnung.setBackground(new Color(250, 250, 120));
+			lblStatistikWarnung.setOpaque(true);
+		}
+	}
+
+	//
+	// Methoden für die Sparfunktion
+	//
+	//
+	// Methoden für die Sparfunktion
+	//
+
+
+
+	
+	// HIER Sparfunktion-Methoden!
+	
+	
+	
+	//
+	// Methoden für das Verhalten (Buttons-Funktionen)
+	//
+	
+
+	
+	//
 	// Verhalten hinzufuegen
+	//
+	
 	/**
 	 * Im Verhalten werden die Methoden angewand
 	 */
@@ -1650,7 +1725,7 @@ public class BudgetPlanGUI extends JFrame {
 			}
 		});
 
-		// Radiobutton der einen bestimmten Zeitraum nimmt
+		// Radiobutton der einen individuellen Zeitraum nimmt
 		rdbtnIndividualZeitraum.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (rdbtnGesamtzeitraum.isSelected() == true) {

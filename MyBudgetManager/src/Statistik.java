@@ -1,9 +1,11 @@
+// Erforderliche Importe
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.awt.Font;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -38,6 +40,7 @@ import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.CombinedDomainCategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.category.AbstractCategoryItemRenderer;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.LineAndShapeRenderer;
 import org.jfree.chart.renderer.xy.XYDifferenceRenderer;
@@ -54,28 +57,59 @@ import org.jfree.data.xy.XYDataset;
 
 import com.opencsv.CSVReader;
 
-import java.awt.Font;
-
+/**
+ * Die Statistik-Klasse enthält alle erforderlichen Methoden, um verschiedene
+ * Grafik-Modelle, 2 Tabellen für je Einnahmen und Ausgaben, sowie eine
+ * Kurzübersicht in einem separatem Fenster darzustellen. Der Benutzer kann
+ * somit eine Übersicht über die Statistik seiner Ausgaben und Einnahmen
+ * erhalten. Dabei kann er im Hauptprogramm den individuellen Zeitraum und ein
+ * gewünschtes Grafik-Modell wählen.
+ * <p>
+ * Folgende Statistik-Modelle stehen zur Verfügung:
+ * "Einnahmen vs Ausgaben (Kategorie) [Kreisdiagramm]",
+ * "Einnahmen vs Ausgaben (Kategorie) [Balkendiagramm]",
+ * "Einnahmen & Ausgaben (Kategorie) [Balkendiagramm]",
+ * "Einnahmen (Zeit: Buchungsdatum) [Balken- und Kreisdiagramm]",
+ * "Ausgaben (Zeit: Buchungsdatum) [Balken- und Kreisdiagramm]",
+ * "Einnahmen vs Ausgaben (Gesamt) [Balkendiagramm]",
+ * "Einnahmen vs Ausgaben (Zeit: monatlich) [Liniendiagramm]",
+ * "Einnahmen vs Ausgaben: Differenz (Zeit: Buchungsdatum) [Liniendiagramm]",
+ * "Einnahmen vs Ausgaben (Kategorie) [Wasserfalldiagramm]".
+ * <p>
+ * Die Kurzübersicht enthält die Anzahl von Buchungen, die Summen von Einnahmen
+ * und Ausgaben und das Saldo.
+ * 
+ * @author Markus Dittmann
+ *
+ */
 public class Statistik {
 
+
+
+	// Alle Objektvariablen
+	/**
+	 * Objekt für Statistik-Fenster
+	 */
 	JFrame Statistic = new JFrame("MyBudgetManager  -- Statistik --    ["
 			+ new SimpleDateFormat("dd.MM.yyyy  HH:mm:ss").format(new Date())
-			+ "]");
+			+ "]"); // Neues Fenster mit Name und Datum/Zeit in Titelleiste
 
-	private static final long serialVersionUID = 1L;
-
+	/**
+	 * Modell der Daten
+	 */
 	private BudgetPlanModel budget;
 
+	// Objektvariablen für die Statistik-GUI
 	private JScrollPane scrollPane_Einnahmen;
 	private JScrollPane scrollPane_Ausgaben;
 	private JPanel panel;
+	private JPanel panel_1;
+	private JPanel panel_2;
 	private JPanel panel_3;
 	private JPanel panel_4;
 	private JLabel lblKontoübersicht_Einnahmen;
 	private JLabel lblKontoübersicht_Ausgaben;
-	private JPanel panel_1;
 	private JLabel lblKurzübersicht;
-	private JPanel panel_2;
 	private JLabel lblBuchungen;
 	private JLabel lblEinnahmen;
 	private JLabel lblAusgaben;
@@ -85,20 +119,61 @@ public class Statistik {
 	private JLabel lblEinnhamenwert;
 	private JLabel lblAusgabenwert;
 	private JLabel lblSaldowert;
-	private JTable table_Einnahmen;
-	private JTable table_Ausgaben;
 	private JLabel lblLückenfüller;
 	private JLabel lblZeitraum;
-	private SimpleDateFormat formatter;
-
-	private int size_Einnahmen;
-	private int size_Ausgaben;
-
+	private JTable table_Einnahmen;
+	private JTable table_Ausgaben;
+	// FensterIcon
 	Image icon = Toolkit.getDefaultToolkit().getImage("src/img/Money.png");
 
+	// Objektvariablen für die
+	// Methoden(Berechnungen/Datenverwaltung/Grafikerstellung)
+	private SimpleDateFormat formatter;
+	private int size_Einnahmen;
+	private int size_Ausgaben;
+	private Object[][] data_Ausgaben;
+	private Object[][] data_Einnahmen;
+	private ArrayList<Posten> tmp;
+	private CSVReader reader;
+	private NumberFormat nf;
+	private ArrayList<Posten> Sortierte_Kategorie_Liste;
+	private DefaultPieDataset piedataset;
+	private ChartPanel chartpanel;
+	private ChartPanel chartpanel2;
+	private DefaultCategoryDataset categorydataset;
+	private DefaultCategoryDataset cd;
+	private ArrayList<Posten> Only_Einnahmen_Or_Ausgaben;
+	private DefaultCategoryDataset defaultcategorydataset;
+	private NumberAxis numberaxis;
+	private CategoryPlot categoryplot;
+	private AbstractCategoryItemRenderer lineandshaperenderer;
+	private NumberAxis numberaxis1;
+	private AbstractCategoryItemRenderer barrenderer;
+	private TimeSeries series1;
+	private TimeSeries series2;
+	private JFreeChart jfreechart;
+	private CategoryPlot categoryplot1;
+	private CategoryAxis categoryaxis;
+	private CombinedDomainCategoryPlot combineddomaincategoryplot;
+	private TimeSeriesCollection dataset;
+	private JFreeChart chart;
+	private JFreeChart chart2;
+	private static ValueAxis domainAxis;
+
+	/**
+	 * Konstruktor für die Statistik.
+	 * 
+	 * Hier wird das Statistikfenster initialisiert.
+	 *
+	 * @param budget
+	 *            Modell der Daten
+	 * @throws whoJackedMyIcon
+	 *             Konnte Programm-Icon icht laden.
+	 */
 	public Statistik(BudgetPlanModel budget) {
+		// schließt aktuelles Fenster und RessourcenFreigabe
 		Statistic.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		Statistic.setBounds(100, 100, 450, 300); // Groesse des Frames
+		Statistic.setBounds(100, 100, 450, 300); // Größe des Frames
 		Statistic.setVisible(true);
 		Statistic.setMinimumSize(new Dimension(800, 550));
 		Statistic.getContentPane().setLayout(new BorderLayout(0, 0));
@@ -114,20 +189,30 @@ public class Statistik {
 		panel.setPreferredSize(new Dimension(0, 185));
 		panel.setLayout(new BorderLayout(0, 0));
 
+		panel_1 = new JPanel();
+		panel_1.setPreferredSize(new Dimension(270, 185));
+		panel_1.setBackground(Color.WHITE);
+		panel_1.setLayout(null);
+		panel.add(panel_1, BorderLayout.EAST);
+
+		panel_2 = new JPanel();
+		Statistic.getContentPane().add(panel_2, BorderLayout.CENTER);
+		panel_2.setLayout(new GridLayout(1, 2));
+
 		panel_3 = new JPanel();
 		panel.add(panel_3, BorderLayout.CENTER);
 		panel_3.setLayout(new GridLayout(1, 2));
+
+		panel_4 = new JPanel();
+		panel.add(panel_4, BorderLayout.NORTH);
+		panel_4.setBackground(Color.WHITE);
+		panel_4.setLayout(new GridLayout(2, 2));
 
 		scrollPane_Einnahmen = new JScrollPane();
 		panel_3.add(scrollPane_Einnahmen);
 
 		scrollPane_Ausgaben = new JScrollPane();
 		panel_3.add(scrollPane_Ausgaben);
-
-		panel_4 = new JPanel();
-		panel.add(panel_4, BorderLayout.NORTH);
-		panel_4.setBackground(Color.WHITE);
-		panel_4.setLayout(new GridLayout(2, 2));
 
 		lblZeitraum = new JLabel("Zeitraum");
 		lblZeitraum.setFont(new Font("Tahoma", Font.BOLD, 13));
@@ -144,12 +229,6 @@ public class Statistik {
 
 		lblKontoübersicht_Ausgaben = new JLabel("Ausgaben:");
 		panel_4.add(lblKontoübersicht_Ausgaben);
-
-		panel_1 = new JPanel();
-		panel_1.setPreferredSize(new Dimension(270, 185));
-		panel_1.setBackground(Color.WHITE);
-		panel_1.setLayout(null);
-		panel.add(panel_1, BorderLayout.EAST);
 
 		lblKurzübersicht = new JLabel(
 				"<html><body><u>Kurz\u00FCbersicht:</u></body></html>");
@@ -198,16 +277,12 @@ public class Statistik {
 		lblSaldowert.setBounds(94, 129, 160, 14);
 		panel_1.add(lblSaldowert);
 
-		panel_2 = new JPanel();
-		Statistic.getContentPane().add(panel_2, BorderLayout.CENTER);
-		panel_2.setLayout(new GridLayout(1, 2));
-
 		this.budget = budget;
 
 	}
 
 	public void Buchungen_ohne_Kontoeröffnung() {
-		List<Posten> tmp = new ArrayList<Posten>();
+		tmp = new ArrayList<Posten>();
 		for (Posten p : budget.Geldvermögen)
 			if (!p.getBezeichnung().equals("Kontoeröffnung"))
 				tmp.add(p);
@@ -217,6 +292,7 @@ public class Statistik {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	public void Buchungsübersicht() {
 
 		for (Posten pos : budget.Geldvermögen)
@@ -225,8 +301,8 @@ public class Statistik {
 			else
 				size_Ausgaben += 1;
 
-		Object[][] data_Ausgaben = new Object[size_Ausgaben][4];
-		Object[][] data_Einnahmen = new Object[size_Einnahmen][4];
+		data_Ausgaben = new Object[size_Ausgaben][4];
+		data_Einnahmen = new Object[size_Einnahmen][4];
 		int i = 0, j = 0;
 
 		for (Posten p : budget.Geldvermögen) {
@@ -266,7 +342,7 @@ public class Statistik {
 	}
 
 	public void Init_Kurzübersicht() {
-		NumberFormat nf = NumberFormat.getInstance(new Locale("de", "DE"));
+		nf = NumberFormat.getInstance(new Locale("de", "DE"));
 		double i = 0, a = 0, e = 0;
 		lblBuchungswert_gesamt.setText("Gesamt: "
 				+ (size_Ausgaben + size_Einnahmen));
@@ -311,7 +387,7 @@ public class Statistik {
 
 		try {
 			// Zeilenweises Einlesen der Daten
-			CSVReader reader = new CSVReader(new FileReader("data/budget.csv"));
+			reader = new CSVReader(new FileReader("data/budget.csv"));
 			DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,
 					Locale.GERMAN);
 
@@ -382,7 +458,7 @@ public class Statistik {
 		else
 			einnahme_ausgabe = 1;
 
-		List<Posten> Sortierte_Kategorie_Liste = new ArrayList<Posten>();
+		Sortierte_Kategorie_Liste = new ArrayList<Posten>();
 		for (Posten p : budget.Geldvermögen)
 			Sortierte_Kategorie_Liste.add(p);
 
@@ -396,7 +472,7 @@ public class Statistik {
 
 		double betrag = 0;
 		int twin = 0, i = 0;
-		DefaultPieDataset piedataset = new DefaultPieDataset();
+		piedataset = new DefaultPieDataset();
 		for (Posten p : Sortierte_Kategorie_Liste) {
 			i++;
 			if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
@@ -435,18 +511,18 @@ public class Statistik {
 
 	public void Kategorie_Kreisdiagramm_Grafik() {
 		JFreeChart pie = createChartPieEinnahmen((DefaultPieDataset) createDataset_Auswahl2(0));
-		ChartPanel chartpanel = new ChartPanel(pie);
+		chartpanel = new ChartPanel(pie);
 		chartpanel.setMouseWheelEnabled(true);
 		panel_2.add(chartpanel);
 
 		JFreeChart pie2 = createChartPieAusgaben((DefaultPieDataset) createDataset_Auswahl2(1));
-		ChartPanel chartpanel2 = new ChartPanel(pie2);
+		chartpanel2 = new ChartPanel(pie2);
 		chartpanel2.setMouseWheelEnabled(true);
 		panel_2.add(chartpanel2);
 	}
 
 	private CategoryDataset createDataset_Auswahl3(int selection_data_ein_aus) {
-		DefaultCategoryDataset categorydataset = new DefaultCategoryDataset();
+		categorydataset = new DefaultCategoryDataset();
 		int einnahme_ausgabe = -1;
 		String einnahme_ausgabe_text = null;
 		if (selection_data_ein_aus == 0) {
@@ -457,7 +533,7 @@ public class Statistik {
 			einnahme_ausgabe_text = "Ausgaben";
 		}
 
-		List<Posten> Sortierte_Kategorie_Liste = new ArrayList<Posten>();
+		Sortierte_Kategorie_Liste = new ArrayList<Posten>();
 		for (Posten p : budget.Geldvermögen)
 			Sortierte_Kategorie_Liste.add(p);
 
@@ -578,17 +654,17 @@ public class Statistik {
 
 	public void Kategorie_Balkendiagramm_Grafik() {
 		JFreeChart bar = createChartBarEinnahmen((CategoryDataset) createDataset_Auswahl3(0));
-		ChartPanel chartpanel = new ChartPanel(bar);
+		chartpanel = new ChartPanel(bar);
 		panel_2.add(chartpanel);
 
 		JFreeChart bar2 = createChartBarAusgaben((CategoryDataset) createDataset_Auswahl3(1));
-		ChartPanel chartpanel2 = new ChartPanel(bar2);
+		chartpanel2 = new ChartPanel(bar2);
 		panel_2.add(chartpanel2);
 	}
 
 	public void Vergleich_Balkendiagramm_Grafik() {
 		double einnahmen = 0, ausgaben = 0;
-		DefaultCategoryDataset cd = new DefaultCategoryDataset();
+		cd = new DefaultCategoryDataset();
 		for (Posten p : budget.Geldvermögen)
 			if (p.getintern_Einnahme_Ausgabe() == 0)
 				einnahmen += p.getBetrag();
@@ -599,7 +675,7 @@ public class Statistik {
 		JFreeChart bar = ChartFactory.createBarChart(
 				"Gesamt-Einnahmen  vs  Gesamt-Ausgaben", null, "Euro",
 				(CategoryDataset) cd);
-		ChartPanel chartpanel = new ChartPanel(bar);
+		chartpanel = new ChartPanel(bar);
 		panel_2.add(chartpanel);
 
 	}
@@ -613,19 +689,19 @@ public class Statistik {
 
 	public void GesamtKategorie_Balkendiagramm_Grafik() {
 		JFreeChart bar = createChartBarGesamt((CategoryDataset) createDataset_Auswahl3(2));
-		ChartPanel chartpanel = new ChartPanel(bar);
+		chartpanel = new ChartPanel(bar);
 		panel_2.add(chartpanel);
 	}
 
 	public void Zeit_Kombidiagramm_Ausgaben_Grafik() {
 		JFreeChart KombiChart_Ausgaben = createChart_Auswahl(1);
-		ChartPanel chartpanel = new ChartPanel(KombiChart_Ausgaben);
+		chartpanel = new ChartPanel(KombiChart_Ausgaben);
 		panel_2.add(chartpanel);
 	}
 
 	public void Zeit_Kombidiagramm_Einnahmen_Grafik() {
 		JFreeChart KombiChart_Einnahmen = createChart_Auswahl(0);
-		ChartPanel chartpanel = new ChartPanel(KombiChart_Einnahmen);
+		chartpanel = new ChartPanel(KombiChart_Einnahmen);
 		panel_2.add(chartpanel);
 	}
 
@@ -640,7 +716,7 @@ public class Statistik {
 			einnahme_ausgabe_text = "Ausgaben";
 		}
 
-		List<Posten> Only_Einnahmen_Or_Ausgaben = new ArrayList<Posten>();
+		Only_Einnahmen_Or_Ausgaben = new ArrayList<Posten>();
 		for (Posten p : budget.Geldvermögen) {
 			if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
 				Only_Einnahmen_Or_Ausgaben.add(p);
@@ -649,7 +725,7 @@ public class Statistik {
 
 		double betrag = 0;
 		int twin = 0, i = 0;
-		DefaultCategoryDataset defaultcategorydataset = new DefaultCategoryDataset();
+		defaultcategorydataset = new DefaultCategoryDataset();
 		for (Posten p : Only_Einnahmen_Or_Ausgaben) {
 			i++;
 			if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
@@ -700,30 +776,30 @@ public class Statistik {
 		else
 			einnahme_ausgabe_text = "Ausgaben";
 		CategoryDataset categorydataset = createDataset_Auswahl(selection_ein_aus);
-		NumberAxis numberaxis = new NumberAxis("Euro");
+		numberaxis = new NumberAxis("Euro");
 		numberaxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-		LineAndShapeRenderer lineandshaperenderer = new LineAndShapeRenderer();
+		lineandshaperenderer = new LineAndShapeRenderer();
 		lineandshaperenderer
 				.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator());
-		CategoryPlot categoryplot = new CategoryPlot(categorydataset, null,
-				numberaxis, lineandshaperenderer);
+		categoryplot = new CategoryPlot(categorydataset, null, numberaxis,
+				lineandshaperenderer);
 		categoryplot.setDomainGridlinesVisible(true);
 
-		NumberAxis numberaxis1 = new NumberAxis("Euro");
+		numberaxis1 = new NumberAxis("Euro");
 		numberaxis1.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-		BarRenderer barrenderer = new BarRenderer();
+		barrenderer = new BarRenderer();
 		barrenderer
 				.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator());
-		CategoryPlot categoryplot1 = new CategoryPlot(categorydataset, null,
-				numberaxis1, barrenderer);
+		categoryplot1 = new CategoryPlot(categorydataset, null, numberaxis1,
+				barrenderer);
 
 		categoryplot1.setDomainGridlinesVisible(true);
-		CategoryAxis categoryaxis = new CategoryAxis("Zeit");
-		CombinedDomainCategoryPlot combineddomaincategoryplot = new CombinedDomainCategoryPlot(
+		categoryaxis = new CategoryAxis("Zeit");
+		combineddomaincategoryplot = new CombinedDomainCategoryPlot(
 				categoryaxis);
 		combineddomaincategoryplot.add(categoryplot, 2);
 		combineddomaincategoryplot.add(categoryplot1, 1);
-		JFreeChart jfreechart = new JFreeChart(einnahme_ausgabe_text
+		jfreechart = new JFreeChart(einnahme_ausgabe_text
 				+ " nach Zeit - Kombidiagramm", new Font("SansSerif", 1, 12),
 				combineddomaincategoryplot, true);
 		return jfreechart;
@@ -731,12 +807,12 @@ public class Statistik {
 
 	private XYDataset createDataset(int selection_model) {
 
-		TimeSeries series1 = new TimeSeries("Einnahmen");
-		TimeSeries series2 = new TimeSeries("Ausgaben");
+		series1 = new TimeSeries("Einnahmen");
+		series2 = new TimeSeries("Ausgaben");
 		if (selection_model == 0) {
 			for (int einnahme_ausgabe = 0; einnahme_ausgabe < 2; einnahme_ausgabe++) {
 
-				List<Posten> Only_Einnahmen_Or_Ausgaben = new ArrayList<Posten>();
+				Only_Einnahmen_Or_Ausgaben = new ArrayList<Posten>();
 				for (Posten p : budget.Geldvermögen) {
 					if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
 						Only_Einnahmen_Or_Ausgaben.add(p);
@@ -794,7 +870,7 @@ public class Statistik {
 		} else {
 			for (int einnahme_ausgabe = 0; einnahme_ausgabe < 2; einnahme_ausgabe++) {
 
-				List<Posten> Only_Einnahmen_Or_Ausgaben = new ArrayList<Posten>();
+				Only_Einnahmen_Or_Ausgaben = new ArrayList<Posten>();
 				for (Posten p : budget.Geldvermögen) {
 					if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
 						Only_Einnahmen_Or_Ausgaben.add(p);
@@ -927,7 +1003,7 @@ public class Statistik {
 				}
 			}
 		}
-		TimeSeriesCollection dataset = new TimeSeriesCollection();
+		dataset = new TimeSeriesCollection();
 		dataset.addSeries(series1);
 		dataset.addSeries(series2);
 		return dataset;
@@ -941,7 +1017,7 @@ public class Statistik {
 		XYPlot plot = chart.getXYPlot();
 		plot.setRenderer(new XYDifferenceRenderer(Color.green, Color.red, false));
 
-		ValueAxis domainAxis = new DateAxis("Zeit");
+		domainAxis = new DateAxis("Zeit");
 		domainAxis.setLowerMargin(0.0);
 		domainAxis.setUpperMargin(0.0);
 		plot.setDomainAxis(domainAxis);
@@ -950,8 +1026,8 @@ public class Statistik {
 	}
 
 	public void Zeit_Liniendiagramm_Differenz_Gesamt_Grafik() {
-		JFreeChart chart = createChart(createDataset(0));
-		ChartPanel chartpanel = new ChartPanel(chart);
+		chart = createChart(createDataset(0));
+		chartpanel = new ChartPanel(chart);
 		panel_2.add(chartpanel);
 	}
 
@@ -974,8 +1050,8 @@ public class Statistik {
 	}
 
 	public void Zeit_Liniendiagramm_Gesamt_Grafik() {
-		JFreeChart chart = createChart2(createDataset(1));
-		ChartPanel chartpanel = new ChartPanel(chart);
+		chart = createChart2(createDataset(1));
+		chartpanel = new ChartPanel(chart);
 		panel_2.add(chartpanel);
 	}
 
@@ -1005,7 +1081,7 @@ public class Statistik {
 
 		double betrag = 0;
 		int twin = 0, i = 0;
-		DefaultCategoryDataset defaultcategorydataset = new DefaultCategoryDataset();
+		defaultcategorydataset = new DefaultCategoryDataset();
 		for (Posten p : Sortierte_Kategorie_Liste) {
 			i++;
 			if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
@@ -1071,12 +1147,12 @@ public class Statistik {
 	}
 
 	public void Kategorie_Wasserfalldiagramm_Gesamt_Grafik() {
-		JFreeChart chart = createChartWasserfall_Einnahmen((CategoryDataset) createDataset_Wasserfall(0));
-		ChartPanel chartpanel = new ChartPanel(chart);
+		chart = createChartWasserfall_Einnahmen((CategoryDataset) createDataset_Wasserfall(0));
+		chartpanel = new ChartPanel(chart);
 		panel_2.add(chartpanel);
 
-		JFreeChart chart2 = createChartWasserfall_Ausgaben((CategoryDataset) createDataset_Wasserfall(1));
-		ChartPanel chartpanel2 = new ChartPanel(chart2);
+		chart2 = createChartWasserfall_Ausgaben((CategoryDataset) createDataset_Wasserfall(1));
+		chartpanel2 = new ChartPanel(chart2);
 		panel_2.add(chartpanel2);
 	}
 
