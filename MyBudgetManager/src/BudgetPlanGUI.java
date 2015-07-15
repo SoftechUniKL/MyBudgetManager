@@ -48,9 +48,6 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
-/*Test
- * 
- * */
 
 /**
  * Graphische Benutzeroberflaeche des BudgetPlaners
