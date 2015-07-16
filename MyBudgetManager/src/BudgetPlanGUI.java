@@ -1432,8 +1432,10 @@ public class BudgetPlanGUI extends JFrame {
 	 *            ausgewählte Statistik-Modell des Benutzers
 	 */
 	public void Grafikmodellauswahl(String selection) {
-		// Initialisierung der Daten auf Ursprungswerte, falls Änderungen
-		// vorgenommen wurden
+		/*
+		 * Initialisierung der Daten auf Ursprungswerte, falls Änderungen
+		 * vorgenommen wurden
+		 */
 		Init_Kontostand(0);
 		// Referenz auf Statistik-Klasse
 		Statistikauswahl = new Statistik(budget);
@@ -1556,9 +1558,11 @@ public class BudgetPlanGUI extends JFrame {
 		// Erfassung des Datums vom ersten Eintragindex für Ausgabe
 		if (!tmp.isEmpty())
 			monat_ausgaben = monatformat.format(tmp.get(y).getDatum());
-		// Ermittlung der Anzahl von Einträgen für Einnahmen und Ausgaben, sowie
-		// Überprüfung der jeweiligen Datumswerte nach verschiedenen
-		// Monat/Jahres-Werten
+		/*
+		 * Ermittlung der Anzahl von Einträgen für Einnahmen und Ausgaben, sowie
+		 * Überprüfung der jeweiligen Datumswerte nach verschiedenen
+		 * Monat/Jahres-Werten
+		 */
 		for (Posten p : tmp) {
 			if (p.getintern_Einnahme_Ausgabe() == 0) {
 				Zaehler_einnahmen++;
