@@ -84,8 +84,6 @@ import com.opencsv.CSVReader;
  */
 public class Statistik {
 
-
-
 	// Alle Objektvariablen
 	/**
 	 * Objekt für Statistik-Fenster
@@ -126,8 +124,10 @@ public class Statistik {
 	// FensterIcon
 	Image icon = Toolkit.getDefaultToolkit().getImage("src/img/Money.png");
 
-	// Objektvariablen für die
-	// Methoden(Berechnungen/Datenverwaltung/Grafikerstellung)
+	/*
+	 * Objektvariablen für die Methoden
+	 * (Berechnungen/Datenverwaltung/Grafikerstellung)
+	 */
 	private SimpleDateFormat formatter;
 	private int size_Einnahmen;
 	private int size_Ausgaben;
@@ -171,19 +171,19 @@ public class Statistik {
 	 *             Konnte Programm-Icon icht laden.
 	 */
 	public Statistik(BudgetPlanModel budget) {
-		// schließt aktuelles Fenster und RessourcenFreigabe
+		// schließt aktuelles Fenster und Ressourcen-Freigabe
 		Statistic.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		Statistic.setBounds(100, 100, 450, 300); // Größe des Frames
 		Statistic.setVisible(true);
 		Statistic.setMinimumSize(new Dimension(800, 550));
 		Statistic.getContentPane().setLayout(new BorderLayout(0, 0));
-
+		// setzt Icon in Titelleiste
 		try {
 			Statistic.setIconImage(icon);
 		} catch (Exception whoJackedMyIcon) {
 			System.out.println("Could not load program icon.");
 		}
-
+		// Erstellung der GUI fürs neue Statistikfenster
 		panel = new JPanel();
 		Statistic.getContentPane().add(panel, BorderLayout.NORTH);
 		panel.setPreferredSize(new Dimension(0, 185));
@@ -281,30 +281,81 @@ public class Statistik {
 
 	}
 
-	public void Buchungen_ohne_Kontoeröffnung() {
+	/**
+	 * Neuerstellung der ArrayList "Geldvermögen". Diese enthält alle Daten aus
+	 * der ursprünglichen ArrayList "Geldvermögen" nur ohne den Eintrag
+	 * "Kontoeröffnung", da er nicht zu den direkten Einnahmen und Ausgaben
+	 * zählt.
+	 */
+	private void Buchungen_ohne_Kontoeröffnung() {
+		// Hilfs-ArrayList
 		tmp = new ArrayList<Posten>();
 		for (Posten p : budget.Geldvermögen)
 			if (!p.getBezeichnung().equals("Kontoeröffnung"))
 				tmp.add(p);
 		budget.Geldvermögen.clear();
+		// neu reinkoppieren
 		for (Posten t : tmp)
 			budget.Geldvermögen.add(t);
-
 	}
 
-	@SuppressWarnings("deprecation")
-	public void Buchungsübersicht() {
+	/**
+	 * Es erstellt eine Kurzübersicht zu dem Zeitraum, den der Benutzer vorher
+	 * ausgewählt hat. Dazu gehören die Anzahl der Buchungen insgesamt und
+	 * detailiert jeweils in Einnahmen und Ausgaben, sowie die Summen von
+	 * Einnahmen und Ausgaben und dessen Saldo.
+	 */
+	private void Init_Kurzübersicht() {
+		nf = NumberFormat.getInstance(new Locale("de", "DE"));
+		double i = 0, a = 0, e = 0;
+		// Setzten der Anzahl von Buchungen
+		lblBuchungswert_gesamt.setText("Gesamt: "
+				+ (size_Ausgaben + size_Einnahmen));
+		lblBuchungswert_detail.setText("Ein (" + size_Einnahmen + ") "
+				+ ", Aus (" + size_Ausgaben + ")");
+		// Summieren von Einnahmen und Ausgaben
+		for (Posten p : budget.Geldvermögen) {
+			i += p.getBetrag();
+			if (p.getintern_Einnahme_Ausgabe() == 0)
+				e += p.getBetrag();
+			else
+				a += p.getBetrag();
+		}
+		// Setzten der Summen
+		lblSaldowert.setText(nf.format(i) + " \u20ac");
+		lblEinnhamenwert.setText(nf.format(e) + " \u20ac");
+		lblEinnhamenwert.setForeground(new Color(20, 170, 20));
+		lblAusgabenwert.setText(nf.format(a) + " \u20ac");
+		lblAusgabenwert.setForeground(Color.RED);
+		// Farbwahl bei Saldobetrag
+		if (i < 0)
+			lblSaldowert.setForeground(Color.RED);
+		else
+			lblSaldowert.setForeground(new Color(20, 170, 20));
+	}
 
+	/**
+	 * Erstellung der beiden Tabellen für Einnahmen und Ausgaben. Zunächst wird
+	 * die Anzahl von Einnahmen und Ausgaben ermittelt (notwendig für die Größe
+	 * der Tabelleneinträge). Dann werden die Daten aus der ArrayList
+	 * "Geldvermögen" ausgelesen und in die Tabellen eingefügt.
+	 */
+	@SuppressWarnings("deprecation")
+	private void Buchungsübersicht() {
+		// Ermittlung der Anzahl von Einnahmen und Ausgaben
 		for (Posten pos : budget.Geldvermögen)
 			if (pos.getintern_Einnahme_Ausgabe() == 0)
 				size_Einnahmen += 1;
 			else
 				size_Ausgaben += 1;
-
+		// Erstellung von Objektvariablen
 		data_Ausgaben = new Object[size_Ausgaben][4];
 		data_Einnahmen = new Object[size_Einnahmen][4];
 		int i = 0, j = 0;
-
+		/*
+		 * Auslesen der Daten aus ArrayList "Geldvermögen" jeweils für Einnahmen
+		 * und Ausgaben, und abspeichern in Objektvariablen
+		 */
 		for (Posten p : budget.Geldvermögen) {
 			if (p.getintern_Einnahme_Ausgabe() == 0) {
 				data_Einnahmen[i][0] = new SimpleDateFormat("dd.MM.yyyy")
@@ -321,16 +372,15 @@ public class Statistik {
 				data_Ausgaben[j][3] = p.getBetrag();
 				j++;
 			}
-
 		}
-
+		// Erstellung zweier Tabellen mit den Daten von Einnahmen
 		table_Einnahmen = new JTable(data_Einnahmen, new Object[] { "Datum",
 				"Kategorie", "Beschreibung", "Betrag" });
 		table_Einnahmen.enable(false);
 		table_Einnahmen.setAutoCreateRowSorter(true);
 		table_Einnahmen.setBackground(new Color(180, 250, 200));
 		scrollPane_Einnahmen.setViewportView(table_Einnahmen);
-
+		// und Ausgaben
 		table_Ausgaben = new JTable(data_Ausgaben, new Object[] { "Datum",
 				"Kategorie", "Beschreibung", "Betrag" });
 		table_Ausgaben.enable(false);
@@ -341,37 +391,24 @@ public class Statistik {
 		Init_Kurzübersicht();
 	}
 
-	public void Init_Kurzübersicht() {
-		nf = NumberFormat.getInstance(new Locale("de", "DE"));
-		double i = 0, a = 0, e = 0;
-		lblBuchungswert_gesamt.setText("Gesamt: "
-				+ (size_Ausgaben + size_Einnahmen));
-		lblBuchungswert_detail.setText("Ein (" + size_Einnahmen + ") "
-				+ ", Aus (" + size_Ausgaben + ")");
-		for (Posten p : budget.Geldvermögen) {
-			i += p.getBetrag();
-			if (p.getintern_Einnahme_Ausgabe() == 0)
-				e += p.getBetrag();
-			else
-				a += p.getBetrag();
-		}
-		lblSaldowert.setText(nf.format(i) + " \u20ac");
-		lblEinnhamenwert.setText(nf.format(e) + " \u20ac");
-		lblEinnhamenwert.setForeground(new Color(20, 170, 20));
-		lblAusgabenwert.setText(nf.format(a) + " \u20ac");
-		lblAusgabenwert.setForeground(Color.RED);
-		if (i < 0)
-			lblSaldowert.setForeground(Color.RED);
-		else
-			lblSaldowert.setForeground(new Color(20, 170, 20));
-	}
-
-	public void Init_Posten_Zeitraum(String StartingDate, String EndingDate) {
-
+	/**
+	 * Filterung der Datensätze nur für den individuellen Zeitraum. Die
+	 * ArrayList "Geldvermögen" enthält danach nur die Datensätze für den
+	 * individuellen Zeitraum, den der Benutzer ausgewählt hat.
+	 * 
+	 * @param StartingDate
+	 *            Anfangsdatum der Benutzereingabe bei individuellem Zeitraum
+	 * @param EndingDate
+	 *            Enddatum der Benutzereingabe bei individuellem Zeitraum
+	 * 
+	 */
+	private void Init_Posten_Zeitraum(String StartingDate, String EndingDate) {
+		// Löschung von ArrayList "Geldvermögen"
 		budget.Geldvermögen.clear();
 		formatter = new SimpleDateFormat("dd.MM.yyyy");
 		Date startDate = null;
 		Date endDate = null;
+		// Formatieung von String zu Date
 		try {
 			startDate = formatter.parse(StartingDate);
 			endDate = formatter.parse(EndingDate);
@@ -384,14 +421,17 @@ public class Statistik {
 		start.setTime(startDate);
 		Calendar end = Calendar.getInstance();
 		end.setTime(endDate);
-
+		// Zeilenweises Einlesen der Daten
 		try {
-			// Zeilenweises Einlesen der Daten
 			reader = new CSVReader(new FileReader("data/budget.csv"));
 			DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,
 					Locale.GERMAN);
-
 			String[] nextLine;
+			/*
+			 * von Anfangsdatum bis zum Enddatum Tag für Tag abgleichen ob Datum
+			 * in CSV-Datei vorhanden; falls ja, Datensatz in ArrayList
+			 * "Geldvermögen" einfügen
+			 */
 			while ((nextLine = reader.readNext()) != null) {
 				start.setTime(startDate);
 				for (Date date = start.getTime(); !start.after(end); start.add(
@@ -407,10 +447,8 @@ public class Statistik {
 								bezeichnung, betrag, intern_Einnahme_Ausgabe));
 					}
 				}
-
 			}
 			reader.close();
-
 		} catch (FileNotFoundException e) {
 			System.err
 					.println("Die Datei data/budget.csv wurde nicht gefunden!");
@@ -426,9 +464,8 @@ public class Statistik {
 		}
 
 		Buchungen_ohne_Kontoeröffnung();
-
+		// Sortierung der Datensätze nach Datum (aufsteigend)
 		Collections.sort(budget.Geldvermögen, new Comparator<Posten>() {
-
 			@Override
 			public int compare(Posten o1, Posten o2) {
 				return o1.getDatum().compareTo(o2.getDatum());
@@ -509,7 +546,7 @@ public class Statistik {
 		return piedataset;
 	}
 
-	public void Kategorie_Kreisdiagramm_Grafik() {
+	private void Kategorie_Kreisdiagramm_Grafik() {
 		JFreeChart pie = createChartPieEinnahmen((DefaultPieDataset) createDataset_Auswahl2(0));
 		chartpanel = new ChartPanel(pie);
 		chartpanel.setMouseWheelEnabled(true);
@@ -652,7 +689,7 @@ public class Statistik {
 		return chart;
 	}
 
-	public void Kategorie_Balkendiagramm_Grafik() {
+	private void Kategorie_Balkendiagramm_Grafik() {
 		JFreeChart bar = createChartBarEinnahmen((CategoryDataset) createDataset_Auswahl3(0));
 		chartpanel = new ChartPanel(bar);
 		panel_2.add(chartpanel);
@@ -662,7 +699,7 @@ public class Statistik {
 		panel_2.add(chartpanel2);
 	}
 
-	public void Vergleich_Balkendiagramm_Grafik() {
+	private void Vergleich_Balkendiagramm_Grafik() {
 		double einnahmen = 0, ausgaben = 0;
 		cd = new DefaultCategoryDataset();
 		for (Posten p : budget.Geldvermögen)
@@ -687,19 +724,19 @@ public class Statistik {
 		return chart;
 	}
 
-	public void GesamtKategorie_Balkendiagramm_Grafik() {
+	private void GesamtKategorie_Balkendiagramm_Grafik() {
 		JFreeChart bar = createChartBarGesamt((CategoryDataset) createDataset_Auswahl3(2));
 		chartpanel = new ChartPanel(bar);
 		panel_2.add(chartpanel);
 	}
 
-	public void Zeit_Kombidiagramm_Ausgaben_Grafik() {
+	private void Zeit_Kombidiagramm_Ausgaben_Grafik() {
 		JFreeChart KombiChart_Ausgaben = createChart_Auswahl(1);
 		chartpanel = new ChartPanel(KombiChart_Ausgaben);
 		panel_2.add(chartpanel);
 	}
 
-	public void Zeit_Kombidiagramm_Einnahmen_Grafik() {
+	private void Zeit_Kombidiagramm_Einnahmen_Grafik() {
 		JFreeChart KombiChart_Einnahmen = createChart_Auswahl(0);
 		chartpanel = new ChartPanel(KombiChart_Einnahmen);
 		panel_2.add(chartpanel);
@@ -1025,7 +1062,7 @@ public class Statistik {
 		return chart;
 	}
 
-	public void Zeit_Liniendiagramm_Differenz_Gesamt_Grafik() {
+	private void Zeit_Liniendiagramm_Differenz_Gesamt_Grafik() {
 		chart = createChart(createDataset(0));
 		chartpanel = new ChartPanel(chart);
 		panel_2.add(chartpanel);
@@ -1049,7 +1086,7 @@ public class Statistik {
 		return chart;
 	}
 
-	public void Zeit_Liniendiagramm_Gesamt_Grafik() {
+	private void Zeit_Liniendiagramm_Gesamt_Grafik() {
 		chart = createChart2(createDataset(1));
 		chartpanel = new ChartPanel(chart);
 		panel_2.add(chartpanel);
@@ -1146,7 +1183,7 @@ public class Statistik {
 		return chart;
 	}
 
-	public void Kategorie_Wasserfalldiagramm_Gesamt_Grafik() {
+	private void Kategorie_Wasserfalldiagramm_Gesamt_Grafik() {
 		chart = createChartWasserfall_Einnahmen((CategoryDataset) createDataset_Wasserfall(0));
 		chartpanel = new ChartPanel(chart);
 		panel_2.add(chartpanel);
@@ -1156,8 +1193,23 @@ public class Statistik {
 		panel_2.add(chartpanel2);
 	}
 
+	/**
+	 * Hauptmethode zur Koordination der für die Statistik notwendigen
+	 * Komponenten. Je nach Auswahl ob "Gesamtzeitraum" oder
+	 * "individueller Zeitraum", werden spezielle Methoden aufgerufen. Dabei
+	 * werden zunächst die Datensätze wenn nötig (individueller Zeitraum)
+	 * aktualisiert. Dann werden die Tabellen und die Kürzübersicht erstellt.
+	 * Zum Schluss werden die speziellen Methoden der vom Benutzer ausgewählten
+	 * Statistik-Modelle aufgerufen und die Grafiken erstellt.
+	 * 
+	 * @param selection
+	 *            gewählte Grafik-Modell der Statistik
+	 * @param Start
+	 *            Anfangsdatum der Benutzereingabe bei individuellem Zeitraum
+	 * @param End
+	 *            Enddatum der Benutzereingabe bei individuellem Zeitraum
+	 */
 	public void Statistik_Manager(String selection, String Start, String End) {
-		Buchungen_ohne_Kontoeröffnung();
 		if ((Start != "0") && (End != "0")) {
 			lblZeitraum.setText("  Zeitraum:  " + Start + " - " + End);
 			Init_Posten_Zeitraum(Start, End);
@@ -1189,10 +1241,10 @@ public class Statistik {
 			case "Kategorie_Wasserfalldiagramm":
 				Kategorie_Wasserfalldiagramm_Gesamt_Grafik();
 				break;
-
 			}
 		} else {
 			lblZeitraum.setText("  Zeitraum:  Gesamtzeitraum");
+			Buchungen_ohne_Kontoeröffnung();
 			Buchungsübersicht();
 			switch (selection) {
 			case "Kategorie_Kreisdiagramm":
