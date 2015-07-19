@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Locale;
-import java.util.List;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -84,8 +83,6 @@ import com.opencsv.CSVReader;
  */
 public class Statistik {
 
-
-
 	// Alle Objektvariablen
 	/**
 	 * Objekt für Statistik-Fenster
@@ -123,11 +120,11 @@ public class Statistik {
 	private JLabel lblZeitraum;
 	private JTable table_Einnahmen;
 	private JTable table_Ausgaben;
-	// FensterIcon
-	Image icon = Toolkit.getDefaultToolkit().getImage("src/img/Money.png");
 
-	// Objektvariablen für die
-	// Methoden(Berechnungen/Datenverwaltung/Grafikerstellung)
+	/*
+	 * Objektvariablen für die Methoden
+	 * (Berechnungen/Datenverwaltung/Grafikerstellung)
+	 */
 	private SimpleDateFormat formatter;
 	private int size_Einnahmen;
 	private int size_Ausgaben;
@@ -161,6 +158,12 @@ public class Statistik {
 	private static ValueAxis domainAxis;
 
 	/**
+	 * Objekt für Fenster-Icon
+	 */
+	private Image icon = Toolkit.getDefaultToolkit().getImage(
+			"src/img/Money.png");
+
+	/**
 	 * Konstruktor für die Statistik.
 	 * 
 	 * Hier wird das Statistikfenster initialisiert.
@@ -171,19 +174,19 @@ public class Statistik {
 	 *             Konnte Programm-Icon icht laden.
 	 */
 	public Statistik(BudgetPlanModel budget) {
-		// schließt aktuelles Fenster und RessourcenFreigabe
+		// schließt aktuelles Fenster und Ressourcen-Freigabe
 		Statistic.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		Statistic.setBounds(100, 100, 450, 300); // Größe des Frames
 		Statistic.setVisible(true);
 		Statistic.setMinimumSize(new Dimension(800, 550));
 		Statistic.getContentPane().setLayout(new BorderLayout(0, 0));
-
+		// setzt Icon in Titelleiste
 		try {
 			Statistic.setIconImage(icon);
 		} catch (Exception whoJackedMyIcon) {
 			System.out.println("Could not load program icon.");
 		}
-
+		// Erstellung der GUI fürs neue Statistikfenster
 		panel = new JPanel();
 		Statistic.getContentPane().add(panel, BorderLayout.NORTH);
 		panel.setPreferredSize(new Dimension(0, 185));
@@ -278,33 +281,88 @@ public class Statistik {
 		panel_1.add(lblSaldowert);
 
 		this.budget = budget;
-
 	}
 
-	public void Buchungen_ohne_Kontoeröffnung() {
+	//
+	// Methoden für die Strukturierung der Datensätze und
+	// Übersichtenerstellung für die GUI
+	//
+
+	/**
+	 * Neuerstellung der ArrayList "Geldvermögen". Diese enthält alle Daten aus
+	 * der ursprünglichen ArrayList "Geldvermögen" nur ohne den Eintrag
+	 * "Kontoeröffnung", da er nicht zu den direkten Einnahmen und Ausgaben
+	 * zählt.
+	 */
+	private void Buchungen_ohne_Kontoeröffnung() {
+		// Hilfs-ArrayList
 		tmp = new ArrayList<Posten>();
 		for (Posten p : budget.Geldvermögen)
 			if (!p.getBezeichnung().equals("Kontoeröffnung"))
 				tmp.add(p);
 		budget.Geldvermögen.clear();
+		// neu reinkoppieren
 		for (Posten t : tmp)
 			budget.Geldvermögen.add(t);
-
 	}
 
-	@SuppressWarnings("deprecation")
-	public void Buchungsübersicht() {
+	/**
+	 * Es erstellt eine Kurzübersicht zu dem Zeitraum, den der Benutzer vorher
+	 * ausgewählt hat. Dazu gehören die Anzahl der Buchungen insgesamt und
+	 * detailiert jeweils in Einnahmen und Ausgaben, sowie die Summen von
+	 * Einnahmen und Ausgaben und dessen Saldo.
+	 */
+	private void Init_Kurzübersicht() {
+		nf = NumberFormat.getInstance(new Locale("de", "DE"));
+		double i = 0, a = 0, e = 0;
+		// Setzten der Anzahl von Buchungen
+		lblBuchungswert_gesamt.setText("Gesamt: "
+				+ (size_Ausgaben + size_Einnahmen));
+		lblBuchungswert_detail.setText("Ein (" + size_Einnahmen + ") "
+				+ ", Aus (" + size_Ausgaben + ")");
+		// Summieren von Einnahmen und Ausgaben
+		for (Posten p : budget.Geldvermögen) {
+			i += p.getBetrag();
+			if (p.getintern_Einnahme_Ausgabe() == 0)
+				e += p.getBetrag();
+			else
+				a += p.getBetrag();
+		}
+		// Setzten der Summen
+		lblSaldowert.setText(nf.format(i) + " \u20ac");
+		lblEinnhamenwert.setText(nf.format(e) + " \u20ac");
+		lblEinnhamenwert.setForeground(new Color(20, 170, 20));
+		lblAusgabenwert.setText(nf.format(a) + " \u20ac");
+		lblAusgabenwert.setForeground(Color.RED);
+		// Farbwahl bei Saldobetrag
+		if (i < 0)
+			lblSaldowert.setForeground(Color.RED);
+		else
+			lblSaldowert.setForeground(new Color(20, 170, 20));
+	}
 
+	/**
+	 * Erstellung der beiden Tabellen für Einnahmen und Ausgaben. Zunächst wird
+	 * die Anzahl von Einnahmen und Ausgaben ermittelt (notwendig für die Größe
+	 * der Tabelleneinträge). Dann werden die Daten aus der ArrayList
+	 * "Geldvermögen" ausgelesen und in die Tabellen eingefügt.
+	 */
+	@SuppressWarnings("deprecation")
+	private void Buchungsübersicht() {
+		// Ermittlung der Anzahl von Einnahmen und Ausgaben
 		for (Posten pos : budget.Geldvermögen)
 			if (pos.getintern_Einnahme_Ausgabe() == 0)
 				size_Einnahmen += 1;
 			else
 				size_Ausgaben += 1;
-
+		// Erstellung von Objektvariablen
 		data_Ausgaben = new Object[size_Ausgaben][4];
 		data_Einnahmen = new Object[size_Einnahmen][4];
 		int i = 0, j = 0;
-
+		/*
+		 * Auslesen der Daten aus ArrayList "Geldvermögen" jeweils für Einnahmen
+		 * und Ausgaben, und abspeichern in Objektvariablen
+		 */
 		for (Posten p : budget.Geldvermögen) {
 			if (p.getintern_Einnahme_Ausgabe() == 0) {
 				data_Einnahmen[i][0] = new SimpleDateFormat("dd.MM.yyyy")
@@ -321,16 +379,15 @@ public class Statistik {
 				data_Ausgaben[j][3] = p.getBetrag();
 				j++;
 			}
-
 		}
-
+		// Erstellung zweier Tabellen mit den Daten von Einnahmen
 		table_Einnahmen = new JTable(data_Einnahmen, new Object[] { "Datum",
 				"Kategorie", "Beschreibung", "Betrag" });
 		table_Einnahmen.enable(false);
 		table_Einnahmen.setAutoCreateRowSorter(true);
 		table_Einnahmen.setBackground(new Color(180, 250, 200));
 		scrollPane_Einnahmen.setViewportView(table_Einnahmen);
-
+		// und Ausgaben
 		table_Ausgaben = new JTable(data_Ausgaben, new Object[] { "Datum",
 				"Kategorie", "Beschreibung", "Betrag" });
 		table_Ausgaben.enable(false);
@@ -341,37 +398,24 @@ public class Statistik {
 		Init_Kurzübersicht();
 	}
 
-	public void Init_Kurzübersicht() {
-		nf = NumberFormat.getInstance(new Locale("de", "DE"));
-		double i = 0, a = 0, e = 0;
-		lblBuchungswert_gesamt.setText("Gesamt: "
-				+ (size_Ausgaben + size_Einnahmen));
-		lblBuchungswert_detail.setText("Ein (" + size_Einnahmen + ") "
-				+ ", Aus (" + size_Ausgaben + ")");
-		for (Posten p : budget.Geldvermögen) {
-			i += p.getBetrag();
-			if (p.getintern_Einnahme_Ausgabe() == 0)
-				e += p.getBetrag();
-			else
-				a += p.getBetrag();
-		}
-		lblSaldowert.setText(nf.format(i) + " \u20ac");
-		lblEinnhamenwert.setText(nf.format(e) + " \u20ac");
-		lblEinnhamenwert.setForeground(new Color(20, 170, 20));
-		lblAusgabenwert.setText(nf.format(a) + " \u20ac");
-		lblAusgabenwert.setForeground(Color.RED);
-		if (i < 0)
-			lblSaldowert.setForeground(Color.RED);
-		else
-			lblSaldowert.setForeground(new Color(20, 170, 20));
-	}
-
-	public void Init_Posten_Zeitraum(String StartingDate, String EndingDate) {
-
+	/**
+	 * Filterung der Datensätze nur für den individuellen Zeitraum. Die
+	 * ArrayList "Geldvermögen" enthält danach nur die Datensätze für den
+	 * individuellen Zeitraum, den der Benutzer ausgewählt hat.
+	 * 
+	 * @param StartingDate
+	 *            Anfangsdatum der Benutzereingabe bei individuellem Zeitraum
+	 * @param EndingDate
+	 *            Enddatum der Benutzereingabe bei individuellem Zeitraum
+	 * 
+	 */
+	private void Init_Posten_Zeitraum(String StartingDate, String EndingDate) {
+		// Löschung von ArrayList "Geldvermögen"
 		budget.Geldvermögen.clear();
 		formatter = new SimpleDateFormat("dd.MM.yyyy");
 		Date startDate = null;
 		Date endDate = null;
+		// Formatieung von String zu Date
 		try {
 			startDate = formatter.parse(StartingDate);
 			endDate = formatter.parse(EndingDate);
@@ -384,14 +428,17 @@ public class Statistik {
 		start.setTime(startDate);
 		Calendar end = Calendar.getInstance();
 		end.setTime(endDate);
-
+		// Zeilenweises Einlesen der Daten
 		try {
-			// Zeilenweises Einlesen der Daten
 			reader = new CSVReader(new FileReader("data/budget.csv"));
 			DateFormat df = DateFormat.getDateInstance(DateFormat.SHORT,
 					Locale.GERMAN);
-
 			String[] nextLine;
+			/*
+			 * von Anfangsdatum bis zum Enddatum Tag für Tag abgleichen ob Datum
+			 * in CSV-Datei vorhanden; falls ja, Datensatz in ArrayList
+			 * "Geldvermögen" einfügen
+			 */
 			while ((nextLine = reader.readNext()) != null) {
 				start.setTime(startDate);
 				for (Date date = start.getTime(); !start.after(end); start.add(
@@ -407,10 +454,8 @@ public class Statistik {
 								bezeichnung, betrag, intern_Einnahme_Ausgabe));
 					}
 				}
-
 			}
 			reader.close();
-
 		} catch (FileNotFoundException e) {
 			System.err
 					.println("Die Datei data/budget.csv wurde nicht gefunden!");
@@ -426,9 +471,8 @@ public class Statistik {
 		}
 
 		Buchungen_ohne_Kontoeröffnung();
-
+		// Sortierung der Datensätze nach Datum (aufsteigend)
 		Collections.sort(budget.Geldvermögen, new Comparator<Posten>() {
-
 			@Override
 			public int compare(Posten o1, Posten o2) {
 				return o1.getDatum().compareTo(o2.getDatum());
@@ -438,54 +482,92 @@ public class Statistik {
 		Buchungsübersicht();
 	}
 
+	//
+	// Methoden für die Grafikerstellung
+	//
+
+	/**
+	 * Erstellung der Grafik für Kreisdiagramm (Ausgaben) für die Methode
+	 * "Kategorie_Kreisdiagramm_Grafik()".
+	 * 
+	 * @param dataset
+	 *            Die Datensätze
+	 * @return fertige Grafik
+	 */
 	private JFreeChart createChartPieAusgaben(DefaultPieDataset dataset) {
 		JFreeChart chart = ChartFactory.createPieChart3D("Ausgaben", dataset,
 				true, true, false);
 		return chart;
 	}
 
+	/**
+	 * Erstellung der Grafik für Kreisdiagramm (Einnahmen) für die Methode
+	 * "Kategorie_Kreisdiagramm_Grafik()".
+	 * 
+	 * @param dataset
+	 *            Die Datensätze
+	 * @return fertige Grafik
+	 */
 	private JFreeChart createChartPieEinnahmen(DefaultPieDataset dataset) {
 		JFreeChart chart = ChartFactory.createPieChart3D("Einnahmen", dataset,
 				true, true, false);
 		return chart;
 	}
 
+	/**
+	 * Erstellung der Datensätze für Kreisdiagramm für die Methode
+	 * "Kategorie_Kreisdiagramm_Grafik()". Durch ein Algorithmus werden gleiche
+	 * Kategorien und somit die jeweiligen Beträge zusammengefasst und nicht mit
+	 * dem letzten Wert überschrieben, was eine fehlerhafte Grafik zur Folge
+	 * hätte.
+	 * 
+	 * @param selection_data_ein_aus
+	 *            erhält den Wert 0 für Einnahmen oder 1 für Ausgaben
+	 * @return fertig zusammengesetzte Datensätze
+	 */
 	private DefaultPieDataset createDataset_Auswahl2(int selection_data_ein_aus) {
 		int einnahme_ausgabe = -1;
+		// Abfrage des Parameterwerts
 		if (selection_data_ein_aus == 0)
 			einnahme_ausgabe = 0;
-
 		else
 			einnahme_ausgabe = 1;
-
+		// Erstellung einer Hilfs-ArrayList
 		Sortierte_Kategorie_Liste = new ArrayList<Posten>();
 		for (Posten p : budget.Geldvermögen)
 			Sortierte_Kategorie_Liste.add(p);
-
+		// Sortierung der Datensätze nach Kategorie
 		Collections.sort(Sortierte_Kategorie_Liste, new Comparator<Posten>() {
-
 			@Override
 			public int compare(Posten o1, Posten o2) {
 				return o1.getBezeichnung().compareTo(o2.getBezeichnung());
 			}
 		});
-
+		/*
+		 * Algorithmus zur Zusammenfassung der gleichen Kategorien inkl. der
+		 * jeweiligen Beträge 
+		 * [hier detailierter, analog auch für die weiteren Algorithmen unten]
+		 */
 		double betrag = 0;
 		int twin = 0, i = 0;
 		piedataset = new DefaultPieDataset();
 		for (Posten p : Sortierte_Kategorie_Liste) {
 			i++;
+			// Filter für reine Einnahmen oder Ausgaben
 			if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
+				// Schutz vor Zugriff auf ungültigen Index
 				if (i < Sortierte_Kategorie_Liste.size()) {
+					// Prüfung ob Nachfolger gleiche Kategorie					
 					if (Sortierte_Kategorie_Liste
 							.get(i - 1)
 							.getBezeichnung()
 							.equals(Sortierte_Kategorie_Liste.get(i)
 									.getBezeichnung())) {
-						twin = 1;
+						// "Zwilling"-> Existenz mind. 2 gleicher Kateg. 
+						twin = 1;  
 						betrag += Math.abs(p.getBetrag());
-
-					} else if (twin == 1) {
+					} // Ausführung bei "Zwilling"
+					else if (twin == 1) {
 						betrag += Math.abs(p.getBetrag());
 						piedataset.setValue(p.getBezeichnung(), betrag);
 						twin = 0;
@@ -493,7 +575,9 @@ public class Statistik {
 					} else
 						piedataset.setValue(p.getBezeichnung(),
 								Math.abs(p.getBetrag()));
-				} else {
+				} // abschließende Ausführung da Zugriff auf unerlaubten Bereich
+				  // (über letzten Index hinaus)
+				else {
 					if (twin == 1) {
 						betrag += Math.abs(p.getBetrag());
 						piedataset.setValue(p.getBezeichnung(), betrag);
@@ -505,26 +589,46 @@ public class Statistik {
 				}
 			}
 		}
-
 		return piedataset;
 	}
 
-	public void Kategorie_Kreisdiagramm_Grafik() {
+	/**
+	 * Hauptmethode für Kreisdiagramme nach Kategorien jeweils für Einnahmen und
+	 * Ausgaben mit Einfügen der Grafik in Panel (GUI).
+	 */
+	private void Kategorie_Kreisdiagramm_Grafik() {
+		// Einfügen des Kreisdiagramms nach Kategorien von Einnahmen in Panel
 		JFreeChart pie = createChartPieEinnahmen((DefaultPieDataset) createDataset_Auswahl2(0));
 		chartpanel = new ChartPanel(pie);
 		chartpanel.setMouseWheelEnabled(true);
 		panel_2.add(chartpanel);
-
+		// Einfügen des Kreisdiagramms nach Kategorien von Ausgaben in Panel
 		JFreeChart pie2 = createChartPieAusgaben((DefaultPieDataset) createDataset_Auswahl2(1));
 		chartpanel2 = new ChartPanel(pie2);
 		chartpanel2.setMouseWheelEnabled(true);
 		panel_2.add(chartpanel2);
 	}
 
+	/**
+	 * Erstellung der Datensätze für Balkendiagramm für die Methoden
+	 * "Kategorie_Balkendiagramm_Grafik()" &
+	 * "GesamtKategorie_Balkendiagramm_Grafik()". Durch ein Algorithmus werden
+	 * gleiche Kategorien und somit die jeweiligen Beträge zusammengefasst und
+	 * nicht mit dem letzten Wert überschrieben, was eine fehlerhafte Grafik zur
+	 * Folge hätte.
+	 * 
+	 * @param selection_data_ein_aus
+	 *            erhält den Wert 0 für Einnahmen oder 1 für Ausgaben für Grafik
+	 *            der Methode "Kategorie_Balkendiagramm_Grafik()" oder den Wert
+	 *            2 für die Grafik der Methode
+	 *            "GesamtKategorie_Balkendiagramm_Grafik()"
+	 * @return fertig zusammengesetzte Datensätze
+	 */
 	private CategoryDataset createDataset_Auswahl3(int selection_data_ein_aus) {
 		categorydataset = new DefaultCategoryDataset();
 		int einnahme_ausgabe = -1;
 		String einnahme_ausgabe_text = null;
+		// Abfrage des Parameterwerts mit Variableninitialisierung
 		if (selection_data_ein_aus == 0) {
 			einnahme_ausgabe = 0;
 			einnahme_ausgabe_text = "Einnahmen";
@@ -532,19 +636,25 @@ public class Statistik {
 			einnahme_ausgabe = 1;
 			einnahme_ausgabe_text = "Ausgaben";
 		}
-
+		// Erstellung einer Hilfs-ArrayList
 		Sortierte_Kategorie_Liste = new ArrayList<Posten>();
 		for (Posten p : budget.Geldvermögen)
 			Sortierte_Kategorie_Liste.add(p);
-
+		// Sortierung der Datensätze nach Kategorie
 		Collections.sort(Sortierte_Kategorie_Liste, new Comparator<Posten>() {
-
 			@Override
 			public int compare(Posten o1, Posten o2) {
 				return o1.getBezeichnung().compareTo(o2.getBezeichnung());
 			}
 		});
-
+		/*
+		 * Algorithmus zur Zusammenfassung der gleichen Kategorien inkl. der
+		 * jeweiligen Beträge
+		 * 
+		 * bei "selection_data_ein_aus == 2" Algorithmus für Methode
+		 * "GesamtKategorie_Balkendiagramm_Grafik()", sonst bei 0 oder 1 für
+		 * Methode "Kategorie_Balkendiagramm_Grafik()"
+		 */
 		if (selection_data_ein_aus == 2)
 			for (int data_einnahme_ausgabe = 0; data_einnahme_ausgabe < 2; data_einnahme_ausgabe++) {
 				double betrag = 0;
@@ -560,7 +670,6 @@ public class Statistik {
 											.getBezeichnung())) {
 								twin = 1;
 								betrag += p.getBetrag();
-
 							} else if (twin == 1) {
 								betrag += p.getBetrag();
 								categorydataset
@@ -610,7 +719,6 @@ public class Statistik {
 										.getBezeichnung())) {
 							twin = 1;
 							betrag += Math.abs(p.getBetrag());
-
 						} else if (twin == 1) {
 							betrag += Math.abs(p.getBetrag());
 							categorydataset.addValue(betrag,
@@ -638,6 +746,14 @@ public class Statistik {
 		return categorydataset;
 	}
 
+	/**
+	 * Erstellung der Grafik für Balkendiagramm (Ausgaben) für die Methode
+	 * "Kategorie_Balkendiagramm_Grafik()".
+	 * 
+	 * @param dataset
+	 *            Die Datensätze
+	 * @return fertige Grafik
+	 */
 	private JFreeChart createChartBarAusgaben(CategoryDataset dataset) {
 		JFreeChart chart = ChartFactory.createBarChart(
 				"Ausgaben nach Kategorien", "Kategorie", "Euro",
@@ -645,6 +761,14 @@ public class Statistik {
 		return chart;
 	}
 
+	/**
+	 * Erstellung der Grafik für Balkendiagramm (Einnahmen) für die Methode
+	 * "Kategorie_Balkendiagramm_Grafik()".
+	 * 
+	 * @param dataset
+	 *            Die Datensätze
+	 * @return fertige Grafik
+	 */
 	private JFreeChart createChartBarEinnahmen(CategoryDataset dataset) {
 		JFreeChart chart = ChartFactory.createBarChart(
 				"Einnahmen nach Kategorien", "Kategorie", "Euro",
@@ -652,17 +776,53 @@ public class Statistik {
 		return chart;
 	}
 
-	public void Kategorie_Balkendiagramm_Grafik() {
+	/**
+	 * Hauptmethode für Balkendiagramme nach Kategorien jeweils für Einnahmen
+	 * und Ausgaben mit Einfügen der Grafik in Panel (GUI).
+	 */
+	private void Kategorie_Balkendiagramm_Grafik() {
+		// Einfügen des Balkendiagramms nach Kategorien von Einnahmen in Panel
 		JFreeChart bar = createChartBarEinnahmen((CategoryDataset) createDataset_Auswahl3(0));
 		chartpanel = new ChartPanel(bar);
 		panel_2.add(chartpanel);
-
+		// Einfügen des Balkendiagramms nach Kategorien von Ausgaben in Panel
 		JFreeChart bar2 = createChartBarAusgaben((CategoryDataset) createDataset_Auswahl3(1));
 		chartpanel2 = new ChartPanel(bar2);
 		panel_2.add(chartpanel2);
 	}
 
-	public void Vergleich_Balkendiagramm_Grafik() {
+	/**
+	 * Erstellung der Grafik für Balkendiagramm (Einnahmen & Ausgaben) für die
+	 * Methode "GesamtKategorie_Balkendiagramm_Grafik()".
+	 * 
+	 * @param dataset
+	 *            Die Datensätze
+	 * @return fertige Grafik
+	 */
+	private JFreeChart createChartBarGesamt(CategoryDataset dataset) {
+		JFreeChart chart = ChartFactory.createBarChart(
+				"Einnahmen und Ausgaben nach Kategorien", "Kategorie", "Euro",
+				(CategoryDataset) dataset);
+		return chart;
+	}
+
+	/**
+	 * Hauptmethode für Balkendiagramme nach Kategorien für Einnahmen und
+	 * Ausgaben zusammen mit Einfügen der Grafik in Panel (GUI).
+	 */
+	private void GesamtKategorie_Balkendiagramm_Grafik() {
+		JFreeChart bar = createChartBarGesamt((CategoryDataset) createDataset_Auswahl3(2));
+		chartpanel = new ChartPanel(bar);
+		panel_2.add(chartpanel);
+	}
+
+	/**
+	 * Hauptmethode für Balkendiagramme nach Gesamt-Einnahmen und
+	 * Gesamt-Ausgaben mit Einfügen der Grafik in Panel (GUI). Zusätzlich auch
+	 * Erstellung der Grafik und Datensätze.
+	 */
+	private void Vergleich_Balkendiagramm_Grafik() {
+		// Erstellung der Datensätze
 		double einnahmen = 0, ausgaben = 0;
 		cd = new DefaultCategoryDataset();
 		for (Posten p : budget.Geldvermögen)
@@ -672,42 +832,51 @@ public class Statistik {
 				ausgaben += Math.abs(p.getBetrag());
 		cd.addValue(einnahmen, "Einnahmen", "");
 		cd.addValue(ausgaben, "Ausgaben", "");
+		// Erstellung der Grafik
 		JFreeChart bar = ChartFactory.createBarChart(
 				"Gesamt-Einnahmen  vs  Gesamt-Ausgaben", null, "Euro",
 				(CategoryDataset) cd);
 		chartpanel = new ChartPanel(bar);
-		panel_2.add(chartpanel);
-
-	}
-
-	private JFreeChart createChartBarGesamt(CategoryDataset dataset) {
-		JFreeChart chart = ChartFactory.createBarChart(
-				"Einnahmen und Ausgaben nach Kategorien", "Kategorie", "Euro",
-				(CategoryDataset) dataset);
-		return chart;
-	}
-
-	public void GesamtKategorie_Balkendiagramm_Grafik() {
-		JFreeChart bar = createChartBarGesamt((CategoryDataset) createDataset_Auswahl3(2));
-		chartpanel = new ChartPanel(bar);
+		// Einfügung von Grafik in Panel
 		panel_2.add(chartpanel);
 	}
 
-	public void Zeit_Kombidiagramm_Ausgaben_Grafik() {
+	/**
+	 * Hauptmethode für Balken- und Liniendiagramm nach Zeit für Ausgaben mit
+	 * Einfügen der Grafik in Panel (GUI).
+	 */
+	private void Zeit_Kombidiagramm_Ausgaben_Grafik() {
 		JFreeChart KombiChart_Ausgaben = createChart_Auswahl(1);
 		chartpanel = new ChartPanel(KombiChart_Ausgaben);
 		panel_2.add(chartpanel);
 	}
 
-	public void Zeit_Kombidiagramm_Einnahmen_Grafik() {
+	/**
+	 * Hauptmethode für Balken- und Liniendiagramm nach Zeit für Einnahmen mit
+	 * Einfügen der Grafik in Panel (GUI).
+	 */
+	private void Zeit_Kombidiagramm_Einnahmen_Grafik() {
 		JFreeChart KombiChart_Einnahmen = createChart_Auswahl(0);
 		chartpanel = new ChartPanel(KombiChart_Einnahmen);
 		panel_2.add(chartpanel);
 	}
 
+	/**
+	 * Erstellung der Datensätze für Balken- und Liniendiagramm für die Methoden
+	 * "Zeit_Kombidiagramm_Einnahmen_Grafik()" &
+	 * "Zeit_Kombidiagramm_Ausgaben_Grafik()". Durch ein Algorithmus werden
+	 * gleiche Zeiten und somit die jeweiligen Beträge zusammengefasst und nicht
+	 * mit dem letzten Wert überschrieben, was eine fehlerhafte Grafik zur Folge
+	 * hätte.
+	 * 
+	 * @param selection_data_ein_aus
+	 *            erhält den Wert 0 für Einnahmen oder 1 für Ausgaben
+	 * @return fertig zusammengesetzte Datensätze
+	 */
 	private CategoryDataset createDataset_Auswahl(int selection_data_ein_aus) {
 		int einnahme_ausgabe = -1;
 		String einnahme_ausgabe_text = null;
+		// Abfrage des Parameterwerts mit Variableninitialisierung
 		if (selection_data_ein_aus == 0) {
 			einnahme_ausgabe = 0;
 			einnahme_ausgabe_text = "Einnahmen";
@@ -715,14 +884,17 @@ public class Statistik {
 			einnahme_ausgabe = 1;
 			einnahme_ausgabe_text = "Ausgaben";
 		}
-
+		// Hilfs-ArrayList mit nur reinen Einnahmen oder Ausgaben
 		Only_Einnahmen_Or_Ausgaben = new ArrayList<Posten>();
 		for (Posten p : budget.Geldvermögen) {
 			if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
 				Only_Einnahmen_Or_Ausgaben.add(p);
 			}
 		}
-
+		/*
+		 * Algorithmus zur Zusammenfassung der gleichen Zeiten inkl. der
+		 * jeweiligen Beträge
+		 */
 		double betrag = 0;
 		int twin = 0, i = 0;
 		defaultcategorydataset = new DefaultCategoryDataset();
@@ -737,7 +909,6 @@ public class Statistik {
 									.getDatum())) {
 						twin = 1;
 						betrag += Math.abs(p.getBetrag());
-
 					} else if (twin == 1) {
 						betrag += Math.abs(p.getBetrag());
 						defaultcategorydataset.addValue(betrag,
@@ -769,12 +940,22 @@ public class Statistik {
 		return defaultcategorydataset;
 	}
 
+	/**
+	 * Erstellung der Grafik für Balken- und Liniendiagramm (Einnahmen &
+	 * Ausgaben) für die Methoden "Zeit_Kombidiagramm_Einnahmen_Grafik()" &
+	 * "Zeit_Kombidiagramm_Ausgaben_Grafik()".
+	 * 
+	 * @param selection_ein_aus
+	 *            erhält den Wert 0 für Einnahmen oder 1 für Ausgaben
+	 * @return fertige Grafik
+	 */
 	private JFreeChart createChart_Auswahl(int selection_ein_aus) {
 		String einnahme_ausgabe_text = null;
 		if (selection_ein_aus == 0)
 			einnahme_ausgabe_text = "Einnahmen";
 		else
 			einnahme_ausgabe_text = "Ausgaben";
+		// individuelle Grafikerstellung mit Hilfe von Renderer
 		CategoryDataset categorydataset = createDataset_Auswahl(selection_ein_aus);
 		numberaxis = new NumberAxis("Euro");
 		numberaxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
@@ -784,7 +965,6 @@ public class Statistik {
 		categoryplot = new CategoryPlot(categorydataset, null, numberaxis,
 				lineandshaperenderer);
 		categoryplot.setDomainGridlinesVisible(true);
-
 		numberaxis1 = new NumberAxis("Euro");
 		numberaxis1.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 		barrenderer = new BarRenderer();
@@ -792,7 +972,6 @@ public class Statistik {
 				.setBaseToolTipGenerator(new StandardCategoryToolTipGenerator());
 		categoryplot1 = new CategoryPlot(categorydataset, null, numberaxis1,
 				barrenderer);
-
 		categoryplot1.setDomainGridlinesVisible(true);
 		categoryaxis = new CategoryAxis("Zeit");
 		combineddomaincategoryplot = new CombinedDomainCategoryPlot(
@@ -805,23 +984,38 @@ public class Statistik {
 		return jfreechart;
 	}
 
+	/**
+	 * Erstellung der Datensätze für Liniendiagramm für die Methoden
+	 * "Zeit_Liniendiagramm_Differenz_Gesamt_Grafik()" &
+	 * "Zeit_Liniendiagramm_Gesamt_Grafik()". Durch ein Algorithmus werden
+	 * gleiche Zeiten und somit die jeweiligen Beträge zusammengefasst und nicht
+	 * mit dem letzten Wert überschrieben, was eine fehlerhafte Grafik zur Folge
+	 * hätte.
+	 * 
+	 * @param selection_model
+	 *            0 für "Zeit_Liniendiagramm_Differenz_Gesamt_Grafik()" & 1 für
+	 *            "Zeit_Liniendiagramm_Gesamt_Grafik()"
+	 * @return fertig zusammengesetzte Datensätze
+	 */
 	private XYDataset createDataset(int selection_model) {
-
 		series1 = new TimeSeries("Einnahmen");
 		series2 = new TimeSeries("Ausgaben");
+		// Durchführung für "Zeit_Liniendiagramm_Differenz_Gesamt_Grafik()"
 		if (selection_model == 0) {
 			for (int einnahme_ausgabe = 0; einnahme_ausgabe < 2; einnahme_ausgabe++) {
-
+				// Hilfs-ArrayList mit nur reinen Einnahmen oder Ausgaben
 				Only_Einnahmen_Or_Ausgaben = new ArrayList<Posten>();
 				for (Posten p : budget.Geldvermögen) {
 					if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
 						Only_Einnahmen_Or_Ausgaben.add(p);
 					}
 				}
-
+				/*
+				 * Algorithmus zur Zusammenfassung der gleichen Zeiten inkl. der
+				 * jeweiligen Beträge
+				 */
 				double betrag = 0;
 				int twin = 0, i = 0;
-
 				for (Posten p : Only_Einnahmen_Or_Ausgaben) {
 					i++;
 					if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
@@ -867,19 +1061,17 @@ public class Statistik {
 					}
 				}
 			}
-		} else {
+		} // Durchführung für "Zeit_Liniendiagramm_Gesamt_Grafik()"
+		else {
 			for (int einnahme_ausgabe = 0; einnahme_ausgabe < 2; einnahme_ausgabe++) {
-
 				Only_Einnahmen_Or_Ausgaben = new ArrayList<Posten>();
 				for (Posten p : budget.Geldvermögen) {
 					if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
 						Only_Einnahmen_Or_Ausgaben.add(p);
 					}
 				}
-
 				double betrag = 0;
 				int twin = 0, i = 0;
-
 				for (Posten p : Only_Einnahmen_Or_Ausgaben) {
 					i++;
 					if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
@@ -1009,14 +1201,21 @@ public class Statistik {
 		return dataset;
 	}
 
-	private static JFreeChart createChart(XYDataset dataset) {
+	/**
+	 * Erstellung der Grafik für Liniendiagramm (Differenz) (Einnahmen &
+	 * Ausgaben) für die Methode "Zeit_Liniendiagramm_Differenz_Gesamt_Grafik()"
+	 * 
+	 * @param dataset
+	 *            Die Datensätze
+	 * @return fertige Grafik
+	 */
+	private JFreeChart createChart(XYDataset dataset) {
 		JFreeChart chart = ChartFactory.createTimeSeriesChart(
 				"Differenz zw. Einnahmen & Ausgaben", "Zeit", "Euro", dataset,
 				true, true, false);
-
+		// Grafikerstellung mit Hilfe von Renderer
 		XYPlot plot = chart.getXYPlot();
 		plot.setRenderer(new XYDifferenceRenderer(Color.green, Color.red, false));
-
 		domainAxis = new DateAxis("Zeit");
 		domainAxis.setLowerMargin(0.0);
 		domainAxis.setUpperMargin(0.0);
@@ -1025,17 +1224,29 @@ public class Statistik {
 		return chart;
 	}
 
-	public void Zeit_Liniendiagramm_Differenz_Gesamt_Grafik() {
+	/**
+	 * Hauptmethode für Liniendiagramme (Differenz) nach Zeit (monatlich) für
+	 * Einnahmen und Ausgaben gemeinsam mit Einfügen der Grafik in Panel (GUI).
+	 */
+	private void Zeit_Liniendiagramm_Differenz_Gesamt_Grafik() {
 		chart = createChart(createDataset(0));
 		chartpanel = new ChartPanel(chart);
 		panel_2.add(chartpanel);
 	}
 
-	private static JFreeChart createChart2(XYDataset dataset) {
+	/**
+	 * Erstellung der Grafik für Liniendiagramm (Einnahmen & Ausgaben) für die
+	 * Methode "Zeit_Liniendiagramm_Gesamt_Grafik()"
+	 * 
+	 * @param dataset
+	 *            Die Datensätze
+	 * @return fertige Grafik
+	 */
+	private JFreeChart createChart2(XYDataset dataset) {
 		JFreeChart chart = ChartFactory.createTimeSeriesChart(
 				"Einnahmen  vs  Ausgaben (monatlich)", "Datum", "Euro",
 				dataset, true, true, false);
-
+		// Grafikerstellung mit Hilfe von Renderer
 		XYPlot plot = (XYPlot) chart.getPlot();
 		XYItemRenderer r = plot.getRenderer();
 		if (r instanceof XYLineAndShapeRenderer) {
@@ -1049,16 +1260,32 @@ public class Statistik {
 		return chart;
 	}
 
-	public void Zeit_Liniendiagramm_Gesamt_Grafik() {
+	/**
+	 * Hauptmethode für Liniendiagramme nach Zeit (monatlich) für Einnahmen und
+	 * Ausgaben gemeinsam mit Einfügen der Grafik in Panel (GUI).
+	 */
+	private void Zeit_Liniendiagramm_Gesamt_Grafik() {
 		chart = createChart2(createDataset(1));
 		chartpanel = new ChartPanel(chart);
 		panel_2.add(chartpanel);
 	}
 
+	/**
+	 * Erstellung der Datensätze für Wasserfalldiagramm für die Methode
+	 * "Kategorie_Wasserfalldiagramm_Gesamt_Grafik()". Durch ein Algorithmus
+	 * werden gleiche Kategorien und somit die jeweiligen Beträge
+	 * zusammengefasst und nicht mit dem letzten Wert überschrieben, was eine
+	 * fehlerhafte Grafik zur Folge hätte.
+	 * 
+	 * @param selection_data_ein_aus
+	 *            erhält den Wert 0 für Einnahmen oder 1 für Ausgaben
+	 * @return fertig zusammengesetzte Datensätze
+	 */
 	private CategoryDataset createDataset_Wasserfall(int selection_data_ein_aus) {
 		double m = 0;
 		int einnahme_ausgabe = -1;
 		String einnahme_ausgabe_text = null;
+		// Abfrage des Parameterwerts mit Variableninitialisierung
 		if (selection_data_ein_aus == 0) {
 			einnahme_ausgabe = 0;
 			einnahme_ausgabe_text = "Einnahmen";
@@ -1066,19 +1293,21 @@ public class Statistik {
 			einnahme_ausgabe = 1;
 			einnahme_ausgabe_text = "Ausgaben";
 		}
-
-		List<Posten> Sortierte_Kategorie_Liste = new ArrayList<Posten>();
+		// Erstellung einer Hilfs-ArrayList
+		Sortierte_Kategorie_Liste = new ArrayList<Posten>();
 		for (Posten p : budget.Geldvermögen)
 			Sortierte_Kategorie_Liste.add(p);
-
+		// Sortierung der Datensätze nach Kategorie
 		Collections.sort(Sortierte_Kategorie_Liste, new Comparator<Posten>() {
-
 			@Override
 			public int compare(Posten o1, Posten o2) {
 				return o1.getBezeichnung().compareTo(o2.getBezeichnung());
 			}
 		});
-
+		/*
+		 * Algorithmus zur Zusammenfassung der gleichen Kategorien inkl. der
+		 * jeweiligen Beträge
+		 */
 		double betrag = 0;
 		int twin = 0, i = 0;
 		defaultcategorydataset = new DefaultCategoryDataset();
@@ -1116,6 +1345,7 @@ public class Statistik {
 				}
 			}
 		}
+		// letzte "Kategorie" (Total) sind Gesamtbeträge
 		for (Posten p : Sortierte_Kategorie_Liste)
 			if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe)
 				m += p.getBetrag();
@@ -1123,44 +1353,81 @@ public class Statistik {
 		return defaultcategorydataset;
 	}
 
+	/**
+	 * Erstellung der Grafik für Wasserfalldiagramm (Einnahmen) für die Methode
+	 * "Kategorie_Wasserfalldiagramm_Gesamt_Grafik()".
+	 * 
+	 * @param dataset
+	 *            Die Datensätze
+	 * @return fertige Grafik
+	 */
 	private JFreeChart createChartWasserfall_Einnahmen(CategoryDataset dataset) {
-
 		JFreeChart chart = ChartFactory.createWaterfallChart(
 				"Einnahmen nach Kategorien", "Kategorie", "Euro", dataset,
 				PlotOrientation.VERTICAL, true, true, false);
 		CategoryPlot plot = chart.getCategoryPlot();
 		plot.setForegroundAlpha(0.8f);
-
 		return chart;
 	}
 
+	/**
+	 * Erstellung der Grafik für Wasserfalldiagramm (Ausgaben) für die Methode
+	 * "Kategorie_Wasserfalldiagramm_Gesamt_Grafik()".
+	 * 
+	 * @param dataset
+	 *            Die Datensätze
+	 * @return fertige Grafik
+	 */
 	private JFreeChart createChartWasserfall_Ausgaben(CategoryDataset dataset) {
-
 		JFreeChart chart = ChartFactory.createWaterfallChart(
 				"Ausgaben nach Kategorien", "Kategorie", "Euro", dataset,
 				PlotOrientation.VERTICAL, true, true, false);
-
 		CategoryPlot plot = chart.getCategoryPlot();
 		plot.setForegroundAlpha(0.8f);
-
 		return chart;
 	}
 
-	public void Kategorie_Wasserfalldiagramm_Gesamt_Grafik() {
+	/**
+	 * Hauptmethode für Wasserfalldiagramme nach Kategorie jeweils für Einnahmen
+	 * und Ausgabe mit Einfügen der Grafik in Panel (GUI).
+	 */
+	private void Kategorie_Wasserfalldiagramm_Gesamt_Grafik() {
+		// Einfügen des Wasserfalldiagramms nach Kategorien von Einnahmen in Panel
 		chart = createChartWasserfall_Einnahmen((CategoryDataset) createDataset_Wasserfall(0));
 		chartpanel = new ChartPanel(chart);
 		panel_2.add(chartpanel);
-
+		// Einfügen des Wasserfalldiagramms nach Kategorien von Ausgaben in Panel
 		chart2 = createChartWasserfall_Ausgaben((CategoryDataset) createDataset_Wasserfall(1));
 		chartpanel2 = new ChartPanel(chart2);
 		panel_2.add(chartpanel2);
 	}
 
+	//
+	// Hauptmethode zur Koordination der ganzen Methoden
+	//
+
+	/**
+	 * Hauptmethode zur Koordination der für die Statistik notwendigen
+	 * Komponenten. Je nach Auswahl ob "Gesamtzeitraum" oder
+	 * "individueller Zeitraum", werden spezielle Methoden aufgerufen. Dabei
+	 * werden zunächst die Datensätze wenn nötig (individueller Zeitraum)
+	 * aktualisiert. Dann werden die Tabellen und die Kürzübersicht erstellt.
+	 * Zum Schluss werden die speziellen Methoden der vom Benutzer ausgewählten
+	 * Statistik-Modelle aufgerufen und die Grafiken erstellt.
+	 * 
+	 * @param selection
+	 *            gewählte Grafik-Modell der Statistik
+	 * @param Start
+	 *            Anfangsdatum der Benutzereingabe bei individuellem Zeitraum
+	 * @param End
+	 *            Enddatum der Benutzereingabe bei individuellem Zeitraum
+	 */
 	public void Statistik_Manager(String selection, String Start, String End) {
-		Buchungen_ohne_Kontoeröffnung();
+		// Vorgehen bei individuell gewähltem Zeitraum
 		if ((Start != "0") && (End != "0")) {
 			lblZeitraum.setText("  Zeitraum:  " + Start + " - " + End);
 			Init_Posten_Zeitraum(Start, End);
+			// Grafiken
 			switch (selection) {
 			case "Kategorie_Kreisdiagramm":
 				Kategorie_Kreisdiagramm_Grafik();
@@ -1189,11 +1456,13 @@ public class Statistik {
 			case "Kategorie_Wasserfalldiagramm":
 				Kategorie_Wasserfalldiagramm_Gesamt_Grafik();
 				break;
-
 			}
-		} else {
+		} // Vorgehen bei gewähltem Gesamtzeitraum
+		else {
 			lblZeitraum.setText("  Zeitraum:  Gesamtzeitraum");
+			Buchungen_ohne_Kontoeröffnung();
 			Buchungsübersicht();
+			// Grafiken
 			switch (selection) {
 			case "Kategorie_Kreisdiagramm":
 				Kategorie_Kreisdiagramm_Grafik();
