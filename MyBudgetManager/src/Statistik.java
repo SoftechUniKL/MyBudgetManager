@@ -516,8 +516,8 @@ public class Statistik {
 	}
 
 	/**
-	 * Erstellung der Datensätze für Kreisdiagramm für die Methoden
-	 * Kategorie_Kreisdiagramm_Grafik(). Durch ein Algorithmus werden gleiche
+	 * Erstellung der Datensätze für Kreisdiagramm für die Methode
+	 * "Kategorie_Kreisdiagramm_Grafik()". Durch ein Algorithmus werden gleiche
 	 * Kategorien und somit die jeweiligen Beträge zusammengefasst und nicht mit
 	 * dem letzten Wert überschrieben, was eine fehlerhafte Grafik zur Folge
 	 * hätte.
@@ -546,23 +546,29 @@ public class Statistik {
 		});
 		/*
 		 * Algorithmus zur Zusammenfassung der gleichen Kategorien inkl. der
-		 * jeweiligen Beträge
+		 * jeweiligen Beträge 
+		 * [hier detailierter, analog auch für die weiteren Algorithmen unten]
 		 */
 		double betrag = 0;
 		int twin = 0, i = 0;
 		piedataset = new DefaultPieDataset();
 		for (Posten p : Sortierte_Kategorie_Liste) {
 			i++;
+			// Filter für reine Einnahmen oder Ausgaben
 			if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
+				// Schutz vor Zugriff auf ungültigen Index
 				if (i < Sortierte_Kategorie_Liste.size()) {
+					// Prüfung ob Nachfolger gleiche Kategorie					
 					if (Sortierte_Kategorie_Liste
 							.get(i - 1)
 							.getBezeichnung()
 							.equals(Sortierte_Kategorie_Liste.get(i)
 									.getBezeichnung())) {
-						twin = 1;
+						// "Zwilling"-> Existenz mind. 2 gleicher Kateg. 
+						twin = 1;  
 						betrag += Math.abs(p.getBetrag());
-					} else if (twin == 1) {
+					} // Ausführung bei "Zwilling"
+					else if (twin == 1) {
 						betrag += Math.abs(p.getBetrag());
 						piedataset.setValue(p.getBezeichnung(), betrag);
 						twin = 0;
@@ -570,7 +576,9 @@ public class Statistik {
 					} else
 						piedataset.setValue(p.getBezeichnung(),
 								Math.abs(p.getBetrag()));
-				} else {
+				} // abschließende Ausführung da Zugriff auf unerlaubten Bereich
+				  // (über letzten Index hinaus)
+				else {
 					if (twin == 1) {
 						betrag += Math.abs(p.getBetrag());
 						piedataset.setValue(p.getBezeichnung(), betrag);
@@ -977,19 +985,36 @@ public class Statistik {
 		return jfreechart;
 	}
 
+	/**
+	 * Erstellung der Datensätze für Liniendiagramm für die Methoden
+	 * "Zeit_Liniendiagramm_Differenz_Gesamt_Grafik()" &
+	 * "Zeit_Liniendiagramm_Gesamt_Grafik()". Durch ein Algorithmus werden
+	 * gleiche Zeiten und somit die jeweiligen Beträge zusammengefasst und nicht
+	 * mit dem letzten Wert überschrieben, was eine fehlerhafte Grafik zur Folge
+	 * hätte.
+	 * 
+	 * @param selection_model
+	 *            0 für "Zeit_Liniendiagramm_Differenz_Gesamt_Grafik()" & 1 für
+	 *            "Zeit_Liniendiagramm_Gesamt_Grafik()"
+	 * @return fertig zusammengesetzte Datensätze
+	 */
 	private XYDataset createDataset(int selection_model) {
 		series1 = new TimeSeries("Einnahmen");
 		series2 = new TimeSeries("Ausgaben");
+		// Durchführung für "Zeit_Liniendiagramm_Differenz_Gesamt_Grafik()"
 		if (selection_model == 0) {
 			for (int einnahme_ausgabe = 0; einnahme_ausgabe < 2; einnahme_ausgabe++) {
-
+				// Hilfs-ArrayList mit nur reinen Einnahmen oder Ausgaben
 				Only_Einnahmen_Or_Ausgaben = new ArrayList<Posten>();
 				for (Posten p : budget.Geldvermögen) {
 					if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe) {
 						Only_Einnahmen_Or_Ausgaben.add(p);
 					}
 				}
-
+				/*
+				 * Algorithmus zur Zusammenfassung der gleichen Zeiten inkl. der
+				 * jeweiligen Beträge
+				 */
 				double betrag = 0;
 				int twin = 0, i = 0;
 				for (Posten p : Only_Einnahmen_Or_Ausgaben) {
@@ -1037,7 +1062,8 @@ public class Statistik {
 					}
 				}
 			}
-		} else {
+		} // Durchführung für "Zeit_Liniendiagramm_Gesamt_Grafik()"
+		else {
 			for (int einnahme_ausgabe = 0; einnahme_ausgabe < 2; einnahme_ausgabe++) {
 				Only_Einnahmen_Or_Ausgaben = new ArrayList<Posten>();
 				for (Posten p : budget.Geldvermögen) {
@@ -1176,14 +1202,21 @@ public class Statistik {
 		return dataset;
 	}
 
+	/**
+	 * Erstellung der Grafik für Liniendiagramm (Differenz) (Einnahmen &
+	 * Ausgaben) für die Methode "Zeit_Liniendiagramm_Differenz_Gesamt_Grafik()"
+	 * 
+	 * @param dataset
+	 *            Die Datensätze
+	 * @return fertige Grafik
+	 */
 	private JFreeChart createChart(XYDataset dataset) {
 		JFreeChart chart = ChartFactory.createTimeSeriesChart(
 				"Differenz zw. Einnahmen & Ausgaben", "Zeit", "Euro", dataset,
 				true, true, false);
-
+		// Grafikerstellung mit Hilfe von Renderer
 		XYPlot plot = chart.getXYPlot();
 		plot.setRenderer(new XYDifferenceRenderer(Color.green, Color.red, false));
-
 		domainAxis = new DateAxis("Zeit");
 		domainAxis.setLowerMargin(0.0);
 		domainAxis.setUpperMargin(0.0);
@@ -1192,17 +1225,29 @@ public class Statistik {
 		return chart;
 	}
 
+	/**
+	 * Hauptmethode für Liniendiagramme (Differenz) nach Zeit (monatlich) für
+	 * Einnahmen und Ausgaben gemeinsam mit Einfügen der Grafik in Panel (GUI).
+	 */
 	private void Zeit_Liniendiagramm_Differenz_Gesamt_Grafik() {
 		chart = createChart(createDataset(0));
 		chartpanel = new ChartPanel(chart);
 		panel_2.add(chartpanel);
 	}
 
+	/**
+	 * Erstellung der Grafik für Liniendiagramm (Einnahmen & Ausgaben) für die
+	 * Methode "Zeit_Liniendiagramm_Gesamt_Grafik()"
+	 * 
+	 * @param dataset
+	 *            Die Datensätze
+	 * @return fertige Grafik
+	 */
 	private JFreeChart createChart2(XYDataset dataset) {
 		JFreeChart chart = ChartFactory.createTimeSeriesChart(
 				"Einnahmen  vs  Ausgaben (monatlich)", "Datum", "Euro",
 				dataset, true, true, false);
-
+		// Grafikerstellung mit Hilfe von Renderer
 		XYPlot plot = (XYPlot) chart.getPlot();
 		XYItemRenderer r = plot.getRenderer();
 		if (r instanceof XYLineAndShapeRenderer) {
@@ -1216,16 +1261,32 @@ public class Statistik {
 		return chart;
 	}
 
+	/**
+	 * Hauptmethode für Liniendiagramme nach Zeit (monatlich) für Einnahmen und
+	 * Ausgaben gemeinsam mit Einfügen der Grafik in Panel (GUI).
+	 */
 	private void Zeit_Liniendiagramm_Gesamt_Grafik() {
 		chart = createChart2(createDataset(1));
 		chartpanel = new ChartPanel(chart);
 		panel_2.add(chartpanel);
 	}
 
+	/**
+	 * Erstellung der Datensätze für Wasserfalldiagramm für die Methode
+	 * "Kategorie_Wasserfalldiagramm_Gesamt_Grafik()". Durch ein Algorithmus
+	 * werden gleiche Kategorien und somit die jeweiligen Beträge
+	 * zusammengefasst und nicht mit dem letzten Wert überschrieben, was eine
+	 * fehlerhafte Grafik zur Folge hätte.
+	 * 
+	 * @param selection_data_ein_aus
+	 *            erhält den Wert 0 für Einnahmen oder 1 für Ausgaben
+	 * @return fertig zusammengesetzte Datensätze
+	 */
 	private CategoryDataset createDataset_Wasserfall(int selection_data_ein_aus) {
 		double m = 0;
 		int einnahme_ausgabe = -1;
 		String einnahme_ausgabe_text = null;
+		// Abfrage des Parameterwerts mit Variableninitialisierung
 		if (selection_data_ein_aus == 0) {
 			einnahme_ausgabe = 0;
 			einnahme_ausgabe_text = "Einnahmen";
@@ -1233,19 +1294,21 @@ public class Statistik {
 			einnahme_ausgabe = 1;
 			einnahme_ausgabe_text = "Ausgaben";
 		}
-
-		List<Posten> Sortierte_Kategorie_Liste = new ArrayList<Posten>();
+		// Erstellung einer Hilfs-ArrayList
+		Sortierte_Kategorie_Liste = new ArrayList<Posten>();
 		for (Posten p : budget.Geldvermögen)
 			Sortierte_Kategorie_Liste.add(p);
-
+		// Sortierung der Datensätze nach Kategorie
 		Collections.sort(Sortierte_Kategorie_Liste, new Comparator<Posten>() {
-
 			@Override
 			public int compare(Posten o1, Posten o2) {
 				return o1.getBezeichnung().compareTo(o2.getBezeichnung());
 			}
 		});
-
+		/*
+		 * Algorithmus zur Zusammenfassung der gleichen Kategorien inkl. der
+		 * jeweiligen Beträge
+		 */
 		double betrag = 0;
 		int twin = 0, i = 0;
 		defaultcategorydataset = new DefaultCategoryDataset();
@@ -1283,6 +1346,7 @@ public class Statistik {
 				}
 			}
 		}
+		// letzte "Kategorie" (Total) sind Gesamtbeträge
 		for (Posten p : Sortierte_Kategorie_Liste)
 			if (p.getintern_Einnahme_Ausgabe() == einnahme_ausgabe)
 				m += p.getBetrag();
@@ -1290,34 +1354,50 @@ public class Statistik {
 		return defaultcategorydataset;
 	}
 
+	/**
+	 * Erstellung der Grafik für Wasserfalldiagramm (Einnahmen) für die Methode
+	 * "Kategorie_Wasserfalldiagramm_Gesamt_Grafik()".
+	 * 
+	 * @param dataset
+	 *            Die Datensätze
+	 * @return fertige Grafik
+	 */
 	private JFreeChart createChartWasserfall_Einnahmen(CategoryDataset dataset) {
-
 		JFreeChart chart = ChartFactory.createWaterfallChart(
 				"Einnahmen nach Kategorien", "Kategorie", "Euro", dataset,
 				PlotOrientation.VERTICAL, true, true, false);
 		CategoryPlot plot = chart.getCategoryPlot();
 		plot.setForegroundAlpha(0.8f);
-
 		return chart;
 	}
 
+	/**
+	 * Erstellung der Grafik für Wasserfalldiagramm (Ausgaben) für die Methode
+	 * "Kategorie_Wasserfalldiagramm_Gesamt_Grafik()".
+	 * 
+	 * @param dataset
+	 *            Die Datensätze
+	 * @return fertige Grafik
+	 */
 	private JFreeChart createChartWasserfall_Ausgaben(CategoryDataset dataset) {
-
 		JFreeChart chart = ChartFactory.createWaterfallChart(
 				"Ausgaben nach Kategorien", "Kategorie", "Euro", dataset,
 				PlotOrientation.VERTICAL, true, true, false);
-
 		CategoryPlot plot = chart.getCategoryPlot();
 		plot.setForegroundAlpha(0.8f);
-
 		return chart;
 	}
 
+	/**
+	 * Hauptmethode für Wasserfalldiagramme nach Kategorie jeweils für Einnahmen
+	 * und Ausgabe mit Einfügen der Grafik in Panel (GUI).
+	 */
 	private void Kategorie_Wasserfalldiagramm_Gesamt_Grafik() {
+		// Einfügen des Wasserfalldiagramms nach Kategorien von Einnahmen in Panel
 		chart = createChartWasserfall_Einnahmen((CategoryDataset) createDataset_Wasserfall(0));
 		chartpanel = new ChartPanel(chart);
 		panel_2.add(chartpanel);
-
+		// Einfügen des Wasserfalldiagramms nach Kategorien von Ausgaben in Panel
 		chart2 = createChartWasserfall_Ausgaben((CategoryDataset) createDataset_Wasserfall(1));
 		chartpanel2 = new ChartPanel(chart2);
 		panel_2.add(chartpanel2);
