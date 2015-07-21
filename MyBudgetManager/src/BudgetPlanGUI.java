@@ -909,7 +909,7 @@ public class BudgetPlanGUI extends JFrame {
 		lblMonatejahre.setBounds(254, 193, 96, 14);
 		panel_Sparfunktion.add(lblMonatejahre);
 		
-		btnBerechne = new JButton("Buchen", new ImageIcon(
+		btnBerechne = new JButton("Berechne", new ImageIcon(
 				"img/account.png"));
 		btnBerechne.setMnemonic(KeyEvent.VK_ENTER);
 		btnBerechne.setBounds(421, 311, 150, 29);
