@@ -9,7 +9,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.BindException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -820,7 +819,7 @@ public class BudgetPlanGUI extends JFrame {
 		btnStatistikanzeigen = new JButton("Statistik anzeigen", new ImageIcon(
 				"img/statistik.png"));
 		btnStatistikanzeigen.setMnemonic(KeyEvent.VK_ENTER);
-		btnStatistikanzeigen.setBounds(222, 247, 186, 45);
+		btnStatistikanzeigen.setBounds(222, 237, 186, 45);
 		Panel_Statistiken.add(btnStatistikanzeigen);
 
 		comboBoxStatistikModelle = new JComboBox<String>();
@@ -1456,18 +1455,20 @@ public class BudgetPlanGUI extends JFrame {
 		 * vorgenommen wurden
 		 */
 		Init_Kontostand(0);
-		// Referenz auf Statistik-Klasse
-		Statistikauswahl = new Statistik(budget);
 		// Radiobutton mit individuellem Zeitraum ausgewählt
 		if (rdbtnIndividualZeitraum.isSelected() == true) {
 			if ((Statistik_CheckAuswahlDatum() == true)
 					&& (Statistik_CheckDateDiff() == true)) {
+				// Referenz auf Statistik-Klasse
+				Statistikauswahl = new Statistik(budget);
 				Statistikauswahl.Statistik_Manager(selection,
 						textField_Statistik_Startwert.getText(),
 						textField_Statistik_Endwert.getText());
 			}
 		} // Radiobutton für Gesamtzeitraum ausgewählt
 		else {
+			// Referenz auf Statistik-Klasse
+			Statistikauswahl = new Statistik(budget);
 			Statistikauswahl.Statistik_Manager(selection, "0", "0");
 		}
 	}

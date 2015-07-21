@@ -161,7 +161,7 @@ public class Statistik {
 	 * Objekt für Fenster-Icon
 	 */
 	private Image icon = Toolkit.getDefaultToolkit().getImage(
-			"src/img/Money.png");
+			"img/Money.png");
 
 	/**
 	 * Konstruktor für die Statistik.
