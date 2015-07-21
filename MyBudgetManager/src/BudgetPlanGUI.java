@@ -311,7 +311,7 @@ public class BudgetPlanGUI extends JFrame {
 		setBackground(new Color(135, 206, 235));
 		// Setzt das Icon des Programms
 		try {
-			setIconImage(getToolkit().getImage("src/img/Money.png"));
+			setIconImage(getToolkit().getImage("img/Money.png"));
 		} catch (Exception whoJackedMyIcon) {
 			System.out.println("Could not load program icon.");
 		}
@@ -395,21 +395,21 @@ public class BudgetPlanGUI extends JFrame {
 		panel_1.setPreferredSize(new Dimension(0, 50));
 
 		// Info Button über dem man Informationen zum Programm bekommt
-		btnInfo = new JButton("Info", new ImageIcon("src/img/info.png"));
+		btnInfo = new JButton("Info", new ImageIcon("img/info.png"));
 
 		// Taschenrechner mit dem man schnell selbst kleinigkeiten ausrechnen
 		// kann
 		btnTaschenrechner = new JButton("Taschenrechner", new ImageIcon(
-				"src/img/calculator.png"));
+				"img/calculator.png"));
 		btnTaschenrechner.setMnemonic(KeyEvent.VK_T);
 		
 		// Button über den das Programm geschlossen werden kann
 		btnSchließen = new JButton("Schlie\u00DFen", new ImageIcon(
-				"src/img/close.png"));
+				"img/close.png"));
 		// Button über den das aktuelle Konto des Programm gelöscht werden kann
 		btnKontoLöschen = new JButton(
 				"<html><body>Konto<br>löschen</body></html>", new ImageIcon(
-						"src/img/trash.png"));
+						"img/trash.png"));
 
 		gl_panel_1 = new GroupLayout(panel_1);
 		gl_panel_1.setHorizontalGroup(gl_panel_1.createParallelGroup(
@@ -532,7 +532,7 @@ public class BudgetPlanGUI extends JFrame {
 
 		// Button über den das Konto gedruckt werden kann
 		btnKontoDrucken = new JButton("Drucken", new ImageIcon(
-				"src/img/printer.png"));
+				"img/printer.png"));
 		panel_Kontouebersicht.add(btnKontoDrucken);
 
 		// ScrollPane über den in der Tabelle gescrolled werden kann
@@ -614,7 +614,7 @@ public class BudgetPlanGUI extends JFrame {
 
 		// Button über den die Buchung ausgeführt werden kann
 		btnAusgabenBuchen = new JButton("Buchen", new ImageIcon(
-				"src/img/account.png"));
+				"img/account.png"));
 		btnAusgabenBuchen.setMnemonic(KeyEvent.VK_ENTER);
 		btnAusgabenBuchen.setBounds(421, 311, 150, 29);
 		Panel_Ausgaben.add(btnAusgabenBuchen);
@@ -646,7 +646,7 @@ public class BudgetPlanGUI extends JFrame {
 
 		// Reset Button über den die Eingabe alle zurückgesetzt werden können
 		btnReset_Ausgaben = new JButton("Reset", new ImageIcon(
-				"src/img/reset.png"));
+				"img/reset.png"));
 		btnReset_Ausgaben.setMnemonic(KeyEvent.VK_R);
 		btnReset_Ausgaben.setBounds(21, 311, 150, 29);
 		Panel_Ausgaben.add(btnReset_Ausgaben);
@@ -654,7 +654,7 @@ public class BudgetPlanGUI extends JFrame {
 		// HilfeButton über den der Nutzer Hilfe für die richtige Eingabe
 		// bekommt
 		btnHelpButton_Ausgaben = new JButton("", new ImageIcon(
-				"src/img/help.png"));
+				"img/help.png"));
 		btnHelpButton_Ausgaben.setMnemonic(KeyEvent.VK_H);
 		btnHelpButton_Ausgaben.setBounds(570, 10, 60, 50);
 		Panel_Ausgaben.add(btnHelpButton_Ausgaben);
@@ -727,7 +727,7 @@ public class BudgetPlanGUI extends JFrame {
 
 		// Button über den die Buchung ausgeführt werden kann
 		btnEinnahmenBuchen = new JButton("Buchen", new ImageIcon(
-				"src/img/account.png"));
+				"img/account.png"));
 		btnEinnahmenBuchen.setMnemonic(KeyEvent.VK_ENTER);
 		btnEinnahmenBuchen.setBounds(421, 311, 150, 29);
 		Panel_Einnahmen.add(btnEinnahmenBuchen);
@@ -760,7 +760,7 @@ public class BudgetPlanGUI extends JFrame {
 
 		// Reset Button über den die Eingabe alle zurückgesetzt werden können
 		btnReset_Einnahmen = new JButton("Reset", new ImageIcon(
-				"src/img/reset.png"));
+				"img/reset.png"));
 		btnReset_Einnahmen.setMnemonic(KeyEvent.VK_R);
 		btnReset_Einnahmen.setBounds(21, 311, 150, 29);
 		Panel_Einnahmen.add(btnReset_Einnahmen);
@@ -768,7 +768,7 @@ public class BudgetPlanGUI extends JFrame {
 		// HilfeButton über den der Nutzer Hilfe für die richtige Eingabe
 		// bekommt
 		btnHelpButton_Einnahmen = new JButton("", new ImageIcon(
-				"src/img/help.png"));
+				"img/help.png"));
 		btnHelpButton_Einnahmen.setMnemonic(KeyEvent.VK_H);
 		btnHelpButton_Einnahmen.setBounds(570, 10, 60, 50);
 		Panel_Einnahmen.add(btnHelpButton_Einnahmen);
@@ -776,7 +776,7 @@ public class BudgetPlanGUI extends JFrame {
 		// ANFANG PANEL 5 Daueraufträge
 
 		// Label und Nachricht für die Daueraufträge
-		JLabel labelDA = new JLabel(new ImageIcon("src/img/work.png"));
+		JLabel labelDA = new JLabel(new ImageIcon("img/work.png"));
 		labelDA.setBounds(232, 123, 207, 138);
 		panel_Dauerauftraege.add(labelDA);
 
@@ -818,7 +818,7 @@ public class BudgetPlanGUI extends JFrame {
 		Panel_Statistiken.add(lblEnddatum);
 
 		btnStatistikanzeigen = new JButton("Statistik anzeigen", new ImageIcon(
-				"src/img/statistik.png"));
+				"img/statistik.png"));
 		btnStatistikanzeigen.setMnemonic(KeyEvent.VK_ENTER);
 		btnStatistikanzeigen.setBounds(222, 247, 186, 45);
 		Panel_Statistiken.add(btnStatistikanzeigen);
@@ -840,14 +840,15 @@ public class BudgetPlanGUI extends JFrame {
 		Panel_Statistiken.add(comboBoxStatistikModelle);
 
 		lblStatistikWarnung = new JLabel("");
-		lblStatistikWarnung.setBounds(468, 247, 155, 87);
+		lblStatistikWarnung.setBounds(100, 303, 459, 62);
+		lblStatistikWarnung.setHorizontalAlignment(SwingConstants.CENTER);
 		Panel_Statistiken.add(lblStatistikWarnung);
 
 		lblStatistikmodell = new JLabel("Statistik-Modell:");
 		lblStatistikmodell.setBounds(100, 155, 113, 20);
 		Panel_Statistiken.add(lblStatistikmodell);
 
-		btnStatistikHilfe = new JButton("", new ImageIcon("src/img/help.png"));
+		btnStatistikHilfe = new JButton("", new ImageIcon("img/help.png"));
 		btnStatistikHilfe.setMnemonic(KeyEvent.VK_H);
 		btnStatistikHilfe.setBounds(10, 10, 60, 50);
 		Panel_Statistiken.add(btnStatistikHilfe);
@@ -919,9 +920,10 @@ public class BudgetPlanGUI extends JFrame {
 		lblnachSparmaßnahme.setBounds(242, 338, 184, 22);
 		panel_Sparfunktion.add(lblnachSparmaßnahme);
 
-		btnBerechne = new JButton("Berechne");
+		btnBerechne = new JButton("Berechne", new ImageIcon(
+				"img/piggy_bank.png"));
 		btnBerechne.setMnemonic(KeyEvent.VK_ENTER);
-		btnBerechne.setBounds(22, 297, 89, 23);
+		btnBerechne.setBounds(22, 297, 151, 34);
 		panel_Sparfunktion.add(btnBerechne);
 
 		textFieldStartwert = new JTextField();
@@ -962,7 +964,7 @@ public class BudgetPlanGUI extends JFrame {
 		rdbtnZinsenAnAus.setSelected(true);
 		
 		btnHelpButton_Sparfkt = new JButton("", new ImageIcon(
-				"src/img/help.png"));
+				"img/help.png"));
 		btnHelpButton_Sparfkt.setMnemonic(KeyEvent.VK_H);
 		btnHelpButton_Sparfkt.setBounds(570, 10, 60, 50);
 		panel_Sparfunktion.add(btnHelpButton_Sparfkt);
