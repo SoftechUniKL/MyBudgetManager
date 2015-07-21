@@ -145,160 +145,6 @@ public class BudgetPlanGUI extends JFrame {
 	private JButton btnBerechne,btnHelpButton_Sparfkt,btnReset_Sparfkt;
 	private JComboBox<String> comboBoxZinsperiode;
 
-	// Fehlermeldungen als vorgeschriebene Strings
-	/**
-	 * Nachricht bei einer falschen Betragseingabe
-	 */
-	String falsche_betragseingabe = "Falsche Betragseingabe. \n"
-			+ "Formathinweis: \n"
-			+ "- Bitte verwenden Sie nur Zahlen \n"
-			+ "- Benutzen Sie bitte Punkt statt Komma \n"
-			+ "- Achten Sie bitte auf die evtl. fehlenden zwei Nachkommastellen \n"
-			+ "- Benutzen Sie bitte kein Negativzeichen";
-	/**
-	 * Nachricht bei fehlender csv Datei
-	 */
-	String csv_nichtgefunden = "Die Datei data/budget.csv wurde nicht gefunden!";
-	/**
-	 * Nachrichtentext, wenn die csv Datein probleme hat
-	 */
-	String csv_problemöffnen = "Probleme beim Oeffnen der Datei data/budget.csv!";
-	/**
-	 * Nachrichtentext bei falscher Datumsanzeige
-	 */
-	String falsches_datum = "Falsche Datumseingabe. \n"
-			+ "Formathinweis: TT.MM.JJJJ";
-
-	String falsche_datumsgroesse = "Falsche Datumsgrößen. \n"
-			+ "Enddatum muss größer/gleich dem Anfangsdatum sein!";
-	/**
-	 * Nachricht beim Nichtauswählen der Kategorie
-	 */
-	String kategorie = "Bitte wählen sie eine Kategorie aus.";
-	/**
-	 * Nachrichtentext für den Taschenrechner
-	 */
-	String taschenrechner = "Taschenrechner konnte nicht aufgerufen worden.";
-
-	// Hilfe Meldungen als vorgeschriebene Strings
-	/**
-	 * Nachrichtentext für den Hilfebutton im Panel Ausgaben
-	 */
-	String hilfe_a = "Hilfe \n \n"
-			+ "- Bei den Ausgaben ist es Ganz wichtig den Betrag in folgender Form anzugeben: \n  \n"
-			+ "               X.XX Euro \n \n"
-			+ " Beachten Sie hierbei, dass ein Punkt zwischen dem Euro- und Centbetrag gesetzt werden muss.\n"
-			+ " Ansonsten kann es zu Fehlern kommen. \n \n"
-			+ "- Wählen Sie immer eine Kategorie.  \n\n"
-			+ "- Durch die Wahl eines Dauerauftrags werden die Aufträge nicht nur einmal sondern monatlich gebucht.\n "
-			+ " Dadurch müssen sie regelmäßig anfallende Ausgaben nicht jeden Monat manuel eingeben. \n\n"
-			+ "- In der Beschreibung können Angaben zur eigenen Buchung gemacht werden. \n  "
-			+ " Dabei steht Ihnen frei, wie die Eingabe aussieht oder ob sie überhaupt gemacht wird. \n"
-			+ "	 \n"
-			+ "ShortKeys: \n"
-			+ "- Buchen <alt + Enter\n"
-			+ "- Reset <alt + R>\n"
-			+ "- Taschenrechner <alt + T>\n"
-			+ "- Hilfebutton <alt + H> \n";
-	
-	/**
-	 * Nachrichtentext für den Hilfebutton im Panel Einnahmen
-	 */
-	String hilfe_e = "Hilfe \n \n"
-			+ "- Bei den Einnahmen ist es Ganz wichtig den Betrag in folgender Form anzugeben: \n  \n"
-			+ "               X.XX Euro \n \n"
-			+ "  Beachten Sie hierbei, dass ein Punkt zwischen dem Euro- und Centbetrag gesetzt werden muss.\n"
-			+ "  Ansonsten kann es zu Fehlern kommen. \n \n"
-			+ "- Wählen Sie immer eine Kategorie.  \n\n"
-			+ "- Durch die Wahl eines Dauerauftrags werden die Aufträge nicht nur einmal sondern monatlich gebucht.\n "
-			+ " Dadurch müssen sie regelmäßig anfallende Einnahmen nicht jeden Monat manuel eingeben. \n\n"
-			+ "- In der Beschreibung können Angaben zur eigenen Buchung gemacht werden. \n  "
-			+ " Dabei steht Ihnen frei, wie die Eingabe aussieht oder ob sie überhaupt gemacht wird. \n"
-			+ "  \n"
-			+ "ShortKeys: \n"
-			+ "- Buchen <alt + Enter>\n"
-			+ "- Reset <alt + R>\n"
-			+ "- Taschenrechner <alt + T>\n"
-			+ "- Hilfebutton <alt + H>\n";
-	/**
-	 * Nachrichtentext für den Hilfebutton im Panel Statistik
-	 */
-	String hilfe_stat = "\nHier können Sie sich die entsprechende Statistik zu Ihren Ausgaben und Einnahmen \n"
-			+ "für einen bestimmten Zeitraum anzeigen lassen. \n"
-			+ "Dabei können Sie zwischen den verschiedenen Statistik-Modellen wählen. \n \n"
-			+ "Anleitung: \n \nSchritt 1: \n"
-			+ "  Wählen Sie Ihren gewünschten Zeitraum aus, indem Sie 'Gesamtzeitraum' \n"
-			+ "  (alle Einnahmen und Ausgaben seit Kontoeröffnung) oder \n  'individueller Zeitraum' auswählen. \n"
-			+ "  Bei 'individueller Zeitraum' geben Sie bitte noch zusätzlich sowohl das \n  Anfangs- als auch das Enddatum an (Format: TT.MM.JJJJ). \n \n"
-			+ "Schritt 2: \n  Wählen Sie das gewünschte Statistik-Modell aus der Auswahl-Liste aus. \n \n"
-			+ "Schritt 3: \n  Klicken Sie nun auf den Button 'Statistik anzeigen' und \n  es öffnet sich ein neues Fenster mit Ihrer Statistik.\n\n"
-			+ "Wichtige Anmerkung: \n  In der Statistik werden ausschließlich sowohl Einnahmen als auch Ausgaben verwendet. \n"
-			+ "  D.h. der Betrag Ihrer Kontoeröffnung wird nicht berücksichtigt. \n\n"
-			+ "Tipps: \n - Sie können sich auch mehrere Statistiken anzeigen lassen und vergleichen. \n"
-			+ " - Bei den Kreisdiagramm-Grafiken lassen sich die Scheiben mittels Scrollrad der Maus individuell drehen. \n"
-			+ " - Bei den restlichen Diagrammen können Sie individuell in die Grafik hineinzoomen, \n"
-			+ "   indem Sie den gewünschten Bereich mit dem Mauszeiger auswählen. \n"
-			+ "   (zur Ürsprungsübersicht gelangen: auf der Grafik linken Mauszeiger gedrückt nach oben ziehen) \n"
-			+ " - Mit einem Klick der rechten Maustaste auf eine Grafik, können sie \n   Eigenschaften der Grafik verändern, drucken, abspeichern, uvm. \n"
-			+ " - Auf der Titelleiste des 'Statistik-Fensters' wird das Datum samt Uhrzeit beim Öffnen angezeigt. \n"
-			+ "   Dies hilft beim Vergleich mehrer geöffneter 'Statistik-Fenster' (z.B. Ermittlung der Reihenfolge) \n "
-			+ " \n"
-			+ "ShortKeys: \n"
-			+ "- Statistik anzeigen <alt + Enter>\n"
-			+ "- Taschenrechner <alt + T>\n"
-			+ "- Hilfebutton <alt + H>\n";
-	/**
-	 * Nachrichtentext für den Hilfebutton im Panel Sparfunktion
-	 */
-	String hilfe_spar = "Hilfe \n \n"
-			+ "- Bei der Eingabe des Startwertes und der Sparrate muss der Betrag in folgender Form angegeben werden: \n  \n"
-			+ "               X.XX Euro \n \n"
-			+ "  Beachten Sie hierbei, dass ein Punkt zwischen dem Euro- und Centbetrag gesetzt werden muss.\n"
-			+ "  Ansonsten kann es zu Fehlern kommen. \n \n"
-			+ "- Wählen Sie immer eine Sparintervall.  \n"			
-			+ "- Der Zeitraum muss als ganze Zahl angegeben werden und darf nicht 0 sein. \n"
-			+ "- Aktivieren sie den Zinssatz für ihre Berechnung müssen Sie diesen selbstverständlich auch in der richtigen Form angeben(siehe oben)\n"
-			+ "- Entscheiden sie sich für ein jährliches Sparintervall haben sie verschiedene Möglichkeiten eine Zinsperiode zu wählen\n"
-			+ "  Bei aktivierten Zinssatz darf diese Auswahl nicht leer ausfallen!";		
-	/**
-	 * Willkommensnachricht, die sich öffnet, wenn ein neues Konto geöffnet wird
-	 */
-	String willkommen = "Willkommen bei MyBudgetManager! \n"
-			+ "Um das Programm anwenden zu können, legen Sie einen Startwert Ihres Kontos fest. \n"
-			+ "Befindet sich dieser im positiven Breich, tätigen Sie ihre Eröffnungsbuchung unter dem Menüunterpunkt: Einnahmen. \n"
-			+ "Anderenfalls gehen Sie auf Ausgaben.  \n" + "\n"
-			+ "Wir wünschen Ihnen viel Freunde an unserem tollen Produkt\n"
-			+ "";
-
-	// Dialoge als vorgeschriebene Strings
-	/**
-	 * Nachricht bei Ausgabenbuchung
-	 */
-	String buchung_a = "Ausgabe erfolgreich gebucht.";
-	/**
-	 * Nachricht bei der Einnahmenbuchung
-	 */
-	String buchung_e = "Einnahme erfolgreich gebucht.";
-	/**
-	 * Nachricht beim Kontolöschen
-	 */
-	String konto_l = "Möchten Sie wirklich ihr Konto löschen? \n"
-			+ "Sämtliche Daten gehen dabei verloren!";
-	/**
-	 * Nachricht, ob das Programm wirklich geschlossen werden soll
-	 */
-	String prog_close = "Möchten Sie das Programm wirklich schließen?";
-	/**
-	 * Nachricht beim Klicken des Infobuttons
-	 */
-	String info = "MyBudgetManager (Version 1.1.0 beta) 2015 \n \n"
-			+ "Programmierprojekt SS2015 \n Leitung: Dr. Annette Bieniusa \n "
-			+ "Fachbereich Informatik \n Lehrstuhl AG Softwaretechnik \n \n "
-			+ "Programmierer: \n Philipp Heintz \n Lukas Breit \n Markus Dittmann \n \n"
-			+ "Technische Universität Kaiserslautern \n \u00a9 copyright 2015 \n "
-			+ "Die Programmierer übernehmen keine Haftung für enthaltene Fehler oder für Schäden, \n "
-			+ "die im Zusammenhang mit der Verwendung der Software entstehen.";
-
 	/**
 	 * Konstruktor fuer die GUI.
 	 * 
@@ -983,7 +829,7 @@ public class BudgetPlanGUI extends JFrame {
 		// Infomessage, die gezeigt wird, wenn die Csv Datei leer ist und von
 		// einem neuen Kontostart zu rechnen ist.
 		if (budget.Geldvermögen.size() == 0) {
-			JOptionPane.showMessageDialog(null, willkommen,
+			JOptionPane.showMessageDialog(null, Meldungen.willkommen,
 					"Willkommen bei MyBudgetManager",
 					JOptionPane.INFORMATION_MESSAGE);
 			// Deaktivierung von Zugriffsmöglichkeiten
@@ -1105,11 +951,11 @@ public class BudgetPlanGUI extends JFrame {
 
 			// Exceptions
 		} catch (FileNotFoundException e) {
-			System.err.println(csv_nichtgefunden);
+			System.err.println(Meldungen.csv_nichtgefunden);
 			System.exit(1);
 
 		} catch (IOException e) {
-			System.err.println(csv_problemöffnen);
+			System.err.println(Meldungen.csv_problemöffnen);
 			System.exit(1);
 
 		} catch (ParseException e) {
@@ -1266,36 +1112,36 @@ public class BudgetPlanGUI extends JFrame {
 				writer.writeNext(entries);
 				writer.close();
 				Clear_Ausgaben();
-				JOptionPane.showMessageDialog(null, buchung_a,
+				JOptionPane.showMessageDialog(null, Meldungen.buchung_a,
 						"Ausgabenbuchung", JOptionPane.INFORMATION_MESSAGE);
 				Init_Kontostand(1);
 
 				// Exceptions
 			} catch (FileNotFoundException ex) {
-				System.err.println(csv_nichtgefunden);
+				System.err.println(Meldungen.csv_nichtgefunden);
 				System.exit(1);
 
 			} catch (IOException ex) {
-				System.err.println(csv_problemöffnen);
+				System.err.println(Meldungen.csv_problemöffnen);
 				System.exit(1);
 			}
 
 		}
 
 		catch (ParseException e) {
-			JOptionPane.showMessageDialog(null, falsches_datum, "Fehler",
+			JOptionPane.showMessageDialog(null, Meldungen.falsches_datum, "Fehler",
 					JOptionPane.ERROR_MESSAGE);
 			txtTtmmjjjj_Ausgaben.setText(null);
 		}
 
 		catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(null, falsche_betragseingabe,
+			JOptionPane.showMessageDialog(null, Meldungen.falsche_betragseingabe,
 					"Fehler", JOptionPane.ERROR_MESSAGE);
 			textField_Ausgaben.setText(null);
 		}
 
 		catch (IndexOutOfBoundsException e) {
-			JOptionPane.showMessageDialog(null, kategorie, "Fehler",
+			JOptionPane.showMessageDialog(null, Meldungen.kategorie, "Fehler",
 					JOptionPane.ERROR_MESSAGE);
 
 		}
@@ -1385,36 +1231,36 @@ public class BudgetPlanGUI extends JFrame {
 				writer.writeNext(entries);
 				writer.close();
 				Clear_Einnahmen();
-				JOptionPane.showMessageDialog(null, buchung_e,
+				JOptionPane.showMessageDialog(null, Meldungen.buchung_e,
 						"Einnahmenbuchung", JOptionPane.INFORMATION_MESSAGE);
 				Init_Kontostand(1);
 
 				// Exceptions
 			} catch (FileNotFoundException ex) {
-				System.err.println(csv_nichtgefunden);
+				System.err.println(Meldungen.csv_nichtgefunden);
 				System.exit(1);
 
 			} catch (IOException ex) {
-				System.err.println(csv_problemöffnen);
+				System.err.println(Meldungen.csv_problemöffnen);
 				System.exit(1);
 			}
 
 		}
 
 		catch (ParseException e) {
-			JOptionPane.showMessageDialog(null, falsches_datum, "Fehler",
+			JOptionPane.showMessageDialog(null, Meldungen.falsches_datum, "Fehler",
 					JOptionPane.ERROR_MESSAGE);
 			txtTtmmjjjj_Einnahmen.setText(null);
 		}
 
 		catch (NumberFormatException e) {
-			JOptionPane.showMessageDialog(null, falsche_betragseingabe,
+			JOptionPane.showMessageDialog(null, Meldungen.falsche_betragseingabe,
 					"Fehler", JOptionPane.ERROR_MESSAGE);
 			textField_Einnahmen.setText(null);
 		}
 
 		catch (IndexOutOfBoundsException e) {
-			JOptionPane.showMessageDialog(null, kategorie, "Fehler",
+			JOptionPane.showMessageDialog(null, Meldungen.kategorie, "Fehler",
 					JOptionPane.ERROR_MESSAGE);
 
 		}
@@ -1501,7 +1347,7 @@ public class BudgetPlanGUI extends JFrame {
 			return true;
 
 		} catch (ParseException e) {
-			JOptionPane.showMessageDialog(null, falsches_datum, "Fehler",
+			JOptionPane.showMessageDialog(null, Meldungen.falsches_datum, "Fehler",
 					JOptionPane.ERROR_MESSAGE);
 			textField_Statistik_Endwert.setText(null);
 			textField_Statistik_Startwert.setText(null);
@@ -1531,7 +1377,7 @@ public class BudgetPlanGUI extends JFrame {
 			return true;
 
 		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null, falsche_datumsgroesse,
+			JOptionPane.showMessageDialog(null, Meldungen.falsche_datumsgroesse,
 					"Fehler", JOptionPane.ERROR_MESSAGE);
 			textField_Statistik_Endwert.setText(null);
 			textField_Statistik_Startwert.setText(null);
@@ -1743,29 +1589,18 @@ public class BudgetPlanGUI extends JFrame {
 
 			JOptionPane
 					.showMessageDialog(
-							null,
-							"Falsche Betragseingabe. \n"
-									+ "Formathinweis: \n"
-									+ "- Bitte verwenden Sie nur Zahlen \n"
-									+ "- Benutzen Sie bitte Punkt statt Komma \n"
-									+ "- Achten Sie bitte auf die evtl. fehlenden zwei Nachkommastellen \n"
-									+ "- Benutzen Sie bitte kein Negativzeichen",
+							null,Meldungen.falsche_betragseingabe,
 							"Fehler", JOptionPane.ERROR_MESSAGE);
 
 		} catch (IndexOutOfBoundsException e) {
-			JOptionPane.showMessageDialog(null, "Fehlerhafte Auswahl. \n"
-					+ "Bitte wählen sie ein Sparintervall aus! \n"
-					+ "Bei jährlichem Sparintervall müssen sie außerdem eine Zinsperiode auswählen!","Fehler",
-					JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(
+					null, Meldungen.periode_sparfkt,
+					"Fehler",JOptionPane.ERROR_MESSAGE);
 
 		} catch (Exception e) {
 			JOptionPane
 					.showMessageDialog(
-							null,
-							"Falsche Zeitraumseingabe. \n"
-									+ "Formathinweis: \n"
-									+ "- Bitte verwenden Sie nur ganze Zahlen, die größer 0 sind \n"
-									+ "- Benutzen Sie bitte kein Negativzeichen",
+							null,Meldungen.zeitraum_sparfkt,						
 							"Fehler", JOptionPane.ERROR_MESSAGE);
 
 		}
@@ -1826,7 +1661,7 @@ public class BudgetPlanGUI extends JFrame {
 		// Button über den man Hilfe bekommt (Ausgaben)
 		btnHelpButton_Ausgaben.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				textAreaAusgabenHilfe = new JTextArea(hilfe_a);
+				textAreaAusgabenHilfe = new JTextArea(Meldungen.hilfe_a);
 				scrollPaneAusgabenHilfe = new JScrollPane(textAreaAusgabenHilfe);
 				scrollPaneAusgabenHilfe.setPreferredSize(new Dimension(620,300));
 				textAreaAusgabenHilfe.setEditable(false);
@@ -1863,7 +1698,7 @@ public class BudgetPlanGUI extends JFrame {
 		// Button über den man Hilfe bekommt (Einnahmen)
 		btnHelpButton_Einnahmen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				textAreaEinnahmenHilfe = new JTextArea(hilfe_e);
+				textAreaEinnahmenHilfe = new JTextArea(Meldungen.hilfe_e);
 				scrollPaneEinnahmenHilfe = new JScrollPane(textAreaEinnahmenHilfe);
 				scrollPaneEinnahmenHilfe.setPreferredSize(new Dimension(620,300));
 				textAreaEinnahmenHilfe.setEditable(false);
@@ -1942,7 +1777,7 @@ public class BudgetPlanGUI extends JFrame {
 		// Button über den man Hilfe bekommt (Statistik)
 		btnStatistikHilfe.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				textAreaStatHilfe = new JTextArea(hilfe_stat);
+				textAreaStatHilfe = new JTextArea(Meldungen.hilfe_stat);
 				scrollPaneStatHilfe = new JScrollPane(textAreaStatHilfe);
 				scrollPaneStatHilfe.setPreferredSize(new Dimension(620, 300));
 				textAreaStatHilfe.setEditable(false);
@@ -2040,7 +1875,7 @@ public class BudgetPlanGUI extends JFrame {
 		// Hilfe/Erklärungs-Button für das Panel Sparfunktion
 		btnHelpButton_Sparfkt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				textAreaEinnahmenHilfe = new JTextArea(hilfe_spar);
+				textAreaEinnahmenHilfe = new JTextArea(Meldungen.hilfe_spar);
 				scrollPaneEinnahmenHilfe = new JScrollPane(
 						textAreaEinnahmenHilfe);
 				scrollPaneEinnahmenHilfe.setPreferredSize(new Dimension(620,
@@ -2079,7 +1914,7 @@ public class BudgetPlanGUI extends JFrame {
 		btnSchließen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				int schliessen = JOptionPane.showConfirmDialog(null,
-						prog_close, "Programm schließen",
+						Meldungen.prog_close, "Programm schließen",
 						JOptionPane.YES_NO_OPTION);
 				if (schliessen == 0) {
 					setVisible(false);
@@ -2099,7 +1934,7 @@ public class BudgetPlanGUI extends JFrame {
 		btnKontoLöschen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 
-				int loeschen = JOptionPane.showConfirmDialog(null, konto_l,
+				int loeschen = JOptionPane.showConfirmDialog(null, Meldungen.konto_l,
 						"Konto löschen", JOptionPane.YES_NO_OPTION);
 				if (loeschen == 0) {
 					comboBox_Ausgaben.removeItem("Kontoeröffnung");
@@ -2138,7 +1973,7 @@ public class BudgetPlanGUI extends JFrame {
 				try {
 					Runtime.getRuntime().exec("calc.exe");
 				} catch (IOException ex) {
-					JOptionPane.showMessageDialog(null, taschenrechner,
+					JOptionPane.showMessageDialog(null, Meldungen.taschenrechner,
 							"ERROR", JOptionPane.ERROR_MESSAGE);
 				}
 			}
@@ -2148,7 +1983,7 @@ public class BudgetPlanGUI extends JFrame {
 		btnInfo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				JOptionPane.showMessageDialog(null, info, "Info",
+				JOptionPane.showMessageDialog(null, Meldungen.info, "Info",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
