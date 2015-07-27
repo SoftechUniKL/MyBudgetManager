@@ -170,6 +170,10 @@ public class Meldungen {
 			+ "- Der Zeitraum muss als ganze Zahl angegeben werden und darf nicht 0 sein. \n"
 			+ "- Aktivieren sie den Zinssatz für ihre Berechnung müssen Sie diesen selbstverständlich auch in der richtigen Form angeben(siehe oben)\n"
 			+ "- Entscheiden sie sich für ein jährliches Sparintervall haben sie verschiedene Möglichkeiten eine Zinsperiode zu wählen\n"
-			+ "  Bei aktivierten Zinssatz darf diese Auswahl nicht leer ausfallen!";		
+			+ "  Bei aktivierten Zinssatz darf diese Auswahl nicht leer ausfallen! \n"
+			+ "	 \n" + "ShortKeys: \n" + "- Berechnen <alt + Enter\n"
+			+ "- Reset <alt + R>\n" + "- Taschenrechner <alt + T>\n"
+			+ "- Hilfebutton <alt + H> \n";
+		
 
 }

@@ -460,7 +460,7 @@ public class BudgetPlanGUI extends JFrame {
 		// Button über den die Buchung ausgeführt werden kann
 		btnAusgabenBuchen = new JButton("Buchen", new ImageIcon(
 				"img/account.png"));
-		btnAusgabenBuchen.setMnemonic(KeyEvent.VK_ENTER);
+		getRootPane().setDefaultButton(btnAusgabenBuchen);
 		btnAusgabenBuchen.setBounds(421, 311, 150, 29);
 		Panel_Ausgaben.add(btnAusgabenBuchen);
 
@@ -573,7 +573,7 @@ public class BudgetPlanGUI extends JFrame {
 		// Button über den die Buchung ausgeführt werden kann
 		btnEinnahmenBuchen = new JButton("Buchen", new ImageIcon(
 				"img/account.png"));
-		btnEinnahmenBuchen.setMnemonic(KeyEvent.VK_ENTER);
+		getRootPane().setDefaultButton(btnEinnahmenBuchen);
 		btnEinnahmenBuchen.setBounds(421, 311, 150, 29);
 		Panel_Einnahmen.add(btnEinnahmenBuchen);
 
@@ -756,7 +756,7 @@ public class BudgetPlanGUI extends JFrame {
 		panel_Sparfunktion.add(lblMonatejahre);
 		
 		btnBerechne = new JButton("Berechne", new ImageIcon(
-				"img/account.png"));
+				"img/piggy_bank.png"));
 		btnBerechne.setMnemonic(KeyEvent.VK_ENTER);
 		btnBerechne.setBounds(421, 311, 150, 29);
 		panel_Sparfunktion.add(btnBerechne);
