@@ -1937,6 +1937,8 @@ public class BudgetPlanGUI extends JFrame {
 				int loeschen = JOptionPane.showConfirmDialog(null, Meldungen.konto_l,
 						"Konto löschen", JOptionPane.YES_NO_OPTION);
 				if (loeschen == 0) {
+					Clear_Ausgaben();
+					Clear_Einnahmen();
 					comboBox_Ausgaben.removeItem("Kontoeröffnung");
 					comboBox_Einnahmen.removeItem("Kontoeröffnung");
 					lblKontostandWarnung.setText("");
