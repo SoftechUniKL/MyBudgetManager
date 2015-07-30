@@ -174,7 +174,6 @@ public class BudgetPlanGUI extends JFrame {
 		this.budget = budget;
 		initWindow(); // Initialisierung des Frameinhalts
 		addBehavior(); // Verhalten der GUI Elemente dieses Frames
-
 	}
 	
 	//
@@ -825,7 +824,6 @@ public class BudgetPlanGUI extends JFrame {
 	 * 
 	 */	
 	public void Anfangsabfrage() {
-
 		// Infomessage, die gezeigt wird, wenn die Csv Datei leer ist und von
 		// einem neuen Kontostart zu rechnen ist.
 		if (budget.Geldvermögen.size() == 0) {
@@ -850,7 +848,6 @@ public class BudgetPlanGUI extends JFrame {
 			btnReset_Einnahmen.setEnabled(false);
 			btnReset_Ausgaben.setEnabled(false);
 		}
-
 	}
 
 	/**
@@ -875,7 +872,6 @@ public class BudgetPlanGUI extends JFrame {
 		// Freigabe der Resetbutton in Einnahmen und Ausgaben
 		btnReset_Einnahmen.setEnabled(true);
 		btnReset_Ausgaben.setEnabled(true);
-
 	}
 
 	/**
@@ -900,11 +896,9 @@ public class BudgetPlanGUI extends JFrame {
 				m = "Einnahme";
 			else
 				m = "Ausgabe";
-
 			data[i][4] = m;
 			i++;
 		}
-
 		table = new JTable(data, new Object[] { "Datum", "Kategorie",
 				"Beschreibung", "Betrag", "Buchungsart" });
 		table.enable(false);
@@ -928,7 +922,6 @@ public class BudgetPlanGUI extends JFrame {
 		NumberFormat nf = NumberFormat.getInstance(new Locale("de", "DE"));
 		double i = 0;
 		budget.Geldvermögen.clear();
-
 		try {
 			// Zeilenweises Einlesen der Daten
 			CSVReader reader = new CSVReader(new FileReader("data/budget.csv"));
@@ -945,7 +938,6 @@ public class BudgetPlanGUI extends JFrame {
 				int intern_Einnahme_Ausgabe = Integer.parseInt(nextLine[4]);
 				budget.Geldvermögen.add(new Posten(datum, notiz, bezeichnung,
 						betrag, intern_Einnahme_Ausgabe));
-
 			}
 			reader.close();
 
@@ -953,11 +945,9 @@ public class BudgetPlanGUI extends JFrame {
 		} catch (FileNotFoundException e) {
 			System.err.println(Meldungen.csv_nichtgefunden);
 			System.exit(1);
-
 		} catch (IOException e) {
 			System.err.println(Meldungen.csv_problemöffnen);
 			System.exit(1);
-
 		} catch (ParseException e) {
 			System.err
 					.println("Formatfehler: Die Datei konnte nicht eingelesen werden!");
@@ -973,7 +963,6 @@ public class BudgetPlanGUI extends JFrame {
 		for (Posten p : budget.Geldvermögen) {
 			i += p.getBetrag();
 		}
-
 		lblKontostand.setText(nf.format(i) + "");
 		if (i >= 0) {
 			lblKontostand.setForeground(new Color(20, 170, 20));
@@ -989,7 +978,6 @@ public class BudgetPlanGUI extends JFrame {
 		// Wenn der übergebene Parameter 1 ist werden die Fehlermeldungen
 		// ausgegeben, wenn die Initalisierung stattfindet
 		if (k == 1) {
-
 			if (budget.Geldvermögen.size() >= 2) {
 				if (i < 20 && i >= 0 && budget.Geldvermögen.size() != 0) {
 					JOptionPane.showMessageDialog(null,
@@ -1029,14 +1017,12 @@ public class BudgetPlanGUI extends JFrame {
 												// durch Punkt statt durch Komma
 												// trennen
 		// um exception zu verhindern
-
 		textFieldStartwert.setText(s);
 		textFieldZeitraum.setText("0");
 
 		// Weitere Methodenausführung
 		Init_Kontoübersicht();
 		Statistik_Warnung();
-
 	}
 	
 	//
@@ -1091,13 +1077,11 @@ public class BudgetPlanGUI extends JFrame {
 			// Falsche Betragseingabe (Muss der Formatvorgabe entsprechen)
 			if (!textField_Ausgaben.getText().equals(j))
 				throw new NumberFormatException();
-
 			// ComboBox auf den Feld "Bitte Wählen"
 			if (comboBox_Ausgaben.getSelectedIndex() == 0)
 				throw new IndexOutOfBoundsException();
 
 			CSVWriter writer = null;
-
 			// Wenn alle Vorgaben korrekt sind wird hier die Csv Datei
 			// beschrieben
 			try {
@@ -1120,32 +1104,25 @@ public class BudgetPlanGUI extends JFrame {
 			} catch (FileNotFoundException ex) {
 				System.err.println(Meldungen.csv_nichtgefunden);
 				System.exit(1);
-
 			} catch (IOException ex) {
 				System.err.println(Meldungen.csv_problemöffnen);
 				System.exit(1);
 			}
-
 		}
-
 		catch (ParseException e) {
 			JOptionPane.showMessageDialog(null, Meldungen.falsches_datum, "Fehler",
 					JOptionPane.ERROR_MESSAGE);
 			txtTtmmjjjj_Ausgaben.setText(null);
 		}
-
 		catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(null, Meldungen.falsche_betragseingabe,
 					"Fehler", JOptionPane.ERROR_MESSAGE);
 			textField_Ausgaben.setText(null);
 		}
-
 		catch (IndexOutOfBoundsException e) {
 			JOptionPane.showMessageDialog(null, Meldungen.kategorie, "Fehler",
 					JOptionPane.ERROR_MESSAGE);
-
 		}
-
 	}
 
 	/**
@@ -1210,7 +1187,6 @@ public class BudgetPlanGUI extends JFrame {
 			// Falsche Betragseingabe (Muss der Formatvorgabe entsprechen)
 			if (!textField_Einnahmen.getText().equals(j))
 				throw new NumberFormatException();
-
 			// ComboBox muss auf das Feld "Bitte Wählen"
 			if (comboBox_Einnahmen.getSelectedIndex() == 0)
 				throw new IndexOutOfBoundsException();
@@ -1218,7 +1194,6 @@ public class BudgetPlanGUI extends JFrame {
 			// Wenn alle Vorgaben korrekt sind wird hier die Csv Datei
 			// beschrieben
 			CSVWriter writer = null;
-
 			try {
 				writer = new CSVWriter(new FileWriter("data/budget.csv", true));
 				String[] entries = new String[5];
@@ -1239,30 +1214,24 @@ public class BudgetPlanGUI extends JFrame {
 			} catch (FileNotFoundException ex) {
 				System.err.println(Meldungen.csv_nichtgefunden);
 				System.exit(1);
-
 			} catch (IOException ex) {
 				System.err.println(Meldungen.csv_problemöffnen);
 				System.exit(1);
 			}
-
 		}
-
 		catch (ParseException e) {
 			JOptionPane.showMessageDialog(null, Meldungen.falsches_datum, "Fehler",
 					JOptionPane.ERROR_MESSAGE);
 			txtTtmmjjjj_Einnahmen.setText(null);
 		}
-
 		catch (NumberFormatException e) {
 			JOptionPane.showMessageDialog(null, Meldungen.falsche_betragseingabe,
 					"Fehler", JOptionPane.ERROR_MESSAGE);
 			textField_Einnahmen.setText(null);
 		}
-
 		catch (IndexOutOfBoundsException e) {
 			JOptionPane.showMessageDialog(null, Meldungen.kategorie, "Fehler",
 					JOptionPane.ERROR_MESSAGE);
-
 		}
 	}
 
@@ -1326,7 +1295,6 @@ public class BudgetPlanGUI extends JFrame {
 	 *             bei fehlerhafter Datumseingabe Error-Meldung
 	 */
 	public boolean Statistik_CheckAuswahlDatum() {
-
 		try {
 			// überprüft die Gültigkeit von Datumsstartwert & Datumsendwert
 			if ((textField_Statistik_Startwert.getText().length() != 10)
@@ -1375,7 +1343,6 @@ public class BudgetPlanGUI extends JFrame {
 			if (End.compareTo(Start) < 0)
 				throw new Exception();
 			return true;
-
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null, Meldungen.falsche_datumsgroesse,
 					"Fehler", JOptionPane.ERROR_MESSAGE);
@@ -1433,7 +1400,6 @@ public class BudgetPlanGUI extends JFrame {
 				monat_einnahmen = monatformat.format(p.getDatum());
 			} else {
 				Zaehler_ausgaben++;
-
 				if (monatformat.format(p.getDatum()).compareTo(monat_ausgaben) != 0)
 					month_ausgaben = true;
 				monat_ausgaben = monatformat.format(p.getDatum());
@@ -1502,7 +1468,6 @@ public class BudgetPlanGUI extends JFrame {
 			if (!textFieldsparrate.getText().equals(j)) {// sparrate exception
 				textFieldsparrate.setText("");
 				throw new NumberFormatException();
-
 			}
 			if (sparrate < 0) {// sparrate exception 2
 				throw new NumberFormatException();
@@ -1512,7 +1477,6 @@ public class BudgetPlanGUI extends JFrame {
 					&& rdbtnJaehrlichSparfkt.isSelected() == false) {
 				throw new IndexOutOfBoundsException();//exception wenn kein Sparintervall gewählt wurde
 			}
-
 			if (rdbtnEinmaligSparfkt.isSelected() == true)
 				zeitraum = 1;
 			if (zeitraum <= 0) {// zeitraum excepiton, zeitraum soll nicht Null oder kleiner sein
@@ -1527,7 +1491,6 @@ public class BudgetPlanGUI extends JFrame {
 					Sparfunktion.berechne_SparfktOhneZinsen(startwert,
 							sparrate, zeitraum);
 				}
-			
 				//wenn Zinsen aktiv :
 			if (rdbtnZinsenAnAus.isSelected() == true) {
 				zinssatz = Double.parseDouble(textFieldZinsen.getText());
@@ -1538,19 +1501,15 @@ public class BudgetPlanGUI extends JFrame {
 				if (!textFieldZinsen.getText().equals(z)) {
 					textFieldZinsen.setText(null);
 					throw new NumberFormatException();//Zinssatz exception nr 2
-					
 				}
-
 				if (rdbtnEinmaligSparfkt.isSelected() == true) {
 					zeitraum = 1;
 					Sparfunktion.berechne_SparfktMitZinsenEinmalig(startwert,
 							sparrate, zeitraum, zinssatz);
-
 				}
 				if (rdbtnMonatlichSparfkt.isSelected() == true) {
 					Sparfunktion.berechne_SparfktMitZinsenMonatlich(startwert,
 							sparrate, zeitraum, zinssatz);
-
 				}
 				if (rdbtnJaehrlichSparfkt.isSelected() == true) {
 					if (zinsperiode == "(Bitte Wählen)") {
@@ -1580,31 +1539,24 @@ public class BudgetPlanGUI extends JFrame {
 											startwert, sparrate, zeitraum,
 											zinssatz);
 						}
-
 					}
 				}
 			}
-
 		} catch (NumberFormatException e) {
-
 			JOptionPane
 					.showMessageDialog(
 							null,Meldungen.falsche_betragseingabe,
 							"Fehler", JOptionPane.ERROR_MESSAGE);
-
 		} catch (IndexOutOfBoundsException e) {
 			JOptionPane.showMessageDialog(
 					null, Meldungen.periode_sparfkt,
 					"Fehler",JOptionPane.ERROR_MESSAGE);
-
 		} catch (Exception e) {
 			JOptionPane
 					.showMessageDialog(
 							null,Meldungen.zeitraum_sparfkt,						
 							"Fehler", JOptionPane.ERROR_MESSAGE);
-
 		}
-
 	}
 
 	//
@@ -1640,22 +1592,18 @@ public class BudgetPlanGUI extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				Clear_Ausgaben();
 			}
-
 		});
 
 		// Button der die Ausgaben bucht und dabei die Methode
 		// Checkdata_Ausgaben verwendet.
 		btnAusgabenBuchen.addActionListener(new ActionListener() {
-			
-			public void actionPerformed(ActionEvent arg0) {
-				
+			public void actionPerformed(ActionEvent arg0) {				
 				Checkdata_Ausgaben();
 				if ((comboBox_Ausgaben.isEnabled() == false)
 						&& (budget.Geldvermögen.size() != 0)) {
 					Aktivierung();
 				}
 			}
-
 		});
 
 		// Button über den man Hilfe bekommt (Ausgaben)
@@ -1667,10 +1615,8 @@ public class BudgetPlanGUI extends JFrame {
 				textAreaAusgabenHilfe.setEditable(false);
 				JOptionPane.showMessageDialog(null, scrollPaneAusgabenHilfe, "Hilfe",
 						JOptionPane.INFORMATION_MESSAGE);
-
 			}
 		});
-
 
 		// Button der die Einnahmen resettet und dabei die Methoden
 		// Clear_Ausgaben verwendet.
@@ -1678,21 +1624,18 @@ public class BudgetPlanGUI extends JFrame {
 			public void actionPerformed(ActionEvent arg0) {
 				Clear_Einnahmen();
 			}
-
 		});
 
 		// Button der die Einnahmen bucht und dabei die Methode
 		// CheckData_Einnahmen verwendet
 		btnEinnahmenBuchen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-
 				CheckData_Einnahmen();
 				if ((comboBox_Ausgaben.isEnabled() == false)
 						&& (budget.Geldvermögen.size() != 0)) {
 					Aktivierung();
 				}
 			}
-
 		});
 
 		// Button über den man Hilfe bekommt (Einnahmen)
@@ -1704,8 +1647,6 @@ public class BudgetPlanGUI extends JFrame {
 				textAreaEinnahmenHilfe.setEditable(false);
 				JOptionPane.showMessageDialog(null, scrollPaneEinnahmenHilfe, "Hilfe",
 						JOptionPane.INFORMATION_MESSAGE);
-
-
 			}
 		});
 
@@ -1721,7 +1662,6 @@ public class BudgetPlanGUI extends JFrame {
 					textField_Statistik_Endwert.setText(null);
 				} else
 					rdbtnGesamtzeitraum.setSelected(true);
-
 			}
 		});
 
@@ -1735,7 +1675,6 @@ public class BudgetPlanGUI extends JFrame {
 					rdbtnGesamtzeitraum.setSelected(false);
 				} else
 					rdbtnIndividualZeitraum.setSelected(true);
-
 			}
 		});
 
@@ -1790,10 +1729,9 @@ public class BudgetPlanGUI extends JFrame {
 		btnBerechne.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				Checkdata_Sparfkt();
-
 			}
-
 		});
+		
 		// Radiobutton für einmalige Zugabe der Sparrate
 		rdbtnEinmaligSparfkt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1802,7 +1740,6 @@ public class BudgetPlanGUI extends JFrame {
 					rdbtnMonatlichSparfkt.setEnabled(false);
 					rdbtnJaehrlichSparfkt.setEnabled(false);
 					comboBoxZinsperiode.setEnabled(false);
-
 				} else {
 					textFieldZeitraum.setEnabled(true);
 					rdbtnMonatlichSparfkt.setEnabled(true);
@@ -1813,6 +1750,7 @@ public class BudgetPlanGUI extends JFrame {
 				}
 			}
 		});
+		
 		// Radiobutton für monatliches Sparintervall
 		rdbtnMonatlichSparfkt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1821,7 +1759,6 @@ public class BudgetPlanGUI extends JFrame {
 					rdbtnJaehrlichSparfkt.setEnabled(false);
 					comboBoxZinsperiode.setSelectedItem("monatlich");
 					comboBoxZinsperiode.setEnabled(false);
-
 				} else {
 					rdbtnEinmaligSparfkt.setEnabled(true);
 					rdbtnJaehrlichSparfkt.setEnabled(true);
@@ -1830,27 +1767,26 @@ public class BudgetPlanGUI extends JFrame {
 						comboBoxZinsperiode.setEnabled(true);
 						comboBoxZinsperiode.setSelectedItem("(Bitte Wählen)");
 					}
-
 				}
 			}
 		});
+		
 		// Radiobutton für jährliches Sparintervall
 		rdbtnJaehrlichSparfkt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (rdbtnJaehrlichSparfkt.isSelected()) {
 					rdbtnEinmaligSparfkt.setEnabled(false);
 					rdbtnMonatlichSparfkt.setEnabled(false);
-
 				} else {
 					rdbtnEinmaligSparfkt.setEnabled(true);
 					rdbtnMonatlichSparfkt.setEnabled(true);
-
 				}
 				if (rdbtnJaehrlichSparfkt.isSelected()&&rdbtnZinsenAnAus.isSelected()) {
 					comboBoxZinsperiode.setEnabled(true);
 				}
 			}
 		});
+		
 		// Radiobutton zur Aktivierung der Zinsen
 		rdbtnZinsenAnAus.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1872,6 +1808,7 @@ public class BudgetPlanGUI extends JFrame {
 				}
 			}
 		});
+		
 		// Hilfe/Erklärungs-Button für das Panel Sparfunktion
 		btnHelpButton_Sparfkt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1883,9 +1820,9 @@ public class BudgetPlanGUI extends JFrame {
 				textAreaEinnahmenHilfe.setEditable(false);
 				JOptionPane.showMessageDialog(null, scrollPaneEinnahmenHilfe,
 						"Hilfe", JOptionPane.INFORMATION_MESSAGE);
-
 			}
 		});
+		
 		// komplettes Wiederherstellen der Ausgangsform
 		btnReset_Sparfkt.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -1904,11 +1841,8 @@ public class BudgetPlanGUI extends JFrame {
 				comboBoxZinsperiode.setSelectedItem("(Bitte Wählen)");
 				comboBoxZinsperiode.setEnabled(true);
 				rdbtnZinsenAnAus.setSelected(true);
-
 			}
 		});
-
-		
 
 		// Button der das Programm schließt
 		btnSchließen.addActionListener(new ActionListener() {
@@ -1933,7 +1867,6 @@ public class BudgetPlanGUI extends JFrame {
 		 */
 		btnKontoLöschen.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-
 				int loeschen = JOptionPane.showConfirmDialog(null, Meldungen.konto_l,
 						"Konto löschen", JOptionPane.YES_NO_OPTION);
 				if (loeschen == 0) {
@@ -1943,15 +1876,12 @@ public class BudgetPlanGUI extends JFrame {
 					comboBox_Einnahmen.removeItem("Kontoeröffnung");
 					lblKontostandWarnung.setText("");
 					lblKontostandWarnung.setBackground(Color.WHITE);
-
 					CSVWriter writer = null;
 					try {
 						writer = new CSVWriter(
 								new FileWriter("data/budget.csv"));
 						writer.writeNext(null);
-						;
 						writer.close();
-
 					} catch (FileNotFoundException ex) {
 						System.err.println("csv_nichtgefunden");
 						System.exit(1);
@@ -1960,11 +1890,9 @@ public class BudgetPlanGUI extends JFrame {
 						System.err.println("csv_problemöffnen");
 						System.exit(1);
 					}
-
 					budget.Geldvermögen.clear();
 					Init_Kontostand(0);
 					Anfangsabfrage();
-
 				}
 			}
 		});
@@ -1984,11 +1912,9 @@ public class BudgetPlanGUI extends JFrame {
 		// Button der eine Infoanzeige auslöst
 		btnInfo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
 				JOptionPane.showMessageDialog(null, Meldungen.info, "Info",
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 		});
-
 	}
 }
